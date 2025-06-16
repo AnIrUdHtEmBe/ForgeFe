@@ -17,18 +17,19 @@ const CalendarStrip = (props: CalendarStripProps) => {
 		const days = [];
 		while (date.getMonth() === month) {
 			days.push(new Date(date));
-			date.setDate(date.getDate() + 1);
+			date.setDate(date.getDate() +1);
 		}
-		return days;
-	};
 
+		return days;
+
+	};
 	const dates = getDaysInMonth(year, month);
 
 	return (
 		<div className="calendar-strip-container">
 			<div className="calendar-strip-header">
 				{today.toLocaleString('default', { month: 'short' }).toUpperCase()} '
-				{String(year).slice(-2)}
+				{String(props.activeDate).slice(2, 4)}
 			</div>
 			<div className="calendar-strip">
 				{dates.map((date) => {
@@ -37,8 +38,8 @@ const CalendarStrip = (props: CalendarStripProps) => {
 					return (
 						<div
 							key={date.toDateString()}
-							className={`calendar-day ${isToday ? 'today' : ''}`}
-							onClick={() => props.onDateChangeHandler(date.toISOString())}
+							className={`calendar-day ${isToday ? '--bookSportActive' : ''}`}
+							onClick={() => props.onDateChangeHandler(date.toLocaleDateString())}
 						>
 							<div className="day-name">{daysOfWeek[date.getDay()]}</div>
 							<div className="day-number">{date.getDate()}</div>
