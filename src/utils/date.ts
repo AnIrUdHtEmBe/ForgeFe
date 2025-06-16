@@ -32,6 +32,14 @@ export const getArrayOfDatesFromSundayToSaturday = () => {
 	return datesArray;
 };
 
+export const TodaysDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  const day = date.getDate();
+
+  return day;
+}
+
+
 export const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
 

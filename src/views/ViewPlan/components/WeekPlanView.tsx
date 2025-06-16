@@ -1,16 +1,17 @@
 import type { t_session } from "../../../types/session";
-import { getDate } from "../../../utils/date";
+import { getDate, TodaysDate } from "../../../utils/date";
 import "./styles/week-plan-view.css";
 
 interface WeekPlanViewProps {
-  sessions: t_session[];
+  // sessions: t_session[];
   activeIndex: number;
+  weekStartToEndDates: string[];
 }
 
 const WeekPlanView = (props: WeekPlanViewProps) => {
   return (
     <div className="week-plan-view-container">
-      {props.sessions.map((session, i) => {
+      {/* {props.sessions.map((session, i) => {
         return (
           <div
             key={i}
@@ -22,9 +23,9 @@ const WeekPlanView = (props: WeekPlanViewProps) => {
             <span className="--date">{getDate(session.scheduledDate)}</span>
           </div>
         );
-      })}
+      })} */}
 
-      {["sunday" , "monday"].map((session, i) => {
+      {props.weekStartToEndDates.map((session, i) => {
         return (
           <div
             key={i}
@@ -33,7 +34,7 @@ const WeekPlanView = (props: WeekPlanViewProps) => {
             }}
             className="--plan"
           >
-            <span className="--date">{}</span>
+            <span className="--date">{TodaysDate(session)}</span>
           </div>
         );
       })}

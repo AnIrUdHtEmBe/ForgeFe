@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { categories, DEFAULT_ICON_SIZE, SNACK_AUTO_HIDE } from "../../default";
 import "./styles.css";
 import type { t_plan } from "../../types/plan";
-import { formatDate, formatDateForB, getWeekRange } from "../../utils/date";
+import { formatDate, formatDateForB, getArrayOfDatesFromSundayToSaturday, getWeekRange } from "../../utils/date";
 import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
 import WeekPlanView from "./components/WeekPlanView";
@@ -19,6 +19,9 @@ const ViewPlan = () => {
   const [weekPlan, setWeekPlan] = useState<t_plan | null>(null);
   const [pageState, setPageState] = useState(E_PageState.Unknown);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [weekStartToEndDates, setWeekStartToEndDates] = useState<string[]>([]);
+
+  console.log(activeIndex)
 
   //fetch the plan for user with regard to current week and assign that plan with plan state
   const getUserPlan = () => {
@@ -28,7 +31,7 @@ const ViewPlan = () => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data);
-        setWeekPlan(response.data[5]);
+        setWeekPlan(response.data[3]);
         setActiveIndex(dayOfWeek);
         setPageState(E_PageState.Accepted);
       } else {
@@ -65,7 +68,8 @@ const ViewPlan = () => {
   }, []);
 
   const arrowRightHandler = () => {
-    if (!weekPlan || activeIndex >= weekPlan.sessionInstances.length - 1) return;
+    // if (!weekPlan || activeIndex >= weekPlan.sessionInstances.length - 1) return;
+    if (activeIndex >= 6) return;
     setActiveIndex(activeIndex + 1);
   };
   const arrowLeftHandler = () => {
@@ -84,6 +88,12 @@ const ViewPlan = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(getArrayOfDatesFromSundayToSaturday())
+    const weekDates = getArrayOfDatesFromSundayToSaturday();
+    setWeekStartToEndDates(weekDates);
+  },[])
+
   if (pageState === E_PageState.Loading) {
     return <FullScreenLoader />;
   }
@@ -100,13 +110,16 @@ const ViewPlan = () => {
           );
         })}
       </div>
-      {weekPlan && (
+      {/* {weekPlan && ( */}
         <div className="view-plan-today-information-container">
           <div className="view-plan-top-information-top-container">
             <div className="--date">
 						{/* changes to be done */}
-              {formatDate(
+              {/* {formatDate(
                 weekPlan?.sessionInstances[activeIndex].scheduledDate
+              )} */}
+              {formatDate(
+                weekStartToEndDates[activeIndex]
               )}
             </div>
             <div className="--arrows">
@@ -135,16 +148,17 @@ const ViewPlan = () => {
             </div>
           </div>
         </div>
-      )}
+      {/* )} */}
 
-      {weekPlan && (
+      {/* {weekPlan && ( */}
         <div className="view-plan-sessions-view-container">
           <WeekPlanView
             activeIndex={activeIndex}
-            sessions={weekPlan.sessionInstances}
+            // sessions={weekPlan.sessionInstances}
+            weekStartToEndDates={weekStartToEndDates}
           />
         </div>
-      )}
+      {/* )} */}
 
       <div className="view-plan-schedule-container">
         <div className="--top">
@@ -164,7 +178,7 @@ const ViewPlan = () => {
         </div>
         {weekPlan && (
           <div className="--bottom">
-            {weekPlan.sessionInstances[activeIndex].activities.map(
+            {weekPlan.sessionInstances[activeIndex]?.activities.map(
               (session, i) => {
                 return (
                   <div className="session-information-container">
