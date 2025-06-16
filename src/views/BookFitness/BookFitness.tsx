@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 import CalendarStrip from '../../components/Calendar/Calendar';
 import SportStrip from '../../components/SportStrip/SportStrip';
 // import { PiCourtBasketball } from 'react-icons/pi';
@@ -16,6 +16,8 @@ import { getCourts , getTimeSlotForCourt} from '../../api/courts';
 import { HttpStatusCode, type AxiosResponse } from 'axios';
 import { SNACK_AUTO_HIDE } from '../../default';
 import { enqueueSnackbar } from 'notistack';
+import type { t_court } from '../../types/court';
+import type { t_slot } from '../../types/slot.ts';
 const BookFitness = () => {
 	const [courts, setCourts] = useState<{ name: string , courtId: string}[]>([]);
 	const [selectedCourtId, setSelectedCourtId] = useState<string | null>(null);
@@ -24,7 +26,7 @@ const BookFitness = () => {
 		const onAccept = (response: AxiosResponse) => {
 			if (response.status === HttpStatusCode.Ok) {
 				console.log(response.data);
-				 const newCourts = response.data.map((court: any) => ({
+				 const newCourts = response.data.map((court: t_court) => ({
 					name: court.name,
 					courtId: court.courtId,
 				}));
@@ -54,19 +56,16 @@ const BookFitness = () => {
 			'AREN_JZSW15'
 		);
 	};
-	const [slots , setSlots ] = useState<{startTime:string , endTime: string , status: string, slotId: string}[]>([]);
+	
+	const [selectedSlotIds, setSelectedSlotIds] = useState<string[]>([]);
+	const [slots , setSlots ] = useState<{startTime:number , endTime: number , status: string, slotId: string}[]>([]);
 	const viewTimeSlots = () => {
-		// This function can be used to fetch time slots for the selected court
-		
-		
-				
-		
-				const onAccept = (response: AxiosResponse) => {
+			const onAccept = (response: AxiosResponse) => {
 					if (response.status === HttpStatusCode.Ok) {
 						console.log(response.data);
-						const newSlots = response.data.map((slot: any) => ({
-							startTime: slot.startTime,
-							endTime: slot.endTime,
+						const newSlots = response.data.map((slot: t_slot) => ({
+							startTime: slot.st_unix,
+							endTime: slot.et_unix,
 							status: slot.status,
 							slotId: slot.slotId,
 						}));
@@ -124,21 +123,32 @@ const BookFitness = () => {
 		sport: '',
 	});
 	
-	
+	const handleSlotToggle = (slotId: string) => {
+		const index = slots.findIndex((s) => s.slotId === slotId);
+		const newSelected = [...selectedSlotIds];
 
-	// const slots = [
-	// 	{
-	// 		startTime: '10:30',
-	// 		endTime: '11:30',
-	// 		status: 'Available',
-	// 	},
-	// 	{
-	// 		startTime: '10:30',
-	// 		endTime: '11:30',
-	// 		status: 'Available',
-	// 	},
-	// 
-	// ];
+		if (selectedSlotIds.includes(slotId)) {
+			// Deselect the slot
+			setSelectedSlotIds(newSelected.filter((id) => id !== slotId));
+		} else {
+			// Check continuity
+			const previousId = slots[index - 1]?.slotId;
+			const nextId = slots[index + 1]?.slotId;
+
+			const isAdjacent =
+			selectedSlotIds.length === 0 ||
+			selectedSlotIds.includes(previousId) ||
+			selectedSlotIds.includes(nextId);
+
+			if (isAdjacent) {
+			newSelected.push(slotId);
+			setSelectedSlotIds(newSelected);
+			} else {
+			// Optionally show error/snackbar
+			console.warn("Can only select continuous time slots.");
+			}
+	}
+	};
 
 	const status = [
 		{
@@ -150,7 +160,7 @@ const BookFitness = () => {
 			color: 'blue',
 		},
 		{
-			name: 'occupied',
+			name: 'booked',
 			color: 'grey',
 		},
 		{
@@ -164,6 +174,7 @@ const BookFitness = () => {
     setShowBook(true);
   }
   const [activeDate, setActiveDate] = useState(new Date().toISOString());
+ 
 
   function changeDate(newDate: string) {
 	 setActiveDate(newDate);
@@ -175,9 +186,48 @@ const BookFitness = () => {
 	 console.log('Slots:', slots);
 	 
   }
+
+  let finalStartTime = 0;
+  let finalEndTime = 0;
+
+  useEffect(()=> {
+		console.log(selectedSlotIds);
+		
+	}, [selectedSlotIds])
+
+	// Step 1: Filter slots that are selected
+		const selectedSlots = slots
+		.filter(slot => selectedSlotIds.includes(slot.slotId))
+		.sort((a, b) => a.st_unix - b.st_unix); // Sort by start time to find range
+
+		if (selectedSlots.length === 0) {
+		console.log("No slots selected.");
+		} else {
+		finalStartTime = selectedSlots[0].startTime;
+		finalEndTime = selectedSlots[selectedSlots.length - 1].endTime;
+
+		console.log("Final Start:", finalStartTime);
+		console.log("Final End:", finalEndTime);
+		}
+
+		function combineDateWithUnixTime(dateStr: string, timeUnix: number): Date {
+			const time = new Date(timeUnix * 1000); // Convert to milliseconds
+			const hours = time.getHours();
+			const minutes = time.getMinutes();
+
+			const combinedDate = new Date(dateStr); // Defaults to midnight
+			combinedDate.setHours(hours);
+			combinedDate.setMinutes(minutes);
+			combinedDate.setSeconds(0);
+			combinedDate.setMilliseconds(0);
+
+			return combinedDate;
+		}
+		const startDateTime = combineDateWithUnixTime(activeDate, finalStartTime);
+		const endDateTime = combineDateWithUnixTime(activeDate, finalEndTime);
 	return (
 		<div className="book-fitness-container">
-			{showBook && <BookSlot onClose={() => setShowBook(false)} />}
+			{showBook && <BookSlot onClose={() => setShowBook(false)} courtId={selectedCourtId} startTime={startDateTime} endTime={endDateTime} viewTimeSlots={viewTimeSlots}/>}
 			<div className="book-fitness-top-container">
 				<div className="--calendar">
 					<CalendarStrip
@@ -193,6 +243,7 @@ const BookFitness = () => {
 					<SportStrip
 						activeSport={{ name: 'all' }}
 						changeActiveSport={() => {}}
+						category='SPORTS'
 					/>
 				</div>
 			</div>
@@ -266,9 +317,12 @@ const BookFitness = () => {
 									return (
 										<DropdownItemCheckbox
 											key={j}
-											id={slot.endTime}
+											id={slot.slotId}
+											isSelected={selectedSlotIds.includes(slot.slotId)}
+  											onClick={() => handleSlotToggle(slot.slotId)}
+											
 										>
-											{new Date(slot.startTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })} - {new Date(slot.endTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}
+											{new Date(Number(slot.startTime) * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })} - {new Date(Number(slot.endTime) * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}
 
 											{/* {slot.startTime} - {slot.endTime} */}
 										</DropdownItemCheckbox>
@@ -284,7 +338,8 @@ const BookFitness = () => {
 												}}
 											/>
 											<span>
-												{new Date(slot.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} - {new Date(slot.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+												{new Date(Number(slot.startTime) * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })} - {new Date(Number(slot.endTime) * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}
+
 
 												
 											</span>

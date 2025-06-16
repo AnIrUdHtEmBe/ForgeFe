@@ -7,9 +7,22 @@ interface PlayerInfoCardProps {
 	showLevel?: boolean;
 	showBtn?: boolean;
 	drill?: boolean;
+	courtId?: string; // optional, if you want to show court info
+	startTime?: Date; // optional, if you want to show start time
+	endTime?: Date; // optional, if you want to show end time
 }
 
+
+
 const PlayerInfoCard = (props: PlayerInfoCardProps) => {
+	const start = props.startTime
+	const end = props.endTime
+
+const ordinal = (d: number) =>
+  d + (d > 3 && d < 21 ? 'th' : ['st', 'nd', 'rd'][((d % 10) - 1)] || 'th');
+
+const dateStr = `${ordinal(start.getDate())} ${start.toLocaleString('default', { month: 'short' })}, ${start.toLocaleString('default', { weekday: 'long' })}`;
+const timeStr = `${start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })} - ${end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}`;
 	return (
 		<div className="player-info-card-container">
 			<div className="player-info-start-container">
@@ -22,8 +35,8 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
 					</div>
 				</div>
 				<div className="player-info-date-and-time">
-					<span>24th Jul, Wednesday </span>
-					<span>12:00AM - 01:00PM</span>
+					<span>{dateStr}</span>
+					<span>{timeStr}</span>
 				</div>
 				<div className="player-info-event-info">
 					<div className="--game">

@@ -13,7 +13,7 @@ interface SportStripProps {
 }
 
 const SportStrip = (props: SportStripProps) => {
-  let [sports, setSports] = useState<t_sport[]>([]);
+  let [sports, setSports] = useState<t_sport[]>([]);  
 
   const getAllSports = () => {
     const onAccept = (response: AxiosResponse) => {

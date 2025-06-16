@@ -38,3 +38,29 @@ export const getTimeSlotForCourt = async(
         onReject(e);
     }
 }
+
+export const bookCourt = async(
+    onAccept: (response: AxiosResponse) => void,
+    onReject: (error: unknown) => void,
+    courtId: string,
+    sportId: string,
+    startTime: string,
+    endTime: string
+) => {
+    try {
+        const token = await CheckJWT();
+        const response = await axios.post(
+            PATH_V2 + `/court/${courtId}/bookings/create`,
+            {
+                courtId,
+                sportId,
+                startTime,
+                endTime
+            },
+            { headers: { Authorization: 'Bearer ' + token } }
+        );
+        onAccept(response);
+    } catch (e) {
+        onReject(e);
+    }
+}
