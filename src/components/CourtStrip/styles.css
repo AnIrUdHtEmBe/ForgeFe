@@ -1,0 +1,53 @@
+.court-strip-container {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	position: relative;
+	align-items: center;
+	height: 50px;
+}
+
+.court-strip-container .court-strip-current-filter {
+	width: 20%;
+	position: absolute;
+	left: 0;
+	height: 100%;
+	text-align: center;
+	font-weight: bold;
+	font-size: 14px;
+	color: #333;
+	background-color: #b3eaff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+	border: 1px solid black;
+	border-left: none;
+	transform: scale(1.1);
+}
+
+.court-strip-container .court-strip-courts-filter {
+	width: 80%;
+	background-color: #e8e8e8;
+	display: flex;
+	flex-direction: row;
+  font-size: 12px;
+  font-weight: 700;
+	gap: 5px;
+	align-items: center;
+	margin-left: 20%;
+	padding-left: 14px;
+  overflow-x: auto;
+}
+
+.--court {
+	cursor: pointer;
+	padding: 6px 12px;
+}
+
+.--bookSportActive {
+	background-color: #b3eaff;
+	border-radius: 5px;
+	border: 1px solid black;
+}

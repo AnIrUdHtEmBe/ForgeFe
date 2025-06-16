@@ -19,7 +19,7 @@ const SportStrip = (props: SportStripProps) => {
     else if (name === "football") setSportName("FootBall");
     else if (name === "Tennis") setSportName("Tennis");
     else if (name === "Badminton") setSportName("Badminton");
-    else setSportName(""); // fallback
+    else setSportName("Sports"); // fallback
   }, [props.activeSport.name]);
 
 	

@@ -1,7 +1,76 @@
+import { useEffect, useState } from "react";
+import type { t_court } from "../../types/court";
+import { getCourts } from "../../api/courts";
+import { HttpStatusCode, type AxiosResponse } from "axios";
+import { enqueueSnackbar } from "notistack";
+import "./styles.css";
 
 
 interface CourtStripProps {
-  activeCourt: string;
+  activeCourt: {name : string};
   changeActiveCourt: (newCourt: string) => void;
 }
+
+
+
+const CourtStrip = (props : CourtStripProps) => {
+  const [courts , setCourts] = useState<t_court[]>([]);
+
+  const getAllCourts = () => {
+    const onAccept = (response : AxiosResponse) => {
+      if(response.status === HttpStatusCode.Ok){
+        console.log(response.data);
+        setCourts(response.data);
+      }
+      else{
+        enqueueSnackbar({
+          message: "Failed to fetch the data!",
+          autoHideDuration: 3000,
+          variant: "error",
+        });
+      }
+    }
+
+    const onReject = (e) => {
+      console.log(e);
+      enqueueSnackbar({
+        message: "Failed to fetch the data!",
+        autoHideDuration: 3000,
+        variant: "error",
+      });
+    }
+
+    getCourts(onAccept, onReject, "AREN_JZSW15");
+  } 
+
+  useEffect(() => {
+    getAllCourts();
+  } , []);
+
+  return (
+    <div className="court-strip-container">
+      <div className="court-strip-current-filter">
+        <span>{props.activeCourt.name}</span>
+      </div>
+      <div className="court-strip-courts-filter">
+        {courts.map((court, i) => {
+          return (
+            <div
+              className={`--court ${
+                props.activeCourt.name === court.name ? "--bookSportActive" : ""
+              }`}
+              key={i}
+              onClick={() => props.changeActiveCourt(court.name)}
+            >
+              {court.name}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  )
+}
+
+
+export default CourtStrip;
 

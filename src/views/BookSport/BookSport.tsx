@@ -5,17 +5,26 @@ import "./styles.css";
 import { SPORTS, UNKNOWN_SPORTS_ICON } from "../../default";
 import { useNavigate } from "react-router-dom";
 import E_Routes from "../../types/routes";
+import CourtStrip from "../../components/CourtStrip/CourtStrip";
 
 const BookSport = () => {
   const [activeDate, setActiveDate] = useState<string>(
     new Date().toISOString()
   );
 
-	console.log("activeDate", activeDate);
-  const [filters, setFilters] = useState<{ date: string; sport: string }>({
+  // console.log("activeDate", activeDate);
+
+  const [filters, setFilters] = useState<{
+    date: string;
+    sport: string;
+    court: string;
+  }>({
     date: activeDate,
-    sport: "All",
+    sport: "Sports",
+    court: "Courts",
   });
+
+	console.log(filters)
   const [slots, setSlots] = useState([
     {
       startTime: "10:30",
@@ -83,14 +92,18 @@ const BookSport = () => {
     });
   };
 
-	const handleSportChange = (newSport: string) => {
-		setFilters((prev) => ({ ...prev, sport: newSport }));
-	};
+  const handleSportChange = (newSport: string) => {
+    setFilters((prev) => ({ ...prev, sport: newSport }));
+  };
 
-	const handleDateChange = (newDate: string) => {
-		setActiveDate(newDate);
-		setFilters((prev) => ({ ...prev, date: newDate }));
-	};
+  const handleDateChange = (newDate: string) => {
+    setActiveDate(newDate);
+    setFilters((prev) => ({ ...prev, date: newDate }));
+  };
+
+	const handleCourtChange = (newCourt: string) => {
+		setFilters((prev) => ({ ...prev, court: newCourt }));
+	}
 
   return (
     <div className="book-sport-container">
@@ -105,6 +118,13 @@ const BookSport = () => {
           <SportStrip
             activeSport={{ name: filters.sport }}
             changeActiveSport={handleSportChange}
+          />
+        </div>
+
+        <div className="--calendar">
+          <CourtStrip
+            activeCourt={{ name: filters.court }}
+            changeActiveCourt={handleCourtChange}
           />
         </div>
       </div>
