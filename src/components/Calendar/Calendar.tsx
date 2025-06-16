@@ -38,6 +38,7 @@ const CalendarStrip = (props: CalendarStripProps) => {
 						<div
 							key={date.toDateString()}
 							className={`calendar-day ${isToday ? 'today' : ''}`}
+							onClick={() => props.onDateChangeHandler(date.toISOString())}
 						>
 							<div className="day-name">{daysOfWeek[date.getDay()]}</div>
 							<div className="day-number">{date.getDate()}</div>
