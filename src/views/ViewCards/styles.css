@@ -1,0 +1,39 @@
+.view-cards-container {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding-left: 24px;
+	padding-right: 24px;
+  position: relative;
+}
+
+.view-cards-container .--back { 
+  position: absolute;
+  left: 6%;
+  top: 1%;
+}
+
+.view-cards-container .view-cards-top-heading {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	justify-content: center;
+	align-items: center;
+}
+
+.view-cards-container .--date {
+	font-size: 20px;
+	font-weight: 600;
+}
+
+.view-cards-container .--day {
+	font-size: 16px;
+	font-weight: 600;
+}
+
+
+.view-card-content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

@@ -1,0 +1,70 @@
+.book-fitness-container {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	height: 100%;
+}
+
+.book-fitness-container .book-fitness-top-container {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.book-fitness-container .book-fitness-content-container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	justify-content: center;
+	align-items: center;
+}
+
+.book-fitness-container .top-color-section {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+}
+
+.book-fitness-container .--color-box {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	color: #494949;
+	font-size: 12px;
+	font-weight: 400;
+}
+.book-fitness-container .--color-box-container {
+	height: 11px;
+	width: 11px;
+	border-radius: 2px;
+	border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.book-fitness-container .--court-drop-down {
+	width: 250px;
+}
+
+.book-fitness-container .--time-slot-drop-down {
+	width: 250px;
+}
+
+.book-fitness-container .--drop-down {
+	display: flex;
+	gap: 18px;
+	padding-left: 5px;
+	align-items: center;
+}
+
+.book-fitness-container .--drop-down .--color-box-container {
+	height: 13px;
+	width: 13px;
+}
+
+.book-fitness-container ._1iohnqa1 {
+	width: 100%;
+	background-color: white;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+}

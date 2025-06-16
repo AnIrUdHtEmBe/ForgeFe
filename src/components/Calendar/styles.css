@@ -1,0 +1,70 @@
+.calendar-strip-container {
+	width: 100%;
+	background: #f5f5f5;
+	display: flex;
+	position: relative;
+}
+
+.calendar-strip-header {
+	width: 20%;
+	height: 80px;
+}
+
+.calendar-strip {
+	width: 80%;
+	height: 50px;
+	display: flex;
+	align-items: center;
+}
+
+.calendar-strip-header {
+	font-weight: bold;
+	font-size: 14px;
+	position: absolute;
+	height: 100%;
+	left: 0;
+	color: #333;
+	background-color: #b3eaff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+	border: 1px solid black;
+	border-left: none;
+	transform: scale(1.1);
+}
+
+.calendar-strip {
+	display: flex;
+	overflow-x: auto;
+	gap: 12px;
+	margin-left: 20%;
+}
+
+.calendar-day {
+	min-width: 50px;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	text-align: center;
+	transition: background 0.2s;
+}
+
+.calendar-day .day-name {
+	font-size: 14px;
+	color: #494949;
+	font-weight: 400;
+}
+
+.calendar-day .day-number {
+	font-size: 14px;
+	color: #494949;
+	font-weight: 400;
+}
+
+.calendar-day.today {
+	background: #e0f7ff;
+	color: #01c1f5;
+}

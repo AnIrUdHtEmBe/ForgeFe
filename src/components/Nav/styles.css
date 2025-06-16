@@ -1,0 +1,24 @@
+.top-nav-container {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-left: 24px;
+	padding-right: 24px;
+}
+
+.top-nav-container .--center {
+	font-size: 16px;
+	font-weight: 400;
+}
+
+.top-nav-container .--logo {
+	height: 50px;
+	width: 50px;
+}
+
+.top-nav-container img {
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+}

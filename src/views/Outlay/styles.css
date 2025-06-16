@@ -1,0 +1,13 @@
+.outlay-container {
+	display: flex;
+	height: 100vh;
+	flex-direction: column;
+}
+
+.outlay-top-container {
+	height: 60px;
+}
+
+.outlay-children-container {
+	height: calc(100vh - 60px);
+}

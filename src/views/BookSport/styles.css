@@ -1,0 +1,82 @@
+.book-sport-container {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.book-sport-top-calendar {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.book-sport-content-container {
+	flex: 1;
+	padding-left: 24px;
+	padding-right: 24px;
+	flex-direction: column;
+	display: flex;
+	gap: 10px;
+	overflow-y: auto;
+}
+
+.book-sport-content-container .book-sport-slot-container {
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
+	align-items: center;
+}
+
+.book-sport-slot-container .--time {
+	width: 15%;
+	display: flex;
+	justify-content: center;
+	font-size: 14px;
+	font-weight: 400;
+}
+
+.book-sport-slot-container .--slots {
+	display: flex;
+	width: 85%;
+	gap: 28px;
+}
+
+.book-sport-container .--each-slot {
+	position: relative;
+	background-color: #e8e8e8;
+	border-radius: 50%;
+	height: 45px;
+	width: 45px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.book-sport-container .--each-slot .--number-slots {
+	position: absolute;
+	left: 0%;
+	width: 15px;
+	height: 15px;
+	background-color: black;
+	border-radius: 50%;
+	color: white;
+	flex-shrink: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 8px;
+	top: 0;
+	font-weight: 700;
+}
+
+.book-sport-container .--each-slot .--drill {
+	position: absolute;
+	font-size: 8px;
+	font-weight: 700;
+	left: 65%;
+	top: 0;
+	background-color: #28a745;
+	color: white;
+	padding: 2px 8px;
+	border-radius: 20px;
+}
