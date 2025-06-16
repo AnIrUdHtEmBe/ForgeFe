@@ -22,7 +22,7 @@ const CourtStrip = (props: CourtStripProps) => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data);
         setCourts(response.data);
-        setAllCourts(response.data); // ✅ Save full unfiltered data
+        setAllCourts(response.data); 
        
       } else {
         enqueueSnackbar({
@@ -51,12 +51,13 @@ const CourtStrip = (props: CourtStripProps) => {
 
   useEffect(() => {
     if (!props.selectedSport) {
-      setCourts(allCourts); // 👈 Reset to full list when no sport selected
+      setCourts(allCourts);
     } else {
       const filtered = allCourts.filter((court) =>
         court.allowedSports.includes(props.selectedSport!.sportId)
       );
-      setCourts(filtered); // 👈 Filter based on original data
+      setCourts(filtered);
+      props.changeActiveCourt("Courts")
     }
   }, [props.selectedSport, allCourts]);
 

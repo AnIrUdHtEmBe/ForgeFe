@@ -29,6 +29,7 @@
 
 .court-strip-container .court-strip-courts-filter {
 	width: 80%;
+	min-height: 50px;
 	background-color: #e8e8e8;
 	display: flex;
 	flex-direction: row;
