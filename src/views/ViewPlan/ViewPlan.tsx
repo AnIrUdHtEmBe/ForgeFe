@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 import { categories, DEFAULT_ICON_SIZE, SNACK_AUTO_HIDE } from "../../default";
 import "./styles.css";
 import type { t_plan } from "../../types/plan";
-import { formatDate, formatDateForB, getArrayOfDatesFromSundayToSaturday, getWeekRange } from "../../utils/date";
+import {
+  formatDate,
+  formatDateForB,
+  getArrayOfDatesFromSundayToSaturday,
+  getWeekRange,
+} from "../../utils/date";
 import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
 import WeekPlanView from "./components/WeekPlanView";
@@ -18,10 +23,10 @@ const ViewPlan = () => {
   //current week plan
   const [weekPlan, setWeekPlan] = useState<t_plan | null>(null);
   const [pageState, setPageState] = useState(E_PageState.Unknown);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [weekStartToEndDates, setWeekStartToEndDates] = useState<string[]>([]);
 
-  console.log(activeIndex)
+  // console.log(activeIndex)
 
   //fetch the plan for user with regard to current week and assign that plan with plan state
   const getUserPlan = () => {
@@ -31,7 +36,7 @@ const ViewPlan = () => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data);
-        setWeekPlan(response.data[3]);
+        setWeekPlan(response.data[0]);
         setActiveIndex(dayOfWeek);
         setPageState(E_PageState.Accepted);
       } else {
@@ -78,22 +83,29 @@ const ViewPlan = () => {
   };
 
   // routing to the booking page based on the session category
-  const slotBookingHandler = (sessionCategory: any) => {
+  const slotBookingHandler = (sessionCategory: string) => {
     if (sessionCategory === "FITNESS") {
       window.location.href = "/bookFitness";
     } else if (sessionCategory === "SPORTS") {
       window.location.href = "/bookSport";
-    } else {
+    } else if (sessionCategory === "WELLNESS"){
       window.location.href = "/bookWellness";
     }
   };
 
   useEffect(() => {
-    console.log(getArrayOfDatesFromSundayToSaturday())
     const weekDates = getArrayOfDatesFromSundayToSaturday();
     setWeekStartToEndDates(weekDates);
-  },[])
+  }, []);
 
+  //  here we are finding the current date based on the active index
+  //  we are finding the session for the current date and checking if it exists in the week plan
+  //  if it exists, we will use that session to display the activities for the current date
+  const currentDate = weekStartToEndDates[activeIndex];
+  const sessionForCurrentDate = weekPlan?.sessionInstances.find(
+    (session) => formatDate(session.scheduledDate) === formatDate(currentDate)
+  );
+  console.log("sessionForCurrentDate", sessionForCurrentDate);
   if (pageState === E_PageState.Loading) {
     return <FullScreenLoader />;
   }
@@ -111,53 +123,51 @@ const ViewPlan = () => {
         })}
       </div>
       {/* {weekPlan && ( */}
-        <div className="view-plan-today-information-container">
-          <div className="view-plan-top-information-top-container">
-            <div className="--date">
-						{/* changes to be done */}
-              {/* {formatDate(
+      <div className="view-plan-today-information-container">
+        <div className="view-plan-top-information-top-container">
+          <div className="--date">
+            {/* changes to be done */}
+            {/* {formatDate(
                 weekPlan?.sessionInstances[activeIndex].scheduledDate
               )} */}
-              {formatDate(
-                weekStartToEndDates[activeIndex]
-              )}
+            {formatDate(weekStartToEndDates[activeIndex])}
+          </div>
+          <div className="--arrows">
+            <div className="--arrow-left">
+              <FaChevronLeft
+                onClick={arrowLeftHandler}
+                style={
+                  activeIndex <= 0
+                    ? { color: "rgba(0, 0, 0, 0.4)" }
+                    : { color: "black" }
+                }
+                size={DEFAULT_ICON_SIZE - 10}
+              />
             </div>
-            <div className="--arrows">
-              <div className="--arrow-left">
-                <FaChevronLeft
-                  onClick={arrowLeftHandler}
-                  style={
-                    activeIndex <= 0
-                      ? { color: "rgba(0, 0, 0, 0.4)" }
-                      : { color: "black" }
-                  }
-                  size={DEFAULT_ICON_SIZE - 10}
-                />
-              </div>
-              <div className="--arrow-right">
-                <FaChevronRight
-                  onClick={arrowRightHandler}
-                  style={
-                    activeIndex >= 6
-                      ? { color: "rgba(0, 0, 0, 0.4)" }
-                      : { color: "black" }
-                  }
-                  size={DEFAULT_ICON_SIZE - 10}
-                />
-              </div>
+            <div className="--arrow-right">
+              <FaChevronRight
+                onClick={arrowRightHandler}
+                style={
+                  activeIndex >= 6
+                    ? { color: "rgba(0, 0, 0, 0.4)" }
+                    : { color: "black" }
+                }
+                size={DEFAULT_ICON_SIZE - 10}
+              />
             </div>
           </div>
         </div>
+      </div>
       {/* )} */}
 
       {/* {weekPlan && ( */}
-        <div className="view-plan-sessions-view-container">
-          <WeekPlanView
-            activeIndex={activeIndex}
-            // sessions={weekPlan.sessionInstances}
-            weekStartToEndDates={weekStartToEndDates}
-          />
-        </div>
+      <div className="view-plan-sessions-view-container">
+        <WeekPlanView
+          activeIndex={activeIndex}
+          // sessions={weekPlan.sessionInstances}
+          weekStartToEndDates={weekStartToEndDates}
+        />
+      </div>
       {/* )} */}
 
       <div className="view-plan-schedule-container">
@@ -166,58 +176,56 @@ const ViewPlan = () => {
             <span>Your Schedule</span>
           </div>
           <div
-            className="--book-slot"
+            className={`--book-slot ${sessionForCurrentDate ? "" : "--inActive"}`}
             onClick={() =>
               slotBookingHandler(
-                weekPlan!.sessionInstances[activeIndex]?.category
+                sessionForCurrentDate?.category
               )
             }
           >
             <span>Book Slot</span>
           </div>
         </div>
-        {weekPlan && (
+        {sessionForCurrentDate ? (
           <div className="--bottom">
-            {weekPlan.sessionInstances[activeIndex]?.activities.map(
-              (session, i) => {
-                return (
-                  <div className="session-information-container">
-                    <div className="--session-info">
-                      <div className="--start">
-                        <div
-                          className="dot"
-                          style={
-                            i === 0
-                              ? {
-                                  outline: "1px solid black",
-                                  outlineOffset: "10px",
-                                }
-                              : {}
-                          }
-                        />
-                        <div className="--session">
-                          <span className="--name">
-                            {(session as any).name || "No name"}
-                          </span>
-                          <span className="--desc">
-                            {(session as any).customReps}
-                          </span>
-                        </div>
-                      </div>
-                      {i === 0 && (
-                        <div className="--end">
-                          <span>Start</span>
-                          <FaPlay />
-                        </div>
-                      )}
+            {sessionForCurrentDate.activities.map((activity, i) => (
+              <div key={i} className="session-information-container">
+                <div className="--session-info">
+                  <div className="--start">
+                    <div
+                      className="dot"
+                      style={
+                        i === 0
+                          ? {
+                              outline: "1px solid black",
+                              outlineOffset: "10px",
+                            }
+                          : {}
+                      }
+                    />
+                    <div className="--session">
+                      <span className="--name">
+                        {activity.name || "No name"}
+                      </span>
+                      <span className="--desc">{activity.customReps}</span>
                     </div>
-                    {i <
-                      weekPlan.sessionInstances[activeIndex].activities.length -
-                        1 && <div className="--line" />}
                   </div>
-                );
-              }
-            )}
+                  {i === 0 && (
+                    <div className="--end">
+                      <span>Start</span>
+                      <FaPlay />
+                    </div>
+                  )}
+                </div>
+                {i < sessionForCurrentDate.activities.length - 1 && (
+                  <div className="--line" />
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="--noSession">
+            <span>No session for this date.</span>
           </div>
         )}
       </div>
