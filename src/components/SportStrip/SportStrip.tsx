@@ -8,7 +8,7 @@ import { getSports } from "../../api/sports";
 
 interface SportStripProps {
   activeSport: { name: string; icon?: JSX.Element };
-  changeActiveSport: (newSport: string) => void;
+  changeActiveSport: (newSport: t_sport) => void;
   category: string;
 }
 
@@ -29,7 +29,7 @@ const SportStrip = (props: SportStripProps) => {
       }
     };
 
-    const onReject = (e) => {
+    const onReject = (e :unknown) => {
       console.log(e);
       enqueueSnackbar({
         message: "Failed to fetch the data!",
@@ -58,7 +58,7 @@ const SportStrip = (props: SportStripProps) => {
                 props.activeSport.name === sport.name ? "--bookSportActive" : ""
               }`}
               key={i}
-              onClick={() => props.changeActiveSport(sport.name)}
+              onClick={() => props.changeActiveSport(sport)}
             >
               {sport.name || sport.icon}
             </div>

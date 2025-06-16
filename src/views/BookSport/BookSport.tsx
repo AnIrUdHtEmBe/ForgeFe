@@ -6,11 +6,13 @@ import { SPORTS, UNKNOWN_SPORTS_ICON } from "../../default";
 import { useNavigate } from "react-router-dom";
 import E_Routes from "../../types/routes";
 import CourtStrip from "../../components/CourtStrip/CourtStrip";
+import type { t_sport } from "../../types/sports";
 
 const BookSport = () => {
-  const [activeDate, setActiveDate] = useState<string>(
-    new Date().toISOString()
-  );
+  const [activeDate, setActiveDate] = useState<string>(new Date().toISOString());
+	const [selectedSport, setSelectedSport] = useState<t_sport>();
+
+	console.log("selectedSport", selectedSport);
 
   // console.log("activeDate", activeDate);
 
@@ -92,8 +94,9 @@ const BookSport = () => {
     });
   };
 
-  const handleSportChange = (newSport: string) => {
-    setFilters((prev) => ({ ...prev, sport: newSport }));
+  const handleSportChange = (newSport: t_sport) => {
+    setFilters((prev) => ({ ...prev, sport: newSport.name }));
+		setSelectedSport(newSport);
   };
 
   const handleDateChange = (newDate: string) => {
@@ -126,6 +129,7 @@ const BookSport = () => {
           <CourtStrip
             activeCourt={{ name: filters.court }}
             changeActiveCourt={handleCourtChange}
+						selectedSport={selectedSport}
           />
         </div>
       </div>

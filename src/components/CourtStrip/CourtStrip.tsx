@@ -4,49 +4,63 @@ import { getCourts } from "../../api/courts";
 import { HttpStatusCode, type AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 import "./styles.css";
-
+import type { t_sport } from "../../types/sports";
 
 interface CourtStripProps {
-  activeCourt: {name : string};
+  activeCourt: { name: string };
   changeActiveCourt: (newCourt: string) => void;
+  selectedSport?: t_sport;
 }
 
+const CourtStrip = (props: CourtStripProps) => {
+  const [courts, setCourts] = useState<t_court[]>([]);
+  const [allCourts, setAllCourts] = useState<t_court[]>([])
 
-
-const CourtStrip = (props : CourtStripProps) => {
-  const [courts , setCourts] = useState<t_court[]>([]);
 
   const getAllCourts = () => {
-    const onAccept = (response : AxiosResponse) => {
-      if(response.status === HttpStatusCode.Ok){
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === HttpStatusCode.Ok) {
         console.log(response.data);
         setCourts(response.data);
-      }
-      else{
+        setAllCourts(response.data); // ✅ Save full unfiltered data
+       
+      } else {
         enqueueSnackbar({
           message: "Failed to fetch the data!",
           autoHideDuration: 3000,
           variant: "error",
         });
       }
-    }
+    };
 
-    const onReject = (e) => {
+    const onReject = (e: unknown) => {
       console.log(e);
       enqueueSnackbar({
         message: "Failed to fetch the data!",
         autoHideDuration: 3000,
         variant: "error",
       });
-    }
+    };
 
     getCourts(onAccept, onReject, "AREN_JZSW15");
-  } 
+  };
 
   useEffect(() => {
     getAllCourts();
-  } , []);
+  }, []);
 
+  useEffect(() => {
+    if (!props.selectedSport) {
+      setCourts(allCourts); // 👈 Reset to full list when no sport selected
+    } else {
+      const filtered = allCourts.filter((court) =>
+        court.allowedSports.includes(props.selectedSport!.sportId)
+      );
+      setCourts(filtered); // 👈 Filter based on original data
+    }
+  }, [props.selectedSport, allCourts]);
+
+  
   return (
     <div className="court-strip-container">
       <div className="court-strip-current-filter">
@@ -68,9 +82,7 @@ const CourtStrip = (props : CourtStripProps) => {
         })}
       </div>
     </div>
-  )
-}
-
+  );
+};
 
 export default CourtStrip;
-
