@@ -9,3 +9,6 @@ export const GET_ALL_COURTS = (arenaId: string) =>
 
 export const GET_TIME_SLOTS = (courtId: string) => 
 	`/court/${courtId}/slots`;
+
+export const GET_ALL_SPORTS = (category: string) => 
+	`/sports/category/${category}`;

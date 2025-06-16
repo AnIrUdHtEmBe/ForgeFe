@@ -24,7 +24,7 @@ const BookSport = () => {
     court: "Courts",
   });
 
-	console.log(filters)
+  console.log(filters);
   const [slots, setSlots] = useState([
     {
       startTime: "10:30",
@@ -101,9 +101,9 @@ const BookSport = () => {
     setFilters((prev) => ({ ...prev, date: newDate }));
   };
 
-	const handleCourtChange = (newCourt: string) => {
-		setFilters((prev) => ({ ...prev, court: newCourt }));
-	}
+  const handleCourtChange = (newCourt: string) => {
+    setFilters((prev) => ({ ...prev, court: newCourt }));
+  };
 
   return (
     <div className="book-sport-container">
@@ -118,6 +118,7 @@ const BookSport = () => {
           <SportStrip
             activeSport={{ name: filters.sport }}
             changeActiveSport={handleSportChange}
+            category="SPORTS"
           />
         </div>
 

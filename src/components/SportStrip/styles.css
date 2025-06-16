@@ -39,12 +39,15 @@
 	width: 80%;
 	background-color: #e8e8e8;
 	display: flex;
+	font-size: 12px;
+	font-weight: 700;
 	flex-direction: row;
 	gap: 30px;
 	align-items: center;
 	margin-left: 20%;
 	padding: 6px;
 	padding-left: 14px;
+	overflow-x: auto;
 }
 
 
@@ -52,5 +55,6 @@
 	background-color: #b3eaff;
 	border-radius: 5px;
 	border: 1px solid black;
+	padding: 0px 5px 0px 5px;
 	/* padding: 0px 6px; */
 }
