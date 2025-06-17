@@ -2,7 +2,7 @@ import './styles.css';
 import PlayerProfileImg from '../../assets/playerProfile.png';
 import CustomChip from '../CustomChip/CustomChip';
 import Button from '../Button/Button';
-
+import { getFormattedDateTime } from '../../utils/date';
 interface PlayerInfoCardProps {
 	showLevel?: boolean;
 	showBtn?: boolean;
@@ -22,8 +22,9 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
 const ordinal = (d: number) =>
   d + (d > 3 && d < 21 ? 'th' : ['st', 'nd', 'rd'][((d % 10) - 1)] || 'th');
 
-const dateStr = `${ordinal(start.getDate())} ${start.toLocaleString('default', { month: 'short' })}, ${start.toLocaleString('default', { weekday: 'long' })}`;
-const timeStr = `${start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })} - ${end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+
+	const { dateStr, timeStr } = getFormattedDateTime(start, end);
+
 	return (
 		<div className="player-info-card-container">
 			<div className="player-info-start-container">

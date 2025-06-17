@@ -39,6 +39,18 @@ export const TodaysDate = (dateStr: string) => {
   return day;
 }
 
+export const  getFormattedDateTime = (start: Date, end: Date) =>  {
+  const ordinal = (n: number) => {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  };
+
+  const dateStr = `${ordinal(start.getDate())} ${start.toLocaleString('default', { month: 'short' })}, ${start.toLocaleString('default', { weekday: 'long' })}`;
+  const timeStr = `${start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })} - ${end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+
+  return { dateStr, timeStr };
+}
 
 export const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
