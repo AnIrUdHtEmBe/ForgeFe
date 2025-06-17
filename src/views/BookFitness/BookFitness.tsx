@@ -18,9 +18,14 @@ import { SNACK_AUTO_HIDE } from '../../default';
 import { enqueueSnackbar } from 'notistack';
 import type { t_court } from '../../types/court';
 import type { t_slot } from '../../types/slot.ts';
+import type { t_sport } from '../../types/sports.ts';
 const BookFitness = () => {
 	const [courts, setCourts] = useState<{ name: string , courtId: string}[]>([]);
-	const [selectedCourtId, setSelectedCourtId] = useState<string | null>(null);
+	const [selectedCourtId, setSelectedCourtId] = useState<string >("");
+	const [courtName, setCourtName] = useState<string>('');
+	const [selectedSlotIds, setSelectedSlotIds] = useState<string[]>([]);
+	const [slots , setSlots ] = useState<{startTime:number , endTime: number , status: string, slotId: string}[]>([]);
+
 
 	const ViewCourts = () => {
 		const onAccept = (response: AxiosResponse) => {
@@ -57,8 +62,7 @@ const BookFitness = () => {
 		);
 	};
 	
-	const [selectedSlotIds, setSelectedSlotIds] = useState<string[]>([]);
-	const [slots , setSlots ] = useState<{startTime:number , endTime: number , status: string, slotId: string}[]>([]);
+	
 	const viewTimeSlots = () => {
 			const onAccept = (response: AxiosResponse) => {
 					if (response.status === HttpStatusCode.Ok) {
@@ -69,7 +73,8 @@ const BookFitness = () => {
 							status: slot.status,
 							slotId: slot.slotId,
 						}));
-						setSlots(newSlots);
+						const sortedSlots = [...newSlots].sort((a, b) => a.startTime - b.startTime);
+						setSlots(sortedSlots);
 					} else {
 						
 						enqueueSnackbar({
@@ -105,12 +110,14 @@ const BookFitness = () => {
 	, []);
 	useEffect(() => {
 		console.log('slots', slots);
-		
 	},[slots])
 	useEffect(() => {
 		if (selectedCourtId) {
 			viewTimeSlots();
+			setSelectedSlotIds([]); // Reset selected slots when court changes
+			selectedSlots = [] // Reset slots when showing time slots
 		}
+		
 	}
 	, [selectedCourtId]);
 
@@ -147,7 +154,7 @@ const BookFitness = () => {
 			// Optionally show error/snackbar
 			console.warn("Can only select continuous time slots.");
 			}
-	}
+		}
 	};
 
 	const status = [
@@ -171,6 +178,22 @@ const BookFitness = () => {
 
 
   const clickHandler = () => {
+	if(selectedSlotIds.length === 0 || selectedCourtId === "" ) {
+		enqueueSnackbar({
+			message: 'Please select a court and at least one time slot.',
+			autoHideDuration: SNACK_AUTO_HIDE,
+			variant: 'warning',
+		});
+		return;
+	}
+	if(activeSport === undefined) {
+		enqueueSnackbar({
+			message: 'Please select a sport.',
+			autoHideDuration: SNACK_AUTO_HIDE,
+			variant: 'warning',
+		});
+		return;
+	}
     setShowBook(true);
   }
   const [activeDate, setActiveDate] = useState(new Date().toISOString());
@@ -179,7 +202,7 @@ const BookFitness = () => {
   function changeDate(newDate: string) {
 	 setActiveDate(newDate);
 	 setSlots([]); // Reset slots when date changes
-	 setSelectedCourtId(null); // Reset selected court when date changes
+	 setSelectedCourtId(""); // Reset selected court when date changes
 
 	 console.log('Selected Date:', newDate);
 	 console.log('Selected Court ID:', selectedCourtId);
@@ -194,11 +217,12 @@ const BookFitness = () => {
 		console.log(selectedSlotIds);
 		
 	}, [selectedSlotIds])
+	
 
 	// Step 1: Filter slots that are selected
-		const selectedSlots = slots
+		let selectedSlots = slots
 		.filter(slot => selectedSlotIds.includes(slot.slotId))
-		.sort((a, b) => a.st_unix - b.st_unix); // Sort by start time to find range
+		.sort((a, b) => a.startTime- b.startTime); // Sort by start time to find range
 
 		if (selectedSlots.length === 0) {
 		console.log("No slots selected.");
@@ -225,9 +249,20 @@ const BookFitness = () => {
 		}
 		const startDateTime = combineDateWithUnixTime(activeDate, finalStartTime);
 		const endDateTime = combineDateWithUnixTime(activeDate, finalEndTime);
+		const [activeSport , setActiveSport] = useState<t_sport>();
+		const [showTimeSlots, setShowTimeSlots] = useState(true);
+
+		useEffect(() => {
+			if(showTimeSlots){
+				setSelectedSlotIds([]); // Reset selected slots when showing time slots
+				setSelectedCourtId(""); // Reset selected court when showing time slots
+				selectedSlots = [] // Reset slots when showing time slots
+				setShowTimeSlots(false); // Hide time slots after initial load
+			}
+		},[showTimeSlots]);
 	return (
 		<div className="book-fitness-container">
-			{showBook && <BookSlot onClose={() => setShowBook(false)} courtId={selectedCourtId} startTime={startDateTime} endTime={endDateTime} viewTimeSlots={viewTimeSlots}/>}
+			{showBook && <BookSlot onClose={() => setShowBook(false)} courtId={selectedCourtId} startTime={startDateTime} endTime={endDateTime} viewTimeSlots={viewTimeSlots} sport={activeSport} setShowTimeSlots={setShowTimeSlots}/>}
 			<div className="book-fitness-top-container">
 				<div className="--calendar">
 					<CalendarStrip
@@ -241,9 +276,11 @@ const BookFitness = () => {
 				</div>
 				<div className="--sport">
 					<SportStrip
-						activeSport={{ name: 'all' }}
-						changeActiveSport={() => {}}
-						category='SPORTS'
+						activeSport={{ name: activeSport?.name ?? '' }}
+						changeActiveSport={(newSport: t_sport) => {
+							setActiveSport(newSport);
+						}}
+						category='FITNESS'
 					/>
 				</div>
 			</div>
@@ -276,7 +313,7 @@ const BookFitness = () => {
 				</div>
 				<div className="--court-drop-down">
 					<DropdownMenu
-						trigger="Select Court"
+						trigger={selectedCourtId ? courtName : "Select Court"}
 						shouldRenderToParent
 					>
 						<DropdownItemRadioGroup
@@ -290,7 +327,7 @@ const BookFitness = () => {
 									<DropdownItemRadio
 										key={i}
 										id={court.courtId}
-										onClick={() => setSelectedCourtId(court.courtId)}
+										onClick={() => {setSelectedCourtId(court.courtId); setCourtName(court.name);}}
 										isSelected={selectedCourtId === court.courtId}
 									>
 										{court.name}
@@ -302,7 +339,7 @@ const BookFitness = () => {
 				</div>
 				<div className="--time-slot-drop-down">
 					<DropdownMenu
-						trigger="Select Time Slot"
+						trigger={selectedSlots.length > 0 ? `${new Date(finalStartTime * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} - ${new Date(finalEndTime * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}` : "Select Time Slot"}
 						shouldFitContainer
 						shouldRenderToParent
 					>
@@ -339,9 +376,6 @@ const BookFitness = () => {
 											/>
 											<span>
 												{new Date(Number(slot.startTime) * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })} - {new Date(Number(slot.endTime) * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}
-
-
-												
 											</span>
 										</div>
 									</DropdownItem>

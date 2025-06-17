@@ -10,6 +10,7 @@ interface PlayerInfoCardProps {
 	courtId?: string; // optional, if you want to show court info
 	startTime?: Date; // optional, if you want to show start time
 	endTime?: Date; // optional, if you want to show end time
+	sport?: string;
 }
 
 
@@ -41,11 +42,11 @@ const timeStr = `${start.toLocaleTimeString([], { hour: 'numeric', minute: '2-di
 				<div className="player-info-event-info">
 					<div className="--game">
 						{/* {games[0].icon(20)} */}
-						<span>Football</span>
+						<span>{props.sport}</span>
 					</div>
 					<div className="--delim">.</div>
 					<div className="--side">
-						<span>5 A Side</span>
+						{/* <span>5 A Side</span> */}
 					</div>
 				</div>
 			</div>
