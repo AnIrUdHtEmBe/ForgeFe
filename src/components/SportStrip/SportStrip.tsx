@@ -19,6 +19,10 @@ const SportStrip = (props: SportStripProps) => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data);
         setSports(response.data);
+
+        if (response.data.length > 0) {
+          props.changeActiveSport(response.data[0]);
+        }
       } else {
         enqueueSnackbar({
           message: "Failed to fetch the data!",

@@ -57,7 +57,7 @@ const CourtStrip = (props: CourtStripProps) => {
         court.allowedSports.includes(props.selectedSport!.sportId)
       );
       setCourts(filtered);
-      props.changeActiveCourt("Courts")
+      props.changeActiveCourt("ALL")
     }
   }, [props.selectedSport, allCourts]);
 

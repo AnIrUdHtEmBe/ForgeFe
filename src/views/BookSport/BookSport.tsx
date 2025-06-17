@@ -7,12 +7,19 @@ import { useNavigate } from "react-router-dom";
 import E_Routes from "../../types/routes";
 import CourtStrip from "../../components/CourtStrip/CourtStrip";
 import type { t_sport } from "../../types/sports";
+import type { Axios, AxiosResponse } from "axios";
+import type { t_game } from "../../types/games";
+import { enqueueSnackbar } from "notistack";
+import { getGamesByDateAndSports } from "../../api/games";
 
 const BookSport = () => {
-  const [activeDate, setActiveDate] = useState<string>(new Date().toISOString());
-	const [selectedSport, setSelectedSport] = useState<t_sport>();
+  const [activeDate, setActiveDate] = useState<string>(
+    new Date().toISOString()
+  );
+  const [selectedSport, setSelectedSport] = useState<t_sport>();
+  const [games, setGames] = useState<t_game[]>();
 
-	// console.log("selectedSport", selectedSport);
+  // console.log("selectedSport", selectedSport);
 
   // console.log("activeDate", activeDate);
 
@@ -82,15 +89,37 @@ const BookSport = () => {
   ]);
 
   const navigate = useNavigate();
-	const fetchGaames = () => {
-		
-	}
+  const fetchGames = () => {
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === 200) {
+        console.log(response.data);
+        setGames(response.data);
+      } else {
+        enqueueSnackbar({
+          message: "Failed to fetch the data!",
+          autoHideDuration: 3000,
+          variant: "error",
+        });
+      }
+    };
+    const onReject = (error: unknown) => {
+      console.error("Error fetching games:", error);
+    };
 
+    getGamesByDateAndSports(
+      onAccept,
+      onReject,
+      filters.date,
+      filters.sport,
+      filters.court === "ALL" ? undefined : filters.court
+    );
+  };
 
-	useEffect(() => {
-		fetchGaames()
-	}, [filters])
-	
+  useEffect(() => {
+    fetchGames();
+  }, [filters]);
+
+  console.log("games", games);
 
   const clickHandler = () => {
     //fill these fields
@@ -101,7 +130,7 @@ const BookSport = () => {
 
   const handleSportChange = (newSport: t_sport) => {
     setFilters((prev) => ({ ...prev, sport: newSport.name }));
-		setSelectedSport(newSport);
+    setSelectedSport(newSport);
   };
 
   const handleDateChange = (newDate: string) => {
@@ -134,12 +163,12 @@ const BookSport = () => {
           <CourtStrip
             activeCourt={{ name: filters.court }}
             changeActiveCourt={handleCourtChange}
-						selectedSport={selectedSport}
+            selectedSport={selectedSport}
           />
         </div>
       </div>
       <div className="book-sport-content-container">
-        {slots.map((slot, i) => {
+        {/* {slots.map((slot, i) => {
           return (
             <div key={i} className="book-sport-slot-container">
               <div className="--time">
@@ -166,7 +195,45 @@ const BookSport = () => {
               </div>
             </div>
           );
-        })}
+        })} */}
+
+        {games && games.length > 0 ? (
+          <div className="book-sport-slot-container">
+            <div className=" book-sport-slot-header">
+              <h3>The available Games For {activeDate}</h3>
+            </div>
+            {games.map((game, i) => {
+              return (
+                <div key={i} className="--game-slot">
+                  <div className="--time">
+                    <span>
+                      {new Date(game.startTime).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                  <div className="--sport-name">
+                    {game.sport || UNKNOWN_SPORTS_ICON}
+                  </div>
+                  <div className="--slots"></div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="no-games-message">
+            <h2>No games are available for the Selected Date And Sport</h2>
+          </div>
+        )}
+
+        {games && games.length > 0 && (
+          <div className="book-button-container">
+            <button className="book-button" onClick={clickHandler}>
+              Book
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
