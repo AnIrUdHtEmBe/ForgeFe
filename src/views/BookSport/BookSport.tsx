@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CalendarStrip from "../../components/Calendar/Calendar";
 import SportStrip from "../../components/SportStrip/SportStrip";
 import "./styles.css";
@@ -12,18 +12,14 @@ const BookSport = () => {
   const [activeDate, setActiveDate] = useState<string>(new Date().toISOString());
 	const [selectedSport, setSelectedSport] = useState<t_sport>();
 
-	console.log("selectedSport", selectedSport);
+	// console.log("selectedSport", selectedSport);
 
   // console.log("activeDate", activeDate);
 
-  const [filters, setFilters] = useState<{
-    date: string;
-    sport: string;
-    court: string;
-  }>({
+  const [filters, setFilters] = useState({
     date: activeDate,
     sport: "Sports",
-    court: "Courts",
+    court: "ALL",
   });
 
   console.log(filters);
@@ -86,6 +82,15 @@ const BookSport = () => {
   ]);
 
   const navigate = useNavigate();
+	const fetchGaames = () => {
+		
+	}
+
+
+	useEffect(() => {
+		fetchGaames()
+	}, [filters])
+	
 
   const clickHandler = () => {
     //fill these fields

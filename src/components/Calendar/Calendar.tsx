@@ -36,7 +36,7 @@ const CalendarStrip = (props: CalendarStripProps) => {
 		<div className="calendar-strip-container">
 			<div className="calendar-strip-header">
 				{today.toLocaleString('default', { month: 'short' }).toUpperCase()} '
-				{String(year).slice(-2)}
+				{String(props.activeDate).slice(8, 10)}
 			</div>
 			<div className="calendar-strip">
 				{dates.map((date) => {

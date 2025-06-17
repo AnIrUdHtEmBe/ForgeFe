@@ -12,3 +12,6 @@ export const GET_TIME_SLOTS = (courtId: string) =>
 
 export const GET_ALL_SPORTS = (category: string) => 
 	`/sports/category/${category}`;
+
+export const GET_ALL_GAMES = (sportId: string, date:string ,  arenaId: string) => 
+	`/game/games/by-sport/${sportId}/${date}/${arenaId}`;

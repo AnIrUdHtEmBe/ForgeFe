@@ -1,5 +1,4 @@
 import { useEffect, useState, type JSX } from "react";
-import { SPORTS } from "../../default";
 import "./styles.css";
 import { HttpStatusCode, type AxiosResponse } from "axios";
 import type { t_sport } from "../../types/sports";

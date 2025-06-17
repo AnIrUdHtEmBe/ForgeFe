@@ -25,18 +25,18 @@ const ViewPlan = () => {
   const [pageState, setPageState] = useState(E_PageState.Unknown);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [weekStartToEndDates, setWeekStartToEndDates] = useState<string[]>([]);
+  const { startOfWeek, endOfWeek, dayOfWeek } = getWeekRange(new Date());
 
-  // console.log(activeIndex)
+  console.log(activeIndex);
 
   //fetch the plan for user with regard to current week and assign that plan with plan state
   const getUserPlan = () => {
     setPageState(E_PageState.Loading);
-    const { startOfWeek, endOfWeek, dayOfWeek } = getWeekRange(new Date());
 
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data);
-        setWeekPlan(response.data[0]);
+        setWeekPlan(response.data[5]);
         setActiveIndex(dayOfWeek);
         setPageState(E_PageState.Accepted);
       } else {
@@ -88,7 +88,7 @@ const ViewPlan = () => {
       window.location.href = "/bookFitness";
     } else if (sessionCategory === "SPORTS") {
       window.location.href = "/bookSport";
-    } else if (sessionCategory === "WELLNESS"){
+    } else if (sessionCategory === "WELLNESS") {
       window.location.href = "/bookWellness";
     }
   };
@@ -98,9 +98,6 @@ const ViewPlan = () => {
     setWeekStartToEndDates(weekDates);
   }, []);
 
-  //  here we are finding the current date based on the active index
-  //  we are finding the session for the current date and checking if it exists in the week plan
-  //  if it exists, we will use that session to display the activities for the current date
   const currentDate = weekStartToEndDates[activeIndex];
   const sessionForCurrentDate = weekPlan?.sessionInstances.find(
     (session) => formatDate(session.scheduledDate) === formatDate(currentDate)
@@ -176,12 +173,15 @@ const ViewPlan = () => {
             <span>Your Schedule</span>
           </div>
           <div
-            className={`--book-slot ${sessionForCurrentDate ? "" : "--inActive"}`}
-            onClick={() =>
-              slotBookingHandler(
-                sessionForCurrentDate?.category
-              )
-            }
+            className={`--book-slot ${
+              sessionForCurrentDate && activeIndex >= dayOfWeek
+                ? ""
+                : "--inActive"
+            }`}
+            onClick={() => {
+              if (!(sessionForCurrentDate && activeIndex >= dayOfWeek)) return;
+              slotBookingHandler(sessionForCurrentDate?.category);
+            }}
           >
             <span>Book Slot</span>
           </div>
