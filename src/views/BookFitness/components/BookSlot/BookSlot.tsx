@@ -8,12 +8,15 @@ import { RxCross1 } from 'react-icons/rx';
 import { bookCourt } from '../../../../api/courts';
 import { HttpStatusCode, type AxiosResponse } from 'axios';
 import { enqueueSnackbar } from 'notistack';
+import type { t_sport } from '../../../../types/sports';
 interface BookSlotProps {
 	onClose: () => void;
 	startTime?: Date; // ISO datetime string
 	endTime?: Date; // ISO datetime string
 	courtId?: string;
 	viewTimeSlots?: () => void; // Optional function to view time slots
+	sport: t_sport; // Optional, if you want to pass sportId
+	setShowTimeSlots?: (show: boolean) => void; // Optional function to set visibility of time slots
 }
 
 
@@ -29,7 +32,7 @@ const BookSlot = (props: BookSlotProps) => {
 		courtId: props.courtId,
 		startTime: props.startTime.toISOString(),
 		endTime: props.endTime.toISOString(),
-		sportId: 'SPRT_JYIV42',
+		sportId: props.sport.sportId // Use sportId if available, otherwise an empty string
 	};
 
 	const onAccept = (response: AxiosResponse) => {
@@ -57,6 +60,7 @@ const BookSlot = (props: BookSlotProps) => {
 
 	await bookCourt(onAccept, onReject, bookingData.courtId, bookingData.sportId, bookingData.startTime, bookingData.endTime);
 	props.viewTimeSlots?.(); // Call the viewTimeSlots function if provided
+	props.setShowTimeSlots?.(true); // Hide time slots if setShowTimeSlots is provided
 };
 
 	return (
@@ -79,7 +83,7 @@ const BookSlot = (props: BookSlotProps) => {
 				</div>
 				{/* stepper to be done */}
 				<div className="book-slot-player-card-container">
-					<PlayerInfoCard courtId={props.courtId} startTime={props.startTime} endTime={props.endTime}/>
+					<PlayerInfoCard courtId={props.courtId} startTime={props.startTime} endTime={props.endTime} sport={props.sport?.name}/>
 				</div>
 				<div className="--first-time-user">
 					{/* insert the coupon component here */}

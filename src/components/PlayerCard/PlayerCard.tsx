@@ -2,7 +2,7 @@ import './styles.css';
 import PlayerProfileImg from '../../assets/playerProfile.png';
 import CustomChip from '../CustomChip/CustomChip';
 import Button from '../Button/Button';
-
+import { getFormattedDateTime } from '../../utils/date';
 interface PlayerInfoCardProps {
 	showLevel?: boolean;
 	showBtn?: boolean;
@@ -10,6 +10,7 @@ interface PlayerInfoCardProps {
 	courtId?: string; // optional, if you want to show court info
 	startTime?: Date; // optional, if you want to show start time
 	endTime?: Date; // optional, if you want to show end time
+	sport?: string;
 }
 
 
@@ -21,8 +22,9 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
 const ordinal = (d: number) =>
   d + (d > 3 && d < 21 ? 'th' : ['st', 'nd', 'rd'][((d % 10) - 1)] || 'th');
 
-const dateStr = `${ordinal(start.getDate())} ${start.toLocaleString('default', { month: 'short' })}, ${start.toLocaleString('default', { weekday: 'long' })}`;
-const timeStr = `${start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })} - ${end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+
+	const { dateStr, timeStr } = getFormattedDateTime(start, end);
+
 	return (
 		<div className="player-info-card-container">
 			<div className="player-info-start-container">
@@ -41,11 +43,11 @@ const timeStr = `${start.toLocaleTimeString([], { hour: 'numeric', minute: '2-di
 				<div className="player-info-event-info">
 					<div className="--game">
 						{/* {games[0].icon(20)} */}
-						<span>Football</span>
+						<span>{props.sport}</span>
 					</div>
 					<div className="--delim">.</div>
 					<div className="--side">
-						<span>5 A Side</span>
+						{/* <span>5 A Side</span> */}
 					</div>
 				</div>
 			</div>
