@@ -3,6 +3,7 @@ import PlayerInfoCard from "../../components/PlayerCard/PlayerCard";
 import "./styles.css";
 import { IoIosArrowBack } from "react-icons/io";
 import { DEFAULT_ICON_SIZE } from "../../default";
+import type { t_game } from "../../types/games";
 
 const ViewCards = () => {
   const location = useLocation();
@@ -23,8 +24,11 @@ const ViewCards = () => {
       </div>
       <div className="view-cards-top-heading">
         <span className="--date">
-          {/* use the selected date here from the state */}
-          28th March 2025
+         {selectedDate.toLocaleDateString("en-US", {
+						month: "long",
+						day: "numeric",
+						year: "numeric",
+					})}
         </span>
         <span className="--day">
           {/* figure out day by date */}
@@ -34,8 +38,8 @@ const ViewCards = () => {
 
       <div className="view-card-content-container">
         {/* replace this with card info */}
-        {new Array(3).fill(0).map((_, i) => {
-          return <PlayerInfoCard  drill showBtn key={i} />;
+        {cardInfo.map((games : t_game, i : number) => {
+          return <PlayerInfoCard startTime={new Date(games.bookingDetails.st_unix)} endTime={new Date(games.bookingDetails.et_unix)} showLevel={games.difficultyLevel}  drill showBtn key={i} />;
         })}
       </div>
     </div>

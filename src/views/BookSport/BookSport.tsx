@@ -19,10 +19,6 @@ const BookSport = () => {
   const [selectedSport, setSelectedSport] = useState<t_sport>();
   const [games, setGames] = useState<t_game[]>();
 
-  // console.log("selectedSport", selectedSport);
-
-  // console.log("activeDate", activeDate);
-
   const [filters, setFilters] = useState({
     date: activeDate,
     sport: "Sports",
@@ -122,9 +118,10 @@ const BookSport = () => {
   console.log("games", games);
 
   const clickHandler = () => {
+		const dateObj = new Date(filters.date);
     //fill these fields
     navigate(E_Routes.viewCards, {
-      state: { selectedDate: "s", cardInfo: "s" },
+      state: { selectedDate: dateObj, cardInfo: games },
     });
   };
 
@@ -207,7 +204,7 @@ const BookSport = () => {
                 <div key={i} className="--game-slot">
                   <div className="--time">
                     <span>
-                      {new Date(game.startTime).toLocaleTimeString([], {
+                      {new Date(game.bookingDetails.startTime).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}

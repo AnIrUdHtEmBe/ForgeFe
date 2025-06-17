@@ -4,7 +4,7 @@ import CustomChip from "../CustomChip/CustomChip";
 import Button from "../Button/Button";
 import { getFormattedDateTime } from "../../utils/date";
 interface PlayerInfoCardProps {
-  showLevel?: boolean;
+  showLevel?: string;
   showBtn?: boolean;
   drill?: boolean;
   courtId?: string; // optional, if you want to show court info
