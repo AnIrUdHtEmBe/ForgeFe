@@ -37,11 +37,12 @@
 }
 
 .player-info-helper-container .chip .--regular {
-	margin-left: 15px;
+	margin-left: 5px;
 }
 
 .player-info-helper-container .chip .--mixed {
-	font-size: 14px;
+	font-size: 18px;
 	display: flex;
 	align-items: center;
+	margin-left: 15px;
 }

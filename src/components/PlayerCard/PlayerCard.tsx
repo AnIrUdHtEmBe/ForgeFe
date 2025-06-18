@@ -3,19 +3,24 @@ import PlayerProfileImg from "../../assets/playerProfile.png";
 import CustomChip from "../CustomChip/CustomChip";
 import Button from "../Button/Button";
 import { getFormattedDateTime } from "../../utils/date";
+import type { t_game } from "../../types/games";
 interface PlayerInfoCardProps {
+  game?: t_game;
   showLevel?: string;
   showBtn?: boolean;
   drill?: boolean;
-  courtId?: string; // optional, if you want to show court info
-  startTime?: Date; // optional, if you want to show start time
-  endTime?: Date; // optional, if you want to show end time
+  courtId?: string;
+  startTime?: Date;
+  endTime?: Date;
   sport?: string;
 }
 
 const PlayerInfoCard = (props: PlayerInfoCardProps) => {
   const start = props.startTime;
   const end = props.endTime;
+  const game = props.game;
+
+  console.log("PlayerInfoCard props", game);
 
   const ordinal = (d: number) =>
     d + (d > 3 && d < 21 ? "th" : ["st", "nd", "rd"][(d % 10) - 1] || "th");
@@ -48,7 +53,16 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
       </div>
       <div className="player-info-end-container">
         <div className="player-info-badge-container">
-          <CustomChip text="Booked" showSlots={false} />
+          <CustomChip
+            text={
+              game &&
+              game.maxPlayers != null &&
+              game.bookingDetails?.joinedUsers
+                ? game.maxPlayers - game.bookingDetails.joinedUsers.length - 1
+                : "-"
+            }
+            showSlots={true}
+          />
         </div>
         <div className="player-info-event-location">
           <span>Sarjapur Road, Bangalore</span>
@@ -61,12 +75,16 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
 				</div> */}
         {props.showLevel && (
           <div className="player-info-player-level">
-            <span>Beginner</span>
+            <span>{props.showLevel}</span>
           </div>
         )}
         {props.showBtn && (
           <div className="player-info-bottom-btn">
-            <Button text={props.drill ? "Join Drill" : "Join Game"} />
+            <Button
+              text={
+                props.game?.bookedBy === "ForgeHub" ? "Join Drill" : "Join Game"
+              }
+            />
           </div>
         )}
       </div>
