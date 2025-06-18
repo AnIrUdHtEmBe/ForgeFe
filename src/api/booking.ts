@@ -6,13 +6,14 @@ import axios from "axios";
 export const addPlayersToGame = async (
   onAccept : (response: AxiosResponse) => void,
   onReject : (error: unknown) => void,
-  bookingId: string,
-  userId: string
+  gameId: string,
+  userId: string,
+  target : string
 ) => {
   try{
     const token = await CheckJWT();
     const response = await axios.patch(
-      PATH_V2 + ADD_PLAYES_TO_GAME(bookingId, userId),
+      PATH_V2 + ADD_PLAYES_TO_GAME(gameId, userId , target),
       { headers: { Authorization: 'Bearer ' + token } }
     );
     onAccept(response);

@@ -32,7 +32,7 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
 
   const { dateStr, timeStr } = getFormattedDateTime(start, end);
 
-  const handleBooking = (bookingId: string) => {
+  const handleBooking = (gameId: string) => {
     console.log("Booking clicked");
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
@@ -61,16 +61,20 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
         variant: "error",
       });
     };
+    console.log("Adding player to game with ID:", gameId);
 
-    addPlayersToGame(onAccept, onReject, bookingId, "USER_JWXJ19"); // Replace "userId" with actual user ID
+    addPlayersToGame(
+      onAccept,
+      onReject,
+      gameId,
+      "USER_FATJ79",
+      "scheduledPlayers"
+    ); // Replace "userId" with actual user ID
   };
 
   const handleCloseModal = () => {
     setModal(false);
   };
-
-
-
 
   return (
     <div className="player-info-card-container">
@@ -100,10 +104,8 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
         <div className="player-info-badge-container">
           <CustomChip
             text={
-              game &&
-              game.maxPlayers != null &&
-              game.bookingDetails?.joinedUsers
-                ? game.maxPlayers - game.bookingDetails.joinedUsers.length - 1
+              game && game.maxPlayers != null && game.scheduledPlayers
+                ? game.maxPlayers - game.scheduledPlayers.length
                 : "-"
             }
             showSlots={true}
@@ -125,26 +127,31 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
         )}
         {props.showBtn && (
           <div className="player-info-bottom-btn">
-            <Button
-              onClick={() => {
-                {
-                  game &&
-                    game.bookingDetails &&
-                    game.bookingDetails.bookingId &&
-                    handleBooking(game.bookingDetails.bookingId);
+            {game?.scheduledPlayers.find((userId) => userId === "USER_FATJ79") ? (
+              <Button
+                text={
+                 "Booked"
                 }
-              }}
-              text={
-                props.game?.bookedBy === "ForgeHub" ? "Join Drill" : "Join Game"
-              }
-            />
+              />
+            ) : (
+              <Button
+                onClick={() => {
+                  {
+                    game && game && game.gameId && handleBooking(game.gameId);
+                  }
+                }}
+                text={
+                  props.game?.bookedBy === "ForgeHub"
+                    ? "Join Drill"
+                    : "Join Game"
+                }
+              />
+            )}
           </div>
         )}
       </div>
 
-      {modal && (
-        <PopupModal onClose={handleCloseModal} ></PopupModal>
-      )}
+      {modal && <PopupModal onClose={handleCloseModal}></PopupModal>}
     </div>
   );
 };
