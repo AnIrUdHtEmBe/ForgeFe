@@ -30,6 +30,19 @@ export const getAllUsers  = async (
 	}
 }
 
+export const getCoachDetails = async (
+	onAccept: (response: AxiosResponse) => void,
+	onReject: (error: unknown) => void,
+	userId: string
+) => {
+	try {
+		const response = await axios.get(`${PATH_V2}/human/coach/${userId}`);
+		onAccept(response);
+	} catch (e) {
+		onReject(e);
+	}
+}
+
 export const getUserById = async (
 	onAccept: (response: AxiosResponse) => void,
 	onReject: (error: unknown) => void,

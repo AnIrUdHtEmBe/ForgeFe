@@ -18,7 +18,22 @@ export const getCourts = async (
         onReject(e);
     }
 };
-
+export const getCourtById = async (
+    onAccept: (response: AxiosResponse) => void,
+    onReject: (error: unknown) => void,
+    courtId: string,
+) => {
+    try {
+        const token = await CheckJWT();
+        const response = await axios.get(
+            PATH_V2 + `/court/${courtId}`,
+            { headers: { Authorization: 'Bearer ' + token } }
+        );
+        onAccept(response);
+    } catch (e) {
+        onReject(e);
+    }
+};
 export const getTimeSlotForCourt = async(
     onAccept: (response: AxiosResponse) => void,
     onReject: (error: unknown) => void,
@@ -64,3 +79,20 @@ export const bookCourt = async(
         onReject(e);
     }
 }
+
+export const getCourtBySportId = async (
+    onAccept: (response: AxiosResponse) => void,
+    onReject: (error: unknown) => void,
+    sportId: string,
+) => {
+    try {
+        const token = await CheckJWT();
+        const response = await axios.get(
+            PATH_V2 + `/court/courts/for-sport/${sportId}`,
+            { headers: { Authorization: 'Bearer ' + token } }
+        );
+        onAccept(response);
+    } catch (e) {
+        onReject(e);
+    }
+};

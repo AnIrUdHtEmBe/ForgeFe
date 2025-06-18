@@ -72,3 +72,19 @@
 		width: 120px;
 	}
 }
+
+	.--time-slot-drop-down {
+		width: 200px;
+	}
+
+	 .--drop-down {
+	display: flex;
+	gap: 18px;
+	padding-left: 5px;
+	align-items: center;
+}
+
+.--drop-down .--color-box-container {
+	height: 13px;
+	width: 13px;
+}

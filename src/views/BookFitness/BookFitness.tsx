@@ -12,7 +12,7 @@ import DropdownMenu, {
 } from "@atlaskit/dropdown-menu";
 import Button from "../../components/Button/Button";
 import BookSlot from "./components/BookSlot/BookSlot";
-import { getCourts, getTimeSlotForCourt } from "../../api/courts";
+import { getCourtBySportId, getCourts, getTimeSlotForCourt } from "../../api/courts";
 import { HttpStatusCode, type AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 import { SNACK_AUTO_HIDE } from "../../default";
@@ -32,7 +32,8 @@ const BookFitness = () => {
   const [showTimeSlots, setShowTimeSlots] = useState(true);
 
   useEffect(() => {
-    getCourts(
+    if(activeSport){
+    getCourtBySportId(
       (res: AxiosResponse) => {
         if (res.status === HttpStatusCode.Ok) {
           setCourts(
@@ -46,9 +47,10 @@ const BookFitness = () => {
           variant: "error",
           autoHideDuration: SNACK_AUTO_HIDE,
         }),
-      "AREN_JZSW15"
+      activeSport?.sportId || ""
     );
-  }, []);
+  }
+  }, [activeSport]);
 
   useEffect(() => {
     if (selectedCourtId) {
@@ -202,7 +204,7 @@ const BookFitness = () => {
                   key={courtId}
                   id={courtId}
                   isSelected={selectedCourtId === courtId}
-                  onClick={() => {
+                  onClick={() => {  
                     setSelectedCourtId(courtId);
                     setCourtName(name);
                   }}
