@@ -80,7 +80,7 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
             <img src={PlayerProfileImg} />
           </div>
           <div className="--username">
-            <span>Sahil</span>
+            <span>{game?.hostName}</span>
           </div>
         </div>
         <div className="player-info-date-and-time">

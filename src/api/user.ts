@@ -29,3 +29,16 @@ export const getAllUsers  = async (
 		onReject(e);
 	}
 }
+
+export const getUserById = async (
+	onAccept: (response: AxiosResponse) => void,
+	onReject: (error: unknown) => void,
+	userId: string
+) => {
+	try {
+		const response = await axios.get(`${PATH_V2}/human/${userId}`);
+		onAccept(response);
+	} catch (e) {
+		onReject(e);
+	}
+};

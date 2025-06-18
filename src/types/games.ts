@@ -1,5 +1,6 @@
 export type t_game = {
   hostId: string;
+  hostName: string;
   sport: string;
   courtId: string;
   startTime: string; // ISO string
