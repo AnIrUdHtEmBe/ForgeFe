@@ -15,3 +15,6 @@ export const GET_ALL_SPORTS = (category: string) =>
 
 export const GET_ALL_GAMES = (sportId: string, date: string, courtId: string) =>
   `/game/games/by-sport?sportId=${sportId}&date=${date}&courtId=${courtId}`;
+
+export const ADD_PLAYES_TO_GAME = (bookingId: string , userId : string) =>
+	`/booking/add-players/${bookingId}?userIds=${userId}`;

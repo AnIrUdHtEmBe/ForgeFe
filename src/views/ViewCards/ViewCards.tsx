@@ -31,7 +31,6 @@ const ViewCards = () => {
 					})}
         </span>
         <span className="--day">
-          {/* figure out day by date */}
          {selectedDate.toLocaleDateString("en-US", {
 						weekday: "long",
 					})}
@@ -39,7 +38,6 @@ const ViewCards = () => {
       </div>
 
       <div className="view-card-content-container">
-        {/* replace this with card info */}
         {cardInfo.map((games : t_game, i : number) => {
           return <PlayerInfoCard startTime={new Date(games.bookingDetails.st_unix *1000)} endTime={new Date(games.bookingDetails.et_unix *1000)} showLevel={games.difficultyLevel}  game={games} showBtn key={i} />;
         })}

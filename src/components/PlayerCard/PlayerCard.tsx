@@ -4,6 +4,12 @@ import CustomChip from "../CustomChip/CustomChip";
 import Button from "../Button/Button";
 import { getFormattedDateTime } from "../../utils/date";
 import type { t_game } from "../../types/games";
+import { addPlayersToGame } from "../../api/booking";
+import { HttpStatusCode, type AxiosResponse } from "axios";
+import { useState } from "react";
+import { enqueueSnackbar } from "notistack";
+import { PopupModal } from "../PopupModal/PopupModal";
+import { getGamesByDateAndSports } from "../../api/games";
 interface PlayerInfoCardProps {
   game?: t_game;
   showLevel?: string;
@@ -20,12 +26,51 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
   const end = props.endTime;
   const game = props.game;
 
+  const [modal, setModal] = useState<boolean>(false);
+
   console.log("PlayerInfoCard props", game);
 
-  const ordinal = (d: number) =>
-    d + (d > 3 && d < 21 ? "th" : ["st", "nd", "rd"][(d % 10) - 1] || "th");
-
   const { dateStr, timeStr } = getFormattedDateTime(start, end);
+
+  const handleBooking = (bookingId: string) => {
+    console.log("Booking clicked");
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === 200) {
+        setModal(true);
+        enqueueSnackbar({
+          message: "Successfully joined the game!",
+          autoHideDuration: 3000,
+          variant: "success",
+        });
+
+        // getGamesByDateAndSports();
+      } else {
+        enqueueSnackbar({
+          message: "Failed to join the game!",
+          autoHideDuration: 3000,
+          variant: "error",
+        });
+      }
+    };
+
+    const onReject = (e: unknown) => {
+      console.error("Error joining game:", e);
+      enqueueSnackbar({
+        message: "Failed to join the game!",
+        autoHideDuration: 3000,
+        variant: "error",
+      });
+    };
+
+    addPlayersToGame(onAccept, onReject, bookingId, "USER_JWXJ19"); // Replace "userId" with actual user ID
+  };
+
+  const handleCloseModal = () => {
+    setModal(false);
+  };
+
+
+
 
   return (
     <div className="player-info-card-container">
@@ -81,6 +126,14 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
         {props.showBtn && (
           <div className="player-info-bottom-btn">
             <Button
+              onClick={() => {
+                {
+                  game &&
+                    game.bookingDetails &&
+                    game.bookingDetails.bookingId &&
+                    handleBooking(game.bookingDetails.bookingId);
+                }
+              }}
               text={
                 props.game?.bookedBy === "ForgeHub" ? "Join Drill" : "Join Game"
               }
@@ -88,6 +141,10 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
           </div>
         )}
       </div>
+
+      {modal && (
+        <PopupModal onClose={handleCloseModal} ></PopupModal>
+      )}
     </div>
   );
 };
