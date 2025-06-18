@@ -131,7 +131,7 @@ const BookFitness = () => {
 
   const selectedSlots = slots
     .filter((slot) => selectedSlotIds.includes(slot.slotId))
-    .sort((a, b) => (a.startTime as any) - b.startTime);
+    .sort((a, b) => (a.startTime as any) - (b.startTime as any));
   const finalStartTime = selectedSlots[0]?.startTime ?? 0;
   const finalEndTime = selectedSlots[selectedSlots.length - 1]?.endTime ?? 0;
 

@@ -4,11 +4,46 @@ import { DEFAULT_ICON_SIZE, wellnessWindows } from '../../default';
 import './styles.css';
 import { IoIosArrowBack } from 'react-icons/io';
 import E_Routes from '../../types/routes';
-
+import { getSports } from '../../api/sports';
+import { useEffect, useState } from 'react';
+import { enqueueSnackbar } from 'notistack';
+import { HttpStatusCode } from 'axios';
+import type { t_sport } from '../../types/sports';
+import type { AxiosResponse } from 'axios';
 const BookWellness = () => {
+	const [sports, setSports] = useState<t_sport[]>([]);  
+	
+	  const getAllSports = () => {
+		const onAccept = (response: AxiosResponse) => {
+		  if (response.status === HttpStatusCode.Ok) {
+			console.log(response.data);
+			setSports(response.data);
+		  } else {
+			enqueueSnackbar({
+			  message: "Failed to fetch the data!",
+			  autoHideDuration: 3000,
+			  variant: "error",
+			});
+		  }
+		};
+		const onReject = (e :unknown) => {
+		  console.log(e);
+		  enqueueSnackbar({
+			message: "Failed to fetch the data!",
+			autoHideDuration: 3000,
+			variant: "error",
+		  });
+		};
+		getSports(onAccept, onReject, "WELLNESS");
+	  };
+	
+	  useEffect(() => {
+		  getAllSports();
+	  }, []);
+    
 	const navigate = useNavigate();
 
-	const clickHandler = (value: string) => {
+	const clickHandler = (value: t_sport) => {
 		navigate(E_Routes.detailedViewWellness, { state: { descriptor: value } });
 	};
 
@@ -32,9 +67,9 @@ const BookWellness = () => {
 							key={i}
 							className="book-wellness-top-heading-container"
 						>
-							<div className="--top-heading">{keys}</div>
+							<div className="--top-heading">Wellness</div>
 							<div className="--bottom-content">
-								{obj.map((el, i) => {
+								{sports.map((el, i) => {
 									return (
 										<div
 											key={i}
@@ -44,7 +79,7 @@ const BookWellness = () => {
 											<span className="--text">{el.name}</span>
 											<Button
 												text="Explore"
-												onClick={() => clickHandler(el.name)}
+												onClick={() => clickHandler(el)}
 											/>
 										</div>
 									);

@@ -39,6 +39,11 @@ const BookSlot = (props: BookSlotProps) => {
 		if (response.status === HttpStatusCode.Ok) {
 			console.log('Booking successful:', response.data);
 			props.onClose(); // Close the overlay on success
+			enqueueSnackbar({
+				message: 'Booking successful!',
+				autoHideDuration: SNACK_AUTO_HIDE,
+				variant: 'success',
+			});
 		} else {
 			console.error('Booking failed:', response.data);
 			enqueueSnackbar({
