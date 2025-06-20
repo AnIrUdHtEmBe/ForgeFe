@@ -61,7 +61,6 @@ const BookWellness = () => {
 			</div>
 			<div className="book-wellness-content-container">
 				{Object.keys(wellnessWindows).map((keys, i) => {
-					const obj = wellnessWindows[keys as keyof typeof wellnessWindows];
 					return (
 						<div
 							key={i}

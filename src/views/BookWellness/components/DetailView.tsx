@@ -20,28 +20,16 @@ import { getFormattedDateTime } from "../../../utils/date";
 import { HttpStatusCode, type AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 import Content from "./Content";
-import {getGamesByDateAndSports , joinGame} from "../../../api/games";
+import { getGamesByDateAndSports, joinGame } from "../../../api/games";
 import type { t_game } from "../../../types/games";
+import type { t_slot } from "../../../types/slot";
+import type { doctor } from "../../../types/doctor";
 
 const DetailView = () => {
   const location = useLocation();
   const { descriptor } = location.state;
-
-  const index = Object.keys(detailsInfoWellness).findIndex(
-    (el) => el.toLowerCase() === descriptor.name.toLowerCase()
-  );
-  if (index < 0) {
-    return <span>Invalid Page</span>;
-  }
-  const keys = Object.keys(detailsInfoWellness);
-  const name = keys[index];
-  const obj = detailsInfoWellness[name as keyof typeof detailsInfoWellness];
-
-  const backBtnHandler = () => {
-    window.history.back();
-  };
-  const [doctors, setDoctors] = useState<[]>([]);
-  const [selectedDoctor, setSelectedDoctor] = useState<string>("");
+  const [doctors, setDoctors] = useState<doctor[]>([]);
+  const [selectedDoctor, setSelectedDoctor] = useState<any>("");
   const [courtId, setCourtId] = useState<string>("");
   const [court, setCourt] = useState<t_court>();
   const [operatingHours, setOperatingHours] = useState<string>("");
@@ -50,7 +38,19 @@ const DetailView = () => {
   const [slots, setSlots] = useState<t_slot[]>([]);
   const [games, setGames] = useState<t_game[]>([]);
   const [dateOfGame, setDateOfGame] = useState<Date | null>(null);
-  const [ selectedGame , setSelectedGame] = useState<t_game>();
+  const [selectedGame, setSelectedGame] = useState<t_game | null>();
+
+  const index = Object.keys(detailsInfoWellness).findIndex(
+    (el) => el.toLowerCase() === descriptor.name.toLowerCase()
+  );
+  
+  const keys = Object.keys(detailsInfoWellness);
+  const name = keys[index];
+  const obj = detailsInfoWellness[name as keyof typeof detailsInfoWellness];
+
+  const backBtnHandler = () => {
+    window.history.back();
+  };
   useEffect(() => {
     if (courtId && date) {
       getTimeSlotForCourt(
@@ -63,7 +63,7 @@ const DetailView = () => {
                 status,
                 slotId,
               }))
-              .sort((a, b) => a.startTime - b.startTime);
+              .sort((a: { startTime: number; }, b: { startTime: number; }) => a.startTime - b.startTime);
             setSlots(sorted);
           }
         },
@@ -78,14 +78,14 @@ const DetailView = () => {
       );
       setSelectedSlotIds([]);
     }
-  }, [courtId, date ]);
+  }, [courtId, date]);
 
   const selectedSlots = slots
     .filter((slot) => selectedSlotIds.includes(slot.slotId))
     .sort((a, b) => (a.startTime as any) - (b.startTime as any));
 
-  const finalStartTime = selectedSlots[0]?.startTime ?? 0;
-  const finalEndTime = selectedSlots[selectedSlots.length - 1]?.endTime ?? 0;
+  const finalStartTime = Number(selectedSlots[0]?.startTime ?? 0);
+  const finalEndTime = Number(selectedSlots[selectedSlots.length - 1]?.endTime ?? 0);
 
   const combineDateWithUnixTime = (dateStr: string, timeUnix: number) => {
     const base = new Date(dateStr);
@@ -95,11 +95,11 @@ const DetailView = () => {
   };
 
   const startDateTime = combineDateWithUnixTime(
-    date?.toISOString(),
+    date?.toISOString() || "",
     finalStartTime
   );
   const endDateTime = combineDateWithUnixTime(
-    date?.toISOString(),
+    date?.toISOString() || "",
     finalEndTime
   );
 
@@ -155,8 +155,8 @@ const DetailView = () => {
 
   useEffect(() => {
     const { timeStr } = getFormattedDateTime(
-      new Date(court?.openingTime),
-      new Date(court?.closingTime)
+      new Date(court?.openingTime ?? ""),
+      new Date(court?.closingTime ?? "")
     );
     console.log(timeStr);
     setOperatingHours(timeStr);
@@ -166,6 +166,13 @@ const DetailView = () => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
         console.log(response.data);
+        if(response.data.length === 0) {
+          enqueueSnackbar({
+            message: "No games found for the selected date and sport.",
+            autoHideDuration: 3000,
+            variant: "info",
+          });
+        }
         setGames(response.data);
       } else {
         enqueueSnackbar({
@@ -182,25 +189,24 @@ const DetailView = () => {
     getGamesByDateAndSports(
       onAccept,
       onReject,
-      dateOfGame?.toISOString(),
-      descriptor.sportId,
+      dateOfGame?.toISOString() || new Date().toISOString(),
+      descriptor.sportId
     );
   };
   useEffect(() => {
-    if(dateOfGame && descriptor.sportId) {
+    if (dateOfGame && descriptor.sportId) {
       fetchGames();
     }
-  }, [dateOfGame ]
-  )
+  }, [dateOfGame]);
   const handleBookingForYoga = async () => {
-    if(!selectedGame ){
+    if (!selectedGame) {
       console.error("Please select a game before booking.");
       return;
     }
     const bookingData = {
       gameId: selectedGame.gameId,
-      playerIds: ["USER_JWXJ19"]
-    }
+      playerIds: ["USER_JWXJ19"],
+    };
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
         console.log("Booking successful:", response.data);
@@ -232,7 +238,7 @@ const DetailView = () => {
       bookingData.gameId,
       bookingData.playerIds
     );
-  }
+  };
 
   const handleBookingForPhysio = async () => {
     if (!startDateTime || !endDateTime || !courtId) {
@@ -282,10 +288,13 @@ const DetailView = () => {
       bookingData.endTime
     );
 
-    setDate(new Date(date));
-    
+    if (date) {
+      setDate(new Date(date));
+    }
   };
-
+  if (index < 0) {
+    return <span>Invalid Page</span>;
+  }
   return (
     <div className="detail-view-container">
       <div className="image-container">
@@ -307,7 +316,6 @@ const DetailView = () => {
             <span>Book your session</span>
           </div>
           <Content
-            descriptor={descriptor}
             court={court}
             slots={slots}
             doctors={doctors}
@@ -327,7 +335,14 @@ const DetailView = () => {
             selectedGame={selectedGame}
           ></Content>
           <div className="--btn">
-            <Button onClick={ descriptor.name === "Physio" ?handleBookingForPhysio : handleBookingForYoga } text="Book Now" />
+            <Button
+              onClick={
+                descriptor.name === "Physio"
+                  ? handleBookingForPhysio
+                  : handleBookingForYoga
+              }
+              text="Book Now"
+            />
           </div>
         </div>
       </div>

@@ -1,0 +1,28 @@
+export type doctor = {
+  type: string;
+  name: string;
+  age: number;
+  gender: "male" | "female" | "other";
+  mobile?: string;
+  email?: string;
+  photo?: string | null;
+  address?: string | null;
+  height?: number;
+  weight?: number;
+  healthCondition?: string;
+  membershipType?: "basic" | "premium" | "vip" | string;
+  plansAllocated?: string[];
+  assessments?: string[];
+  sessionsBooked?: string[];
+  gamesBooked?: string[];
+  gamesPlayed?: string[];
+  gameLevel?: string | null;
+  userRating?: number | null;
+  faveSports?: string[];
+  faveUsers?: string[];
+  blockedUsers?: string[];
+  playedWithUsers?: string[];
+  userId?: string;
+  createdOn?: string; 
+  updatedOn?: string; 
+};

@@ -5,11 +5,15 @@ import DropdownMenu, {
   DropdownItemRadio,
   DropdownItemRadioGroup,
 } from "@atlaskit/dropdown-menu";
-import type { t_game } from "../../../types/games";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {getCourtById} from "../../../api/courts";
+import type { t_court } from "../../../types/court";
+import type { t_slot } from "../../../types/slot";
+import { useLocation } from "react-router-dom";
+import type { doctor } from "../../../types/doctor";
+import type { t_game } from "../../../types/games";
+import type { AxiosResponse } from "axios";
 export default function Content({
-  descriptor,
   court,
   slots,
   doctors,
@@ -23,10 +27,32 @@ export default function Content({
   finalStartTime,
   finalEndTime,
   games,
+  dateOfGame,
   setDateOfGame,
   setSelectedGame,
   selectedGame,
-}: any) {
+}: {
+  court: t_court | undefined;
+  slots: t_slot[];
+  doctors: doctor[];
+  operatingHours: string;
+  selectedSlotIds: string[];
+  setSelectedSlotIds: (ids: string[]) => void;
+  setSelectedDoctor: (doctor: doctor) => void;
+  selectedDoctor: doctor;
+  setDate: (date: Date) => void;
+  selectedSlots: t_slot[];
+  finalStartTime: number;
+  finalEndTime: number;
+  games: t_game[];
+  dateOfGame: Date | null;
+  setDateOfGame: (date: Date) => void;
+  setSelectedGame: (game: t_game | null) => void;
+  selectedGame: t_game | null | undefined;
+}) {
+  const [courtName , setCourtName] = useState<string>("");
+  const location = useLocation();
+  const { descriptor } = location.state;
   const handleSlotToggle = (slotId: string) => {
     const index = slots.findIndex((s) => s.slotId === slotId);
     const prev = slots[index - 1]?.slotId;
@@ -46,20 +72,16 @@ export default function Content({
   };
   const getCourtDetails = async (courtId: string) => {
     try {
-      const response = await getCourtById(
-        (res: any) => {
+       await getCourtById(
+        (res: AxiosResponse) => {
           console.log("Court details fetched successfully:", res.data);
-          setSelectedGame((prev: t_game) => ({
-            ...prev,
-            courtName: res.data.name,
-          }));
+          setCourtName(res.data.name);
         },
         (error: any) => {
           console.error("Error fetching court details:", error);
         },
         courtId
       );
-      return response.data;
     } catch (error) {
       console.error("Error in getCourtDetails:", error);
       throw error;
@@ -69,22 +91,24 @@ export default function Content({
   if (selectedGame?.courtId) {
     getCourtDetails(selectedGame.courtId);
   }
-}, [selectedGame?.courtId]);
+}, [selectedGame?.courtId ]);
 
-  
+  useEffect(() => {
+    setSelectedGame(null);
+  },[dateOfGame])
   return (
     <div className="--content">
       {descriptor.name === "yoga" && (
         <>
           <div className="--row">
             <span className="--title">Court</span>
-            <span className="--val">{!selectedGame ? "Select a game to view the court" : selectedGame?.courtName}</span>
+            <span className="--val">{!courtName ? "Select a game to view the court" : courtName}</span>
           </div>
           <div className="--row">
             <span className="--title"> Games</span>
             <span className="--val">
                <DropdownMenu
-              trigger={selectedGame ? `
+                trigger={selectedGame ? `
                 ${new Date(selectedGame.startTime).toLocaleTimeString(
                         [],
                         {
@@ -104,7 +128,7 @@ export default function Content({
               shouldRenderToParent
             >
               <DropdownItemRadioGroup id="games">
-                {games.map((game: any) => (
+                {games.map((game: t_game) => (
                   <DropdownItemRadio
                     key={game.bookingId}
                     id={game.bookingId}
@@ -167,45 +191,7 @@ export default function Content({
 
       {descriptor.name === "Physio" && (
         <>
-          <div className="--row">
-            <span className="--title">Operating Hours</span>
-            <span className="--val">
-              {court
-                ? operatingHours
-                : "Select a doctor to view operating hours"}
-            </span>
-          </div>
-          <div className="--row">
-            <span className="--title">Doctor</span>
-            <DropdownMenu
-              trigger={selectedDoctor?.name || "Select Doctor"}
-              shouldRenderToParent
-            >
-              <DropdownItemRadioGroup id="doctors">
-                {doctors.map((doctor: any) => (
-                  <DropdownItemRadio
-                    key={doctor.userId}
-                    id={doctor.userId}
-                    isSelected={selectedDoctor?.userId === doctor.userId}
-                    onClick={() => setSelectedDoctor(doctor)}
-                  >
-                    {doctor.name}
-                  </DropdownItemRadio>
-                ))}
-              </DropdownItemRadioGroup>
-            </DropdownMenu>
-          </div>
-          <div className="--row">
-            <span className="--title">More Info</span>
-            <span className="--val">
-              <ul>
-                {descriptor.instructions.map((el: string) => (
-                  <li>{el}</li>
-                ))}
-              </ul>
-            </span>
-          </div>
-          <div className="--row">
+        <div className="--row">
             <span className="--title">Select A Date</span>
             <input
               type="date"
@@ -214,6 +200,27 @@ export default function Content({
                 setDate(selectedDate);
               }}
             />
+          </div>
+
+          <div className="--row">
+            <span className="--title">Doctor</span>
+            <DropdownMenu
+              trigger={selectedDoctor?.name || "Select Doctor"}
+              shouldRenderToParent
+            >
+              <DropdownItemRadioGroup id="doctors">
+                {doctors.map((doctor: doctor) => (
+                  <DropdownItemRadio
+                    key={doctor.userId}
+                    id={doctor.userId || ""}
+                    isSelected={selectedDoctor?.userId === doctor.userId}
+                    onClick={() => setSelectedDoctor(doctor)}
+                  >
+                    {doctor.name}
+                  </DropdownItemRadio>
+                ))}
+              </DropdownItemRadioGroup>
+            </DropdownMenu>
           </div>
           <div className="--row">
             <span className="--title">Select A Slot</span>
@@ -295,6 +302,27 @@ export default function Content({
               </DropdownMenu>
             </div>
           </div>
+          <div className="--row">
+            <span className="--title">Operating Hours</span>
+            <span className="--val">
+              {court
+                ? operatingHours
+                : "Select a doctor to view operating hours"}
+            </span>
+          </div>
+          
+          <div className="--row">
+            <span className="--title">More Info</span>
+            <span className="--val">
+              <ul>
+                {descriptor.instructions.map((el: string) => (
+                  <li>{el}</li>
+                ))}
+              </ul>
+            </span>
+          </div>
+          
+          
         </>
       )}
     </div>

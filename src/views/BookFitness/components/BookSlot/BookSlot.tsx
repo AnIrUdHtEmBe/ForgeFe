@@ -15,7 +15,7 @@ interface BookSlotProps {
 	endTime?: Date; // ISO datetime string
 	courtId?: string;
 	viewTimeSlots?: () => void; // Optional function to view time slots
-	sport: t_sport; // Optional, if you want to pass sportId
+	sport: t_sport | undefined; // Optional, if you want to pass sportId
 	setShowTimeSlots?: (show: boolean) => void; // Optional function to set visibility of time slots
 }
 
@@ -32,7 +32,7 @@ const BookSlot = (props: BookSlotProps) => {
 		courtId: props.courtId,
 		startTime: props.startTime.toISOString(),
 		endTime: props.endTime.toISOString(),
-		sportId: props.sport.sportId // Use sportId if available, otherwise an empty string
+		sportId: props.sport?.sportId ?? '' // Use sportId if available, otherwise an empty string
 	};
 
 	const onAccept = (response: AxiosResponse) => {

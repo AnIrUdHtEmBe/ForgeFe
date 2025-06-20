@@ -12,7 +12,7 @@ import DropdownMenu, {
 } from "@atlaskit/dropdown-menu";
 import Button from "../../components/Button/Button";
 import BookSlot from "./components/BookSlot/BookSlot";
-import { getCourtBySportId, getCourts, getTimeSlotForCourt } from "../../api/courts";
+import { getCourtBySportId, getTimeSlotForCourt } from "../../api/courts";
 import { HttpStatusCode, type AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 import { SNACK_AUTO_HIDE } from "../../default";
@@ -134,8 +134,8 @@ const BookFitness = () => {
   const selectedSlots = slots
     .filter((slot) => selectedSlotIds.includes(slot.slotId))
     .sort((a, b) => (a.startTime as any) - (b.startTime as any));
-  const finalStartTime = selectedSlots[0]?.startTime ?? 0;
-  const finalEndTime = selectedSlots[selectedSlots.length - 1]?.endTime ?? 0;
+  const finalStartTime = Number(selectedSlots[0]?.startTime);
+  const finalEndTime = Number(selectedSlots[selectedSlots.length - 1]?.endTime);
 
   const combineDateWithUnixTime = (dateStr: string, timeUnix: number) => {
     const base = new Date(dateStr);
@@ -243,13 +243,13 @@ const BookFitness = () => {
                     isSelected={selectedSlotIds.includes(slotId)}
                     onClick={() => handleSlotToggle(slotId)}
                   >
-                    {new Date(startTime * 1000).toLocaleTimeString([], {
+                    {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
                       hour: "numeric",
                       minute: "2-digit",
                       hour12: true,
                     })}{" "}
                     -{" "}
-                    {new Date(endTime * 1000).toLocaleTimeString([], {
+                    {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
                       hour: "numeric",
                       minute: "2-digit",
                       hour12: true,
@@ -267,13 +267,13 @@ const BookFitness = () => {
                         }}
                       />
                       <span>
-                        {new Date(startTime * 1000).toLocaleTimeString([], {
+                        {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
                           hour: "numeric",
                           minute: "2-digit",
                           hour12: true,
                         })}{" "}
                         -{" "}
-                        {new Date(endTime * 1000).toLocaleTimeString([], {
+                        {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
                           hour: "numeric",
                           minute: "2-digit",
                           hour12: true,
