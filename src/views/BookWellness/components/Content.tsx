@@ -37,7 +37,8 @@ export default function Content({
   doctors: doctor[];
   operatingHours: string;
   selectedSlotIds: string[];
-  setSelectedSlotIds: (ids: string[]) => void;
+  setSelectedSlotIds: React.Dispatch<React.SetStateAction<string[]>>;
+
   setSelectedDoctor: (doctor: doctor) => void;
   selectedDoctor: doctor;
   setDate: (date: Date) => void;
@@ -62,13 +63,14 @@ export default function Content({
       selectedSlotIds.includes(prev) ||
       selectedSlotIds.includes(next);
 
-    setSelectedSlotIds((prevIds) => {
+    setSelectedSlotIds((prevIds: string[]) => {
       if (prevIds.includes(slotId))
         return prevIds.filter((id) => id !== slotId);
       if (isAdjacent) return [...prevIds, slotId];
       console.warn("Only select continuous time slots.");
       return prevIds;
     });
+    
   };
   const getCourtDetails = async (courtId: string) => {
     try {
@@ -77,7 +79,7 @@ export default function Content({
           console.log("Court details fetched successfully:", res.data);
           setCourtName(res.data.name);
         },
-        (error: any) => {
+        (error: unknown) => {
           console.error("Error fetching court details:", error);
         },
         courtId
@@ -257,13 +259,13 @@ export default function Content({
                         isSelected={selectedSlotIds.includes(slotId)}
                         onClick={() => handleSlotToggle(slotId)}
                       >
-                        {new Date(startTime * 1000).toLocaleTimeString([], {
+                        {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
                           hour: "numeric",
                           minute: "2-digit",
                           hour12: true,
                         })}{" "}
                         -{" "}
-                        {new Date(endTime * 1000).toLocaleTimeString([], {
+                        {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
                           hour: "numeric",
                           minute: "2-digit",
                           hour12: true,
@@ -282,13 +284,13 @@ export default function Content({
                             }}
                           />
                           <span>
-                            {new Date(startTime * 1000).toLocaleTimeString([], {
+                            {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
                               hour: "numeric",
                               minute: "2-digit",
                               hour12: true,
                             })}{" "}
                             -{" "}
-                            {new Date(endTime * 1000).toLocaleTimeString([], {
+                            {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
                               hour: "numeric",
                               minute: "2-digit",
                               hour12: true,
