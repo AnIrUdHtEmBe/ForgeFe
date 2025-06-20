@@ -49,7 +49,7 @@ const ViewPlan = () => {
       }
     };
 
-    const onReject = (e) => {
+    const onReject = (e :unknown) => {
       console.log(e);
       enqueueSnackbar({
         message: "Failed to fetch the data!",

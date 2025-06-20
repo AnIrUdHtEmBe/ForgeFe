@@ -17,6 +17,7 @@ const ViewCards = () => {
     window.history.back();
   };
 
+
   return (
     <div className="view-cards-container">
       <div className="--back" onClick={backClickHandler}>
@@ -24,22 +25,31 @@ const ViewCards = () => {
       </div>
       <div className="view-cards-top-heading">
         <span className="--date">
-         {selectedDate.toLocaleDateString("en-US", {
-						month: "long",
-						day: "numeric",
-						year: "numeric",
-					})}
+          {selectedDate.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          })}
         </span>
         <span className="--day">
-         {selectedDate.toLocaleDateString("en-US", {
-						weekday: "long",
-					})}
+          {selectedDate.toLocaleDateString("en-US", {
+            weekday: "long",
+          })}
         </span>
       </div>
 
       <div className="view-card-content-container">
-        {cardInfo.map((games : t_game, i : number) => {
-          return <PlayerInfoCard startTime={new Date(games.bookingDetails.st_unix *1000)} endTime={new Date(games.bookingDetails.et_unix *1000)} showLevel={games.difficultyLevel}  game={games} showBtn key={i} />;
+        {cardInfo.map((games: t_game, i: number) => {
+          return (
+            <PlayerInfoCard
+              startTime={new Date(games.bookingDetails.st_unix * 1000)}
+              endTime={new Date(games.bookingDetails.et_unix * 1000)}
+              showLevel={games.difficultyLevel}
+              game={games}
+              showBtn
+              key={i}
+            />
+          );
         })}
       </div>
     </div>

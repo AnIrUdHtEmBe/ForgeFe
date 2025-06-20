@@ -26,63 +26,6 @@ const BookSport = () => {
   });
 
   console.log(filters);
-  const [slots, setSlots] = useState([
-    {
-      startTime: "10:30",
-      slots: [
-        {
-          name: "football",
-          slot: 3,
-          drill: true,
-        },
-        {
-          name: "football",
-          slot: 3,
-          drill: true,
-        },
-      ],
-    },
-    {
-      startTime: "12:30",
-      slots: [
-        {
-          name: "football",
-          slot: 3,
-          drill: true,
-        },
-      ],
-    },
-    {
-      startTime: "1:30",
-      slots: [
-        {
-          name: "football",
-          slot: 3,
-          drill: true,
-        },
-      ],
-    },
-    {
-      startTime: "9:30",
-      slots: [
-        {
-          name: "run",
-          slot: 3,
-          drill: true,
-        },
-      ],
-    },
-    {
-      startTime: "10:30",
-      slots: [
-        {
-          name: "football",
-          slot: 3,
-          drill: true,
-        },
-      ],
-    },
-  ]);
 
   const navigate = useNavigate();
   const fetchGames = () => {
@@ -114,6 +57,15 @@ const BookSport = () => {
   useEffect(() => {
     fetchGames();
   }, [filters]);
+
+  useEffect(() => {
+    const shouldRefetch = sessionStorage.getItem("shouldRefetchGames");
+  
+    if (shouldRefetch === "true") {
+      fetchGames(); // Re-fetch
+      sessionStorage.removeItem("shouldRefetchGames"); // Clean up
+    }
+  }, []);
 
   console.log("games", games);
 
@@ -165,35 +117,6 @@ const BookSport = () => {
         </div>
       </div>
       <div className="book-sport-content-container">
-        {/* {slots.map((slot, i) => {
-          return (
-            <div key={i} className="book-sport-slot-container">
-              <div className="--time">
-                <span>{slot.startTime}</span>
-              </div>
-              <div className="--slots">
-                {slot.slots.map((eachSlot, i) => {
-                  let icon = UNKNOWN_SPORTS_ICON;
-                  const iconIndex = SPORTS.findIndex(
-                    (el) =>
-                      el.name.toLowerCase() === eachSlot.name.toLowerCase()
-                  );
-                  if (iconIndex >= 0) {
-                    icon = SPORTS[iconIndex].icon;
-                  }
-                  return (
-                    <div onClick={clickHandler} className="--each-slot" key={i}>
-                      {eachSlot.drill && <div className="--drill">Drill</div>}
-                      <div className="--number-slots">{eachSlot.slot} </div>
-                      <span>{icon}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })} */}
-
         {games && games.length > 0 ? (
           <div className="book-sport-slot-container">
             <div className=" book-sport-slot-header">

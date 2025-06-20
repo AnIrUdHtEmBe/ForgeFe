@@ -4,6 +4,8 @@ import { HttpStatusCode, type AxiosResponse } from "axios";
 import type { t_sport } from "../../types/sports";
 import { enqueueSnackbar } from "notistack";
 import { getSports } from "../../api/sports";
+import { E_PageState } from "../../types/state";
+import { FullScreenLoader } from "../Loader/CustomLoader";
 
 interface SportStripProps {
   activeSport: { name: string; icon?: JSX.Element };
@@ -13,8 +15,11 @@ interface SportStripProps {
 
 const SportStrip = (props: SportStripProps) => {
   const [sports, setSports] = useState<t_sport[]>([]);  
+  const [pageState, setPageState] = useState(E_PageState.Unknown);
 
   const getAllSports = () => {
+
+    setPageState(E_PageState.Loading);
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data);
@@ -23,7 +28,10 @@ const SportStrip = (props: SportStripProps) => {
         if (response.data.length > 0) {
           props.changeActiveSport(response.data[0]);
         }
+
+        setPageState(E_PageState.Accepted);
       } else {
+        setPageState(E_PageState.Rejected);
         enqueueSnackbar({
           message: "Failed to fetch the data!",
           autoHideDuration: 3000,
@@ -47,6 +55,10 @@ const SportStrip = (props: SportStripProps) => {
   useEffect(() => {
     getAllSports();
   }, []);
+
+  if (pageState === E_PageState.Loading) {
+    return <FullScreenLoader />;
+  }
 
   return (
     <div className="sport-strip-container">

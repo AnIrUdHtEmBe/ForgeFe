@@ -10,6 +10,9 @@ import { useState } from "react";
 import { enqueueSnackbar } from "notistack";
 import { PopupModal } from "../PopupModal/PopupModal";
 import { getGamesByDateAndSports } from "../../api/games";
+import { useNavigate } from "react-router-dom";
+
+// inside component:
 interface PlayerInfoCardProps {
   game?: t_game;
   showLevel?: string;
@@ -21,7 +24,10 @@ interface PlayerInfoCardProps {
   sport?: string;
 }
 
+// inside component:
+
 const PlayerInfoCard = (props: PlayerInfoCardProps) => {
+  const navigate = useNavigate();
   const start = props.startTime;
   const end = props.endTime;
   const game = props.game;
@@ -30,7 +36,14 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
 
   console.log("PlayerInfoCard props", game);
 
-  const { dateStr, timeStr } = getFormattedDateTime(start, end);
+  let dateStr = "";
+  let timeStr = "";
+
+  if (start && end) {
+    const formatted = getFormattedDateTime(start, end);
+    dateStr = formatted.dateStr;
+    timeStr = formatted.timeStr;
+  }
 
   const handleBooking = (gameId: string) => {
     console.log("Booking clicked");
@@ -42,8 +55,8 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
           autoHideDuration: 3000,
           variant: "success",
         });
-
-        // getGamesByDateAndSports();
+        sessionStorage.setItem("shouldRefetchGames", "true");
+        navigate(-1);
       } else {
         enqueueSnackbar({
           message: "Failed to join the game!",
@@ -127,12 +140,10 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
         )}
         {props.showBtn && (
           <div className="player-info-bottom-btn">
-            {game?.scheduledPlayers.find((userId) => userId === "USER_FATJ79") ? (
-              <Button
-                text={
-                 "Booked"
-                }
-              />
+            {game?.scheduledPlayers.find(
+              (userId) => userId === "USER_FATJ79"
+            ) ? (
+              <Button text={"Booked"} />
             ) : (
               <Button
                 onClick={() => {

@@ -1,6 +1,7 @@
 import type { t_activity } from "./activity";
 
 export type t_session = {
+  category: string;
   name: string; 
   description: string; 
   sessionInstanceId: string; 
