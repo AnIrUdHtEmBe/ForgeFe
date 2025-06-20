@@ -20,6 +20,8 @@ import { getFormattedDateTime } from "../../../utils/date";
 import { HttpStatusCode, type AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 import Content from "./Content";
+import {getGamesByDateAndSports , joinGame} from "../../../api/games";
+import type { t_game } from "../../../types/games";
 
 const DetailView = () => {
   const location = useLocation();
@@ -46,7 +48,9 @@ const DetailView = () => {
   const [date, setDate] = useState<Date | null>(null);
   const [selectedSlotIds, setSelectedSlotIds] = useState<string[]>([]);
   const [slots, setSlots] = useState<t_slot[]>([]);
-
+  const [games, setGames] = useState<t_game[]>([]);
+  const [dateOfGame, setDateOfGame] = useState<Date | null>(null);
+  const [ selectedGame , setSelectedGame] = useState<t_game>();
   useEffect(() => {
     if (courtId && date) {
       getTimeSlotForCourt(
@@ -158,7 +162,79 @@ const DetailView = () => {
     setOperatingHours(timeStr);
   }, [court]);
 
-  const handleBooking = async () => {
+  const fetchGames = () => {
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === 200) {
+        console.log(response.data);
+        setGames(response.data);
+      } else {
+        enqueueSnackbar({
+          message: "Failed to fetch the data!",
+          autoHideDuration: 3000,
+          variant: "error",
+        });
+      }
+    };
+    const onReject = (error: unknown) => {
+      console.error("Error fetching games:", error);
+    };
+
+    getGamesByDateAndSports(
+      onAccept,
+      onReject,
+      dateOfGame?.toISOString(),
+      descriptor.sportId,
+    );
+  };
+  useEffect(() => {
+    if(dateOfGame && descriptor.sportId) {
+      fetchGames();
+    }
+  }, [dateOfGame ]
+  )
+  const handleBookingForYoga = async () => {
+    if(!selectedGame ){
+      console.error("Please select a game before booking.");
+      return;
+    }
+    const bookingData = {
+      gameId: selectedGame.gameId,
+      playerIds: ["USER_JWXJ19"]
+    }
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === HttpStatusCode.Ok) {
+        console.log("Booking successful:", response.data);
+        enqueueSnackbar({
+          message: "Booking successful!",
+          autoHideDuration: SNACK_AUTO_HIDE,
+          variant: "success",
+        });
+      } else {
+        console.error("Booking failed:", response.data);
+        enqueueSnackbar({
+          message: "Booking failed!",
+          autoHideDuration: SNACK_AUTO_HIDE,
+          variant: "error",
+        });
+      }
+    };
+    const onReject = (error: any) => {
+      console.error("Error booking game:", error);
+      enqueueSnackbar({
+        message: "Error while booking game!",
+        autoHideDuration: SNACK_AUTO_HIDE,
+        variant: "error",
+      });
+    };
+    await joinGame(
+      onAccept,
+      onReject,
+      bookingData.gameId,
+      bookingData.playerIds
+    );
+  }
+
+  const handleBookingForPhysio = async () => {
     if (!startDateTime || !endDateTime || !courtId) {
       console.error("Missing required booking information");
       return;
@@ -244,9 +320,14 @@ const DetailView = () => {
             selectedSlots={selectedSlots}
             finalStartTime={finalStartTime}
             finalEndTime={finalEndTime}
+            dateOfGame={dateOfGame}
+            setDateOfGame={setDateOfGame}
+            games={games}
+            setSelectedGame={setSelectedGame}
+            selectedGame={selectedGame}
           ></Content>
           <div className="--btn">
-            <Button onClick={handleBooking} text="Book Now" />
+            <Button onClick={ descriptor.name === "Physio" ?handleBookingForPhysio : handleBookingForYoga } text="Book Now" />
           </div>
         </div>
       </div>

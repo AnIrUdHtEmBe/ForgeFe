@@ -23,3 +23,31 @@ export const getGamesByDateAndSports = async (
     onReject(e);
   }
 }
+
+export const joinGame = async (
+  onAccept: (response: AxiosResponse) => void,
+  onReject: (error: unknown) => void,
+  gameId: string,
+  playerIds: string[]
+) => {
+  try {
+    const token = await CheckJWT();
+    const res = await axios.patch(
+      `${PATH_V2}/game/add-players/${gameId}`,
+      {}, // No body needed
+      {
+        headers: { Authorization: 'Bearer ' + token },
+        params: { playerIds }, // Send as query params
+        paramsSerializer: (params) => {
+          return new URLSearchParams(
+            params.playerIds.map(id => ['playerIds', id])
+          ).toString();
+        },
+      }
+    );
+    onAccept(res);
+  } catch (e) {
+    onReject(e);
+  }
+}
+
