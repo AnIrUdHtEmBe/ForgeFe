@@ -19,12 +19,16 @@ const BookSport = () => {
   const [selectedSport, setSelectedSport] = useState<t_sport>();
   const [games, setGames] = useState<t_game[]>();
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    date: string;
+    sport?: string; // ✅ allow undefined initially
+    court: string;
+  }>({
     date: activeDate,
-    sport: "Sports",
+    sport: undefined,
     court: "ALL",
   });
-
+  
   console.log(filters);
 
   const navigate = useNavigate();
@@ -55,6 +59,7 @@ const BookSport = () => {
   };
 
   useEffect(() => {
+    if(!filters.sport) return;
     fetchGames();
   }, [filters]);
 
