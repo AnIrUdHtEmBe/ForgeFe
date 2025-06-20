@@ -1,5 +1,5 @@
-export const PATH = 'http://3.111.32.88:8080';
-export const PATH_V2 = 'http://3.111.32.88:6060'
+export const PATH = 'https://forge-play-backend.forgehub.in';
+export const PATH_V2 = 'https://play-os-backend.forgehub.in'
 
 export const GET_USER_PLAN = (id: string) =>
 	`/humans/${id}/plan-instances-within-date`;
