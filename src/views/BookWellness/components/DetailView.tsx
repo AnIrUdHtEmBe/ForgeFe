@@ -332,7 +332,6 @@ const DetailView = () => {
         </div>
         <div className="--line" />
         <div className="--page-title">
-          {/* <span>{obj.title}</span> */}
           <span>{selectedType === "group" ? "Group Session" : "1-on-1 Session"}</span>
         </div>
         <div className="detail-view-table-content-container">

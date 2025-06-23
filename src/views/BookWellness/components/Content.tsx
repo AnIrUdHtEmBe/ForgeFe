@@ -2,10 +2,11 @@ import DropdownMenu, {
   DropdownItem,
   DropdownItemCheckbox,
   DropdownItemCheckboxGroup,
+  DropdownItemGroup,
   DropdownItemRadio,
   DropdownItemRadioGroup,
 } from "@atlaskit/dropdown-menu";
-import { use, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import {getCourtById} from "../../../api/courts";
 import type { t_court } from "../../../types/court";
 import type { t_slot } from "../../../types/slot";
@@ -39,7 +40,6 @@ export default function Content({
   operatingHours: string;
   selectedSlotIds: string[];
   setSelectedSlotIds: React.Dispatch<React.SetStateAction<string[]>>;
-
   setSelectedDoctor: (doctor: doctor) => void;
   selectedDoctor: doctor;
   setDate: (date: Date) => void;
@@ -51,7 +51,7 @@ export default function Content({
   setDateOfGame: (date: Date) => void;
   setSelectedGame: (game: t_game | null) => void;
   selectedGame: t_game | null | undefined;
-  selectedType: any;
+  selectedType: string;
 }) {
   const [courtName , setCourtName] = useState<string>("");
   const location = useLocation();
@@ -216,23 +216,23 @@ export default function Content({
               trigger={selectedDoctor?.name || "Select Doctor"}
               shouldRenderToParent
             >
-              <DropdownItemRadioGroup id="doctors">
+              <DropdownItemGroup id="doctors">
                 {doctors.map((doctor: doctor) => (
-                  <DropdownItemRadio
+                  <DropdownItem
                     key={doctor.userId}
-                    id={doctor.userId || ""}
                     isSelected={selectedDoctor?.userId === doctor.userId}
                     onClick={() => setSelectedDoctor(doctor)}
                   >
                     {doctor.name}
-                  </DropdownItemRadio>
+                  </DropdownItem>
                 ))}
-              </DropdownItemRadioGroup>
+              </DropdownItemGroup>
             </DropdownMenu>
           </div>
           <div className="--row">
             <span className="--title">Select A Slot</span>
             <div className="--time-slot-drop-down">
+              
               <DropdownMenu
                 trigger={
                   selectedSlots.length > 0
@@ -255,6 +255,7 @@ export default function Content({
                 }
                 shouldFitContainer
                 shouldRenderToParent
+                shouldFlip  
               >
                 <DropdownItemCheckboxGroup title="Slots" id="slots">
                   {slots.map(({ slotId, startTime, endTime, status }) =>
@@ -330,6 +331,8 @@ export default function Content({
             </span>
           </div>
           
+           
+
           
         </>
       )}

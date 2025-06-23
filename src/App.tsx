@@ -51,9 +51,6 @@ function App() {
 						path={E_Routes.detailedViewWellness}
 						element={<Outlay children={<DetailView />} />}
 					/>
-					{/* <Route
-						path={E_Routes.bookFitnessGame}
-						element={<Outlay children={<BookFitnessGame />} />}/> */}
 				</Routes>
 			</BrowserRouter>
 		</SnackbarProvider>

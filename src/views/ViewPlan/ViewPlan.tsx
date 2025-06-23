@@ -119,46 +119,6 @@ const ViewPlan = () => {
     setActiveIndex(activeIndex - 1);
   };
 
-  // routing to the booking page based on the session category
-  // const slotBookingHandler = (sessionCategory: string) => {
-  //   if (sessionCategory === "FITNESS") {
-  //     if (type === "group") {
-  //       clickHandler("group" , sessionCategory);
-  //       return;
-  //     }
-  //     else if (type === "personal") {
-  //       clickHandler("personal", sessionCategory);
-  //       return;
-  //     }
-
-  //     else window.location.href = "/bookFitness";
-  //   }
-  //  else if (sessionCategory === "SPORTS") {
-  //     {
-  //       sessionForCurrentDate?.status === "SCHEDULED"
-  //         ? navigate(E_Routes.viewCards, {
-  //             state: {
-  //               selectedDate: selectedDateISO,
-  //               category: "SPORTS",
-  //             },
-  //           })
-  //         : navigate(E_Routes.bookSport);
-  //     }
-  //   }
-  //   else if (sessionCategory === "WELLNESS") {
-  //     if (type === "group") {
-  //       clickHandler("group" , sessionCategory);
-  //       return;
-  //     }
-  //     else if (type === "personal") {
-  //       clickHandler("personal" , sessionCategory);
-  //       return;
-  //     }
-
-  //     else window.location.href = "/bookWellness";
-  //   }
-  // };
-
   console.log(new Date(getDate.setDate(getDate.getDate())));
   useEffect(() => {
     const weekDates = getArrayOfDatesFromSundayToSaturday(
@@ -178,7 +138,15 @@ const ViewPlan = () => {
     ).toISOString();
     if (sessionCategory === "FITNESS") {
       if (type === "group") {
-        clickHandler("group", sessionCategory);
+        // clickHandler("group", sessionCategory);
+        if(sessionForCurrentDate?.status === "SCHEDULED"){
+           navigate(E_Routes.viewCards, {
+              state: {
+                selectedDate: selectedDateISO,
+                category: "FITNESS",
+              },
+            })
+          }
         return;
       } else if (type === "personal") {
         clickHandler("personal", sessionCategory);
@@ -265,12 +233,12 @@ const ViewPlan = () => {
           </div>
           <div
             className={`--book-slot ${
-              sessionForCurrentDate && activeIndex >= dayOfWeek
+              sessionForCurrentDate 
                 ? ""
                 : "--inActive"
             }`}
             onClick={() => {
-              if (!(sessionForCurrentDate && activeIndex >= dayOfWeek)) return;
+              if (!(sessionForCurrentDate )) return;
 
               if (
                 sessionForCurrentDate?.category === "FITNESS" ||
@@ -334,41 +302,39 @@ const ViewPlan = () => {
         )}
       </div>
       {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <div className="modal-title">Choose Type</div>
-            <button
-              className={`modal-button group ${
-                type === "group" ? "active" : ""
-              }`}
-              onClick={() => {
-                setType("group");
-              }}
-            >
-              Group
-            </button>
-            <button
-              className={`modal-button personal ${
-                type === "personal" ? "active" : ""
-              }`}
-              onClick={() => {
-                setType("personal");
-              }}
-            >
-              Personal
-            </button>
-            <button
-              className="modal-cancel"
-              disabled={type === "" ? true : false}
-              onClick={() =>
-                slotBookingHandler(sessionForCurrentDate?.category)
-              }
-            >
-              Confirm
-            </button>
-          </div>
-        </div>
-      )}
+  <div className="modal-overlay">
+    <div className="modal-box">
+      <button
+        className="modal-close"
+        aria-label="Close modal"
+        onClick={() => setShowModal(false)}
+      >
+        &times;
+      </button>
+      <div className="modal-title">Choose Type</div>
+      <button
+        className={`modal-button group ${type === "group" ? "active" : ""}`}
+        onClick={() => setType("group")}
+      >
+        Group Session
+      </button>
+      <button
+        className={`modal-button group ${type === "personal" ? "active" : ""}`}
+        onClick={() => setType("personal")}
+      >
+        1-on-1 Session
+      </button>
+      <button
+        className="modal-confirm"
+        disabled={type === ""}
+        onClick={() => slotBookingHandler(sessionForCurrentDate?.category)}
+      >
+        Confirm
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
