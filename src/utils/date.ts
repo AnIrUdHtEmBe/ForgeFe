@@ -10,7 +10,7 @@ export const getWeekRange = (date: Date) => {
   startOfWeek.setDate(diffToStart);
   startOfWeek.setHours(0, 0, 0, 0);
 
-  // End of the week (Saturday)
+  // // End of the week (Saturday)
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
   endOfWeek.setHours(23, 59, 59, 999);
@@ -18,8 +18,8 @@ export const getWeekRange = (date: Date) => {
   return { startOfWeek, endOfWeek , dayOfWeek};
 };
 
-export const getArrayOfDatesFromSundayToSaturday = () => {
-	const { startOfWeek, endOfWeek } = getWeekRange(new Date());
+export const getArrayOfDatesFromSundayToSaturday = (date :  Date) => {
+	const { startOfWeek, endOfWeek } = getWeekRange(date);
 	const datesArray = [];
 	while (startOfWeek <= endOfWeek) {
 		const yyyy = startOfWeek.getFullYear();
@@ -38,6 +38,7 @@ export const TodaysDate = (dateStr: string) => {
 
   return day;
 }
+
 
 export const  getFormattedDateTime = (start: Date, end: Date) =>  {
   const ordinal = (n: number) => {

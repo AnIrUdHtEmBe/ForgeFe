@@ -17,12 +17,16 @@ export const getGamesByDateAndSports = async (
       PATH_V2 + GET_ALL_GAMES(sportId, date, courtId || "ALL"),
       { headers: { Authorization: 'Bearer ' + token } }
     )
+    // console.log("API Response:", res.data , sportId);
     onAccept(res);
   }
   catch (e) {
     onReject(e);
   }
 }
+
+
+
 
 export const joinGame = async (
   onAccept: (response: AxiosResponse) => void,

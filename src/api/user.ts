@@ -15,6 +15,7 @@ export const login = async (
 	}
 };
 
+
 export const getAllUsers  = async (
 	onAccept: (response: AxiosResponse) => void,
 	onReject: (error: unknown) => void,

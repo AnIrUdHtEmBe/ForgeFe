@@ -18,6 +18,8 @@ import { HttpStatusCode, type AxiosResponse } from "axios";
 import { E_PageState } from "../../types/state";
 import { FullScreenLoader } from "../../components/Loader/CustomLoader";
 import { enqueueSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
+import E_Routes from "../../types/routes";
 
 const ViewPlan = () => {
   //current week plan
@@ -25,9 +27,18 @@ const ViewPlan = () => {
   const [pageState, setPageState] = useState(E_PageState.Unknown);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [weekStartToEndDates, setWeekStartToEndDates] = useState<string[]>([]);
+  const [weekNumber, setWeekNumber] = useState<number>(0);
   const { startOfWeek, endOfWeek, dayOfWeek } = getWeekRange(new Date());
+  const [getDate, setgetDate] = useState<Date>(startOfWeek);
+  const navigate = useNavigate();
 
   console.log(activeIndex);
+  console.log("getDate", getDate);
+  console.log("start of week", startOfWeek);
+  console.log("end of week", endOfWeek);
+  console.log("day of week", dayOfWeek);
+  console.log("week number", weekNumber);
+  console.log(weekStartToEndDates);
 
   //fetch the plan for user with regard to current week and assign that plan with plan state
   const getUserPlan = () => {
@@ -37,7 +48,11 @@ const ViewPlan = () => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data);
         setWeekPlan(response.data[5]);
-        setActiveIndex(dayOfWeek);
+        if (weekNumber != 0) {
+          setActiveIndex(0);
+        } else {
+          setActiveIndex(dayOfWeek);
+        }
         setPageState(E_PageState.Accepted);
       } else {
         setPageState(E_PageState.Rejected);
@@ -49,7 +64,7 @@ const ViewPlan = () => {
       }
     };
 
-    const onReject = (e :unknown) => {
+    const onReject = (e: unknown) => {
       console.log(e);
       enqueueSnackbar({
         message: "Failed to fetch the data!",
@@ -63,45 +78,74 @@ const ViewPlan = () => {
       onAccept,
       onReject,
       "USER_CIZW87",
-      formatDateForB(startOfWeek),
-      formatDateForB(endOfWeek)
+      formatDateForB(getDate),
+      formatDateForB(new Date(getDate.getTime() + 7 * 24 * 60 * 60 * 1000))
     );
   };
 
   useEffect(() => {
     getUserPlan();
-  }, []);
+  }, [weekNumber]);
 
   const arrowRightHandler = () => {
-    // if (!weekPlan || activeIndex >= weekPlan.sessionInstances.length - 1) return;
-    if (activeIndex >= 6) return;
+    if (activeIndex >= 6) {
+      setActiveIndex(0);
+      setWeekNumber(weekNumber + 1);
+      setgetDate(new Date(getDate.setDate(getDate.getDate() + 7)));
+      return;
+    }
     setActiveIndex(activeIndex + 1);
   };
   const arrowLeftHandler = () => {
-    if (activeIndex <= 0) return;
+    if (activeIndex <= 0) {
+      if (weekNumber > 0) {
+        setActiveIndex(6);
+        setWeekNumber(weekNumber - 1);
+        setgetDate(new Date(getDate.setDate(getDate.getDate() - 7)));
+      } else {
+        return;
+      }
+      return;
+    }
     setActiveIndex(activeIndex - 1);
   };
 
   // routing to the booking page based on the session category
-  const slotBookingHandler = (sessionCategory: string) => {
-    if (sessionCategory === "FITNESS") {
-      window.location.href = "/bookFitness";
-    } else if (sessionCategory === "SPORTS") {
-      window.location.href = "/bookSport";
-    } else if (sessionCategory === "WELLNESS") {
-      window.location.href = "/bookWellness";
-    }
-  };
 
+  console.log(new Date(getDate.setDate(getDate.getDate())))
   useEffect(() => {
-    const weekDates = getArrayOfDatesFromSundayToSaturday();
+   
+    const weekDates = getArrayOfDatesFromSundayToSaturday(new Date(getDate.setDate(getDate.getDate())));
     setWeekStartToEndDates(weekDates);
-  }, []);
+  }, [weekNumber]);
 
   const currentDate = weekStartToEndDates[activeIndex];
   const sessionForCurrentDate = weekPlan?.sessionInstances.find(
     (session) => formatDate(session.scheduledDate) === formatDate(currentDate)
   );
+
+  const slotBookingHandler = (sessionCategory: string) => {
+    const selectedDateISO = new Date(
+      weekStartToEndDates[activeIndex]
+    ).toISOString();
+
+    if (sessionCategory === "FITNESS") {
+      window.location.href = "/bookFitness";
+    } else if (sessionCategory === "SPORTS") {
+      {
+        sessionForCurrentDate?.status === "SCHEDULED"
+          ? navigate(E_Routes.viewCards, {
+              state: {
+                selectedDate: selectedDateISO,
+                category: "SPORTS",
+              },
+            })
+          : navigate(E_Routes.bookSport);
+      }
+    } else if (sessionCategory === "WELLNESS") {
+      window.location.href = "/bookWellness";
+    }
+  };
   console.log("sessionForCurrentDate", sessionForCurrentDate);
   if (pageState === E_PageState.Loading) {
     return <FullScreenLoader />;
@@ -123,32 +167,18 @@ const ViewPlan = () => {
       <div className="view-plan-today-information-container">
         <div className="view-plan-top-information-top-container">
           <div className="--date">
-            {/* changes to be done */}
-            {/* {formatDate(
-                weekPlan?.sessionInstances[activeIndex].scheduledDate
-              )} */}
             {formatDate(weekStartToEndDates[activeIndex])}
           </div>
           <div className="--arrows">
             <div className="--arrow-left">
               <FaChevronLeft
                 onClick={arrowLeftHandler}
-                style={
-                  activeIndex <= 0
-                    ? { color: "rgba(0, 0, 0, 0.4)" }
-                    : { color: "black" }
-                }
                 size={DEFAULT_ICON_SIZE - 10}
               />
             </div>
             <div className="--arrow-right">
               <FaChevronRight
                 onClick={arrowRightHandler}
-                style={
-                  activeIndex >= 6
-                    ? { color: "rgba(0, 0, 0, 0.4)" }
-                    : { color: "black" }
-                }
                 size={DEFAULT_ICON_SIZE - 10}
               />
             </div>
@@ -183,7 +213,11 @@ const ViewPlan = () => {
               slotBookingHandler(sessionForCurrentDate?.category);
             }}
           >
-            <span>Book Slot</span>
+            <span>
+              {sessionForCurrentDate?.status === "SCHEDULED"
+                ? "Book Slot"
+                : "View Booking"}
+            </span>
           </div>
         </div>
         {sessionForCurrentDate ? (

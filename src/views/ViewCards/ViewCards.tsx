@@ -4,19 +4,85 @@ import "./styles.css";
 import { IoIosArrowBack } from "react-icons/io";
 import { DEFAULT_ICON_SIZE } from "../../default";
 import type { t_game } from "../../types/games";
+import type { AxiosResponse } from "axios";
+import { useEffect, useState } from "react";
+import { enqueueSnackbar } from "notistack";
+import { getSports } from "../../api/sports";
+import { getGamesByDateAndSports } from "../../api/games";
+import type { t_sport } from "../../types/sports";
 
 const ViewCards = () => {
   const location = useLocation();
-  const { selectedDate, cardInfo } = location.state;
-  console.log(selectedDate, cardInfo);
-  if (!selectedDate || !cardInfo) {
-    return <span>Invalid data</span>;
-  }
+
+  const [sports, setSports] = useState<t_sport[]>([]);
+  const [games, setGames] = useState<t_game[]>([]);
+  console.log(games);
+
+  const { selectedDate, category } = location.state;
 
   const backClickHandler = () => {
     window.history.back();
   };
 
+  const getSportsByCategory = () => {
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === 200) {
+        console.log(response.data);
+        setSports(response.data);
+      } else {
+        enqueueSnackbar({
+          message: "Failed to fetch the data!",
+          autoHideDuration: 3000,
+          variant: "error",
+        });
+      }
+    };
+
+    const onReject = (error: unknown) => {
+      console.error("Error fetching games:", error);
+      enqueueSnackbar({
+        message: "Failed to fetch the data!",
+        autoHideDuration: 3000,
+        variant: "error",
+      });
+    };
+    getSports(onAccept, onReject, category);
+  };
+
+  useEffect(() => {
+    getSportsByCategory();
+  }, []);
+
+  useEffect(() => {
+    if (sports.length > 0) {
+      sports.forEach((sport: t_sport) => {
+        // console.log("Sport ID:", sport.sportId);
+        fetchGames(sport.sportId);
+      });
+    }
+  }, [sports]);
+
+  const fetchGames = (sportId: string) => {
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === 200) {
+        // console.log(response.data);
+        setGames((prev) => [...prev, ...response.data]);
+      } else {
+        enqueueSnackbar({
+          message: "Failed to fetch the data!",
+          autoHideDuration: 3000,
+          variant: "error",
+        });
+      }
+    };
+    const onReject = (error: unknown) => {
+      console.error("Error fetching games:", error);
+    };
+
+    getGamesByDateAndSports(onAccept, onReject, selectedDate, sportId);
+  };
+
+  const date = new Date(selectedDate);
 
   return (
     <div className="view-cards-container">
@@ -25,21 +91,21 @@ const ViewCards = () => {
       </div>
       <div className="view-cards-top-heading">
         <span className="--date">
-          {selectedDate.toLocaleDateString("en-US", {
-            month: "long",
+          {date.toLocaleDateString("en-GB", {
             day: "numeric",
+            month: "long",
             year: "numeric",
           })}
         </span>
         <span className="--day">
-          {selectedDate.toLocaleDateString("en-US", {
+          {date.toLocaleDateString("en-US", {
             weekday: "long",
           })}
         </span>
       </div>
 
       <div className="view-card-content-container">
-        {cardInfo.map((games: t_game, i: number) => {
+        {games.map((games: t_game, i: number) => {
           return (
             <PlayerInfoCard
               startTime={new Date(games.bookingDetails.st_unix * 1000)}
