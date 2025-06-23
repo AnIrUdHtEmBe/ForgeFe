@@ -13,14 +13,14 @@ import DropdownMenu, {
 import Button from "../../components/Button/Button";
 import BookSlot from "./components/BookSlot/BookSlot";
 import { getCourtBySportId, getTimeSlotForCourt } from "../../api/courts";
-import { HttpStatusCode, type AxiosResponse } from "axios";
+import axios, { HttpStatusCode, type AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 import { SNACK_AUTO_HIDE } from "../../default";
 import type { t_court } from "../../types/court";
 import type { t_slot } from "../../types/slot";
 import type { t_sport } from "../../types/sports";
 import { useLocation } from "react-router-dom";
-
+import { getUserById, getUserByIdAsync } from "../../api/user";
 const BookFitness = () => {
   const [courts, setCourts] = useState<t_court[]>([]);
   const [selectedCourtId, setSelectedCourtId] = useState("");
@@ -34,15 +34,37 @@ const BookFitness = () => {
   const location = useLocation();
   const { descriptor } = location.state;
   console.log(descriptor);
-  
+
   useEffect(() => {
-    if(activeSport){
+    if (!activeSport) return;
+
     getCourtBySportId(
-      (res: AxiosResponse) => {
+      async (res: AxiosResponse) => {
         if (res.status === HttpStatusCode.Ok) {
-          setCourts(
-            res.data.map(({ name, courtId }: t_court) => ({ name, courtId }))
+          const courtsWithNames = await Promise.all(
+            res.data.map(async ({ name, courtId }: t_court) => {
+              const match = name.match(/(USER_[A-Z0-9]+)/i);
+              const userId = match ? match[1] : null;
+
+              if (userId) {
+                try {
+                  const userRes = await getUserByIdAsync(userId);
+                  const humanName = userRes?.name || "Unknown";
+                  return {
+                    courtId,
+                    name: `${humanName}'s court`,
+                  };
+                } catch (error) {
+                  console.error("Failed to fetch user name:", error);
+                  return { courtId, name: "Unknown's court" };
+                }
+              }
+
+              return { courtId, name };
+            })
           );
+
+          setCourts(courtsWithNames);
         }
       },
       () =>
@@ -53,7 +75,6 @@ const BookFitness = () => {
         }),
       activeSport?.sportId || ""
     );
-  }
   }, [activeSport]);
 
   useEffect(() => {
@@ -69,7 +90,7 @@ const BookFitness = () => {
                 slotId,
               }))
               .sort((a, b) => a.startTime - b.startTime);
-            setSlots(sorted); 
+            setSlots(sorted);
           }
         },
         () =>
@@ -150,7 +171,9 @@ const BookFitness = () => {
 
   const startDateTime = combineDateWithUnixTime(activeDate, finalStartTime);
   const endDateTime = combineDateWithUnixTime(activeDate, finalEndTime);
-
+  useEffect(() => {
+    console.log(courts);
+  }, [courts]);
   return (
     <div className="book-fitness-container">
       {showBook && (
@@ -208,7 +231,7 @@ const BookFitness = () => {
                   key={courtId}
                   id={courtId}
                   isSelected={selectedCourtId === courtId}
-                  onClick={() => {  
+                  onClick={() => {
                     setSelectedCourtId(courtId);
                     setCourtName(name);
                   }}
@@ -271,17 +294,23 @@ const BookFitness = () => {
                         }}
                       />
                       <span>
-                        {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}{" "}
+                        {new Date(Number(startTime) * 1000).toLocaleTimeString(
+                          [],
+                          {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )}{" "}
                         -{" "}
-                        {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}
+                        {new Date(Number(endTime) * 1000).toLocaleTimeString(
+                          [],
+                          {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )}
                       </span>
                     </div>
                   </DropdownItem>

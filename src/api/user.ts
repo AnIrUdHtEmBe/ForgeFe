@@ -56,3 +56,14 @@ export const getUserById = async (
 		onReject(e);
 	}
 };
+
+
+export const getUserByIdAsync = (userId: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    getUserById(
+      (res: AxiosResponse) => resolve(res.data),
+      (error: unknown) => reject(error),
+      userId
+    );
+  });
+};
