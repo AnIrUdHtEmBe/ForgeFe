@@ -10,7 +10,7 @@ import BookFitness from './views/BookFitness/BookFitness';
 import BookWellness from './views/BookWellness/BookWellness';
 import DetailView from './views/BookWellness/components/DetailView';
 import ViewPlan from './views/ViewPlan/ViewPlan';
-// import BookFitnessGame from './views/BookFitness/fitness_game/BookFitnessGame';
+import GameDetails from './components/GameDetails/GameDetails';
 
 function App() {
 	return (
@@ -50,6 +50,10 @@ function App() {
 					<Route
 						path={E_Routes.detailedViewWellness}
 						element={<Outlay children={<DetailView />} />}
+					/>
+					<Route
+						path={E_Routes.gameDetails}
+						element={<Outlay children={<GameDetails></GameDetails>} />}
 					/>
 				</Routes>
 			</BrowserRouter>

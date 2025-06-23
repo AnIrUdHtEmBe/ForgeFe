@@ -48,6 +48,13 @@ const ViewPlan = () => {
   console.log("day of week", dayOfWeek);
   console.log("week number", weekNumber);
   console.log(weekStartToEndDates);
+  // console.log(activeIndex);
+  // console.log("getDate", getDate);
+  // console.log("start of week", startOfWeek);
+  // console.log("end of week", endOfWeek);
+  // console.log("day of week", dayOfWeek);
+  // console.log("week number", weekNumber);
+  // console.log(weekStartToEndDates);
 
   //fetch the plan for user with regard to current week and assign that plan with plan state
   const getUserPlan = () => {
@@ -86,7 +93,7 @@ const ViewPlan = () => {
     getPlans(
       onAccept,
       onReject,
-      "USER_PDSN16",
+      "USER_HQCI59",
       formatDateForB(getDate),
       formatDateForB(new Date(getDate.getTime() + 7 * 24 * 60 * 60 * 1000))
     );
@@ -136,6 +143,9 @@ const ViewPlan = () => {
     const selectedDateISO = new Date(
       weekStartToEndDates[activeIndex]
     ).toISOString();
+
+    console.log(sessionCategory)
+
     if (sessionCategory === "FITNESS") {
       if (type === "group") {
         // clickHandler("group", sessionCategory);
@@ -161,17 +171,22 @@ const ViewPlan = () => {
         return;
       } else window.location.href = "/bookWellness";
     } else if (sessionCategory === "SPORTS") {
-      
-        if(sessionForCurrentDate?.status === "SCHEDULED"){
-           navigate(E_Routes.viewCards, {
+        sessionForCurrentDate?.status === "SCHEDULED"
+          ? navigate(E_Routes.viewCards, {
               state: {
                 selectedDate: selectedDateISO,
                 category: "SPORTS",
+                session : sessionForCurrentDate,
               },
             })
-          }
-          else navigate(E_Routes.bookSport);
+          : navigate(E_Routes.gameDetails, {
+            state : {
+              gameId: sessionForCurrentDate?.gameId,
+            }
+          });
       
+    } else if (sessionCategory === "WELLNESS") {
+      window.location.href = "/bookWellness";
     }
   };
 

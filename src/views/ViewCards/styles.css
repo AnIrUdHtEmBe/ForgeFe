@@ -37,3 +37,14 @@
   flex-direction: column;
   gap: 20px;
 }
+
+.no-games-found {
+	display: flex;
+	font-family: 'roboto', sans-serif;
+	font-size: 18px;
+	font-weight: 600;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 500px;
+}

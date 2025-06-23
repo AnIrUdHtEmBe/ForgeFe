@@ -18,8 +18,9 @@ const ViewCards = () => {
   const [games, setGames] = useState<t_game[]>([]);
   console.log(games);
 
-  const { selectedDate, category } = location.state;
+  const { selectedDate, category , session} = location.state;
 
+  console.log(session)
   const backClickHandler = () => {
     window.history.back();
   };
@@ -105,6 +106,11 @@ const ViewCards = () => {
       </div>
 
       <div className="view-card-content-container">
+        {games.length === 0 && (
+          <div className="no-games-found">
+            <span>No games found for the selected date.</span>
+          </div>
+        )}
         {games.map((games: t_game, i: number) => {
           return (
             <PlayerInfoCard
@@ -114,6 +120,7 @@ const ViewCards = () => {
               game={games}
               showBtn
               key={i}
+              session={session}
             />
           );
         })}

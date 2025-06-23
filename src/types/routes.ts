@@ -6,6 +6,7 @@ enum E_Routes {
 	bookFitness = '/bookFitness', 
 	viewPlan = 'viewPlan',
 	bookWellness = '/bookWellness', 
-	detailedViewWellness = '/detailedViewWellness'
+	detailedViewWellness = '/detailedViewWellness',
+	gameDetails = '/gameDetails',
 }
 export default E_Routes;

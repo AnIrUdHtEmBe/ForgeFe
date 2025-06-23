@@ -4,13 +4,14 @@ import CustomChip from "../CustomChip/CustomChip";
 import Button from "../Button/Button";
 import { getFormattedDateTime } from "../../utils/date";
 import type { t_game } from "../../types/games";
-import { addPlayersToGame } from "../../api/booking";
+import { addPlayersToGame, patchSession } from "../../api/booking";
 import { HttpStatusCode, type AxiosResponse } from "axios";
 import { useState } from "react";
 import { enqueueSnackbar } from "notistack";
 import { PopupModal } from "../PopupModal/PopupModal";
 import { getGamesByDateAndSports } from "../../api/games";
 import { useNavigate } from "react-router-dom";
+import type { t_session } from "../../types/session";
 
 // inside component:
 interface PlayerInfoCardProps {
@@ -22,6 +23,7 @@ interface PlayerInfoCardProps {
   startTime?: Date;
   endTime?: Date;
   sport?: string;
+  session? : t_session;
 }
 
 // inside component:
@@ -31,6 +33,8 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
   const start = props.startTime;
   const end = props.endTime;
   const game = props.game;
+
+  // console.log("PlayerInfoCard props", props);
 
   const [modal, setModal] = useState<boolean>(false);
 
@@ -74,7 +78,7 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
         variant: "error",
       });
     };
-    console.log("Adding player to game with ID:", gameId);
+    // console.log("Adding player to game with ID:", gameId);
 
     addPlayersToGame(
       onAccept,
@@ -83,6 +87,14 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
       "USER_FATJ79",
       "scheduledPlayers"
     ); // Replace "userId" with actual user ID
+
+    patchSession(
+      onAccept,
+      onReject,
+      props.session?.sessionInstanceId || "",
+      gameId 
+    )
+    
   };
 
   const handleCloseModal = () => {

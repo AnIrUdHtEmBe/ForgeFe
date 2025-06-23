@@ -55,3 +55,20 @@ export const joinGame = async (
   }
 }
 
+
+export const getGamesById = async (
+  onAccept: (response: AxiosResponse) => void,
+  onReject: (error: unknown) => void,
+  gameId: string
+) => {
+  try {
+    const token = await CheckJWT();
+    const res = await axios.get(
+      `${PATH_V2}/game/${gameId}`,
+      { headers: { Authorization: 'Bearer ' + token } }
+    );
+    onAccept(res);
+  } catch (e) {
+    onReject(e);
+  }
+}
