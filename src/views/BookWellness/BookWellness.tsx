@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button/Button';
 import { DEFAULT_ICON_SIZE, wellnessWindows } from '../../default';
 import './styles.css';
@@ -12,7 +12,10 @@ import type { t_sport } from '../../types/sports';
 import type { AxiosResponse } from 'axios';
 const BookWellness = () => {
 	const [sports, setSports] = useState<t_sport[]>([]);  
-	
+	const location = useLocation();
+  const { descriptor } = location.state;
+  console.log(descriptor);
+  
 	  const getAllSports = () => {
 		const onAccept = (response: AxiosResponse) => {
 		  if (response.status === HttpStatusCode.Ok) {
@@ -44,7 +47,9 @@ const BookWellness = () => {
 	const navigate = useNavigate();
 
 	const clickHandler = (value: t_sport) => {
-		navigate(E_Routes.detailedViewWellness, { state: { descriptor: value } });
+		navigate(E_Routes.detailedViewWellness, { state: { descriptor: value , 
+			selectedType: descriptor
+		} });
 	};
 
 	const backHandler = () => {

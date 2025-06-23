@@ -23,6 +23,7 @@ import E_Routes from "../../types/routes";
 
 const ViewPlan = () => {
   //current week plan
+  const [showModal, setShowModal] = useState(false);
   const [weekPlan, setWeekPlan] = useState<t_plan | null>(null);
   const [pageState, setPageState] = useState(E_PageState.Unknown);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
@@ -30,8 +31,16 @@ const ViewPlan = () => {
   const [weekNumber, setWeekNumber] = useState<number>(0);
   const { startOfWeek, endOfWeek, dayOfWeek } = getWeekRange(new Date());
   const [getDate, setgetDate] = useState<Date>(startOfWeek);
+  const [type, setType] = useState<string>("");
   const navigate = useNavigate();
 
+  const clickHandler = (value: string, category: string) => {
+    if (category === "FITNESS") {
+      if (value === "personal") navigate(E_Routes.bookFitness, { state: { descriptor: value } });
+      else navigate(E_Routes.viewCards, { state: { descriptor: value } });
+    } 
+    else navigate(E_Routes.bookWellness, { state: { descriptor: value } });
+  };
   console.log(activeIndex);
   console.log("getDate", getDate);
   console.log("start of week", startOfWeek);
@@ -47,7 +56,7 @@ const ViewPlan = () => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data);
-        setWeekPlan(response.data[5]);
+      setWeekPlan(response.data[0]);
         if (weekNumber != 0) {
           setActiveIndex(0);
         } else {
@@ -77,7 +86,7 @@ const ViewPlan = () => {
     getPlans(
       onAccept,
       onReject,
-      "USER_CIZW87",
+      "USER_PDSN16",
       formatDateForB(getDate),
       formatDateForB(new Date(getDate.getTime() + 7 * 24 * 60 * 60 * 1000))
     );
@@ -111,11 +120,50 @@ const ViewPlan = () => {
   };
 
   // routing to the booking page based on the session category
+  // const slotBookingHandler = (sessionCategory: string) => {
+  //   if (sessionCategory === "FITNESS") {
+  //     if (type === "group") {
+  //       clickHandler("group" , sessionCategory);
+  //       return;
+  //     }
+  //     else if (type === "personal") {
+  //       clickHandler("personal", sessionCategory);
+  //       return;
+  //     }
 
-  console.log(new Date(getDate.setDate(getDate.getDate())))
+  //     else window.location.href = "/bookFitness";
+  //   }
+  //  else if (sessionCategory === "SPORTS") {
+  //     {
+  //       sessionForCurrentDate?.status === "SCHEDULED"
+  //         ? navigate(E_Routes.viewCards, {
+  //             state: {
+  //               selectedDate: selectedDateISO,
+  //               category: "SPORTS",
+  //             },
+  //           })
+  //         : navigate(E_Routes.bookSport);
+  //     }
+  //   }
+  //   else if (sessionCategory === "WELLNESS") {
+  //     if (type === "group") {
+  //       clickHandler("group" , sessionCategory);
+  //       return;
+  //     }
+  //     else if (type === "personal") {
+  //       clickHandler("personal" , sessionCategory);
+  //       return;
+  //     }
+
+  //     else window.location.href = "/bookWellness";
+  //   }
+  // };
+
+  console.log(new Date(getDate.setDate(getDate.getDate())));
   useEffect(() => {
-   
-    const weekDates = getArrayOfDatesFromSundayToSaturday(new Date(getDate.setDate(getDate.getDate())));
+    const weekDates = getArrayOfDatesFromSundayToSaturday(
+      new Date(getDate.setDate(getDate.getDate()))
+    );
     setWeekStartToEndDates(weekDates);
   }, [weekNumber]);
 
@@ -128,24 +176,37 @@ const ViewPlan = () => {
     const selectedDateISO = new Date(
       weekStartToEndDates[activeIndex]
     ).toISOString();
-
     if (sessionCategory === "FITNESS") {
-      window.location.href = "/bookFitness";
+      if (type === "group") {
+        clickHandler("group", sessionCategory);
+        return;
+      } else if (type === "personal") {
+        clickHandler("personal", sessionCategory);
+        return;
+      } else window.location.href = "/bookFitness";
+    } else if (sessionCategory === "WELLNESS") {
+      if (type === "group") {
+        clickHandler("group", sessionCategory);
+        return;
+      } else if (type === "personal") {
+        clickHandler("personal", sessionCategory);
+        return;
+      } else window.location.href = "/bookWellness";
     } else if (sessionCategory === "SPORTS") {
-      {
-        sessionForCurrentDate?.status === "SCHEDULED"
-          ? navigate(E_Routes.viewCards, {
+      
+        if(sessionForCurrentDate?.status === "SCHEDULED"){
+           navigate(E_Routes.viewCards, {
               state: {
                 selectedDate: selectedDateISO,
                 category: "SPORTS",
               },
             })
-          : navigate(E_Routes.bookSport);
-      }
-    } else if (sessionCategory === "WELLNESS") {
-      window.location.href = "/bookWellness";
+          }
+          else navigate(E_Routes.bookSport);
+      
     }
   };
+
   console.log("sessionForCurrentDate", sessionForCurrentDate);
   if (pageState === E_PageState.Loading) {
     return <FullScreenLoader />;
@@ -210,6 +271,15 @@ const ViewPlan = () => {
             }`}
             onClick={() => {
               if (!(sessionForCurrentDate && activeIndex >= dayOfWeek)) return;
+
+              if (
+                sessionForCurrentDate?.category === "FITNESS" ||
+                sessionForCurrentDate?.category === "WELLNESS"
+              ) {
+                setShowModal(true);
+                return;
+              }
+
               slotBookingHandler(sessionForCurrentDate?.category);
             }}
           >
@@ -263,6 +333,42 @@ const ViewPlan = () => {
           </div>
         )}
       </div>
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <div className="modal-title">Choose Type</div>
+            <button
+              className={`modal-button group ${
+                type === "group" ? "active" : ""
+              }`}
+              onClick={() => {
+                setType("group");
+              }}
+            >
+              Group
+            </button>
+            <button
+              className={`modal-button personal ${
+                type === "personal" ? "active" : ""
+              }`}
+              onClick={() => {
+                setType("personal");
+              }}
+            >
+              Personal
+            </button>
+            <button
+              className="modal-cancel"
+              disabled={type === "" ? true : false}
+              onClick={() =>
+                slotBookingHandler(sessionForCurrentDate?.category)
+              }
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

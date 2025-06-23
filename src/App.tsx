@@ -10,6 +10,7 @@ import BookFitness from './views/BookFitness/BookFitness';
 import BookWellness from './views/BookWellness/BookWellness';
 import DetailView from './views/BookWellness/components/DetailView';
 import ViewPlan from './views/ViewPlan/ViewPlan';
+// import BookFitnessGame from './views/BookFitness/fitness_game/BookFitnessGame';
 
 function App() {
 	return (
@@ -50,6 +51,9 @@ function App() {
 						path={E_Routes.detailedViewWellness}
 						element={<Outlay children={<DetailView />} />}
 					/>
+					{/* <Route
+						path={E_Routes.bookFitnessGame}
+						element={<Outlay children={<BookFitnessGame />} />}/> */}
 				</Routes>
 			</BrowserRouter>
 		</SnackbarProvider>

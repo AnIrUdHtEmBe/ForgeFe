@@ -27,7 +27,7 @@ import type { doctor } from "../../../types/doctor";
 
 const DetailView = () => {
   const location = useLocation();
-  const { descriptor } = location.state;
+  const { descriptor , selectedType } = location.state;
   const [doctors, setDoctors] = useState<doctor[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<any>("");
   const [courtId, setCourtId] = useState<string>("");
@@ -39,6 +39,7 @@ const DetailView = () => {
   const [games, setGames] = useState<t_game[]>([]);
   const [dateOfGame, setDateOfGame] = useState<Date | null>(null);
   const [selectedGame, setSelectedGame] = useState<t_game | null>();
+  const [isBooked, setIsBooked] = useState<boolean>(false);
 
   const index = Object.keys(detailsInfoWellness).findIndex(
     (el) => el.toLowerCase() === descriptor.name.toLowerCase()
@@ -51,6 +52,12 @@ const DetailView = () => {
   const backBtnHandler = () => {
     window.history.back();
   };
+
+
+  useEffect(() => {
+    console.log("SelectedType", selectedType);
+    
+  },[selectedType]);
   useEffect(() => {
     if (courtId && date) {
       getTimeSlotForCourt(
@@ -238,6 +245,9 @@ const DetailView = () => {
       bookingData.gameId,
       bookingData.playerIds
     );
+    if(dateOfGame) {
+      setDateOfGame(new Date(dateOfGame));
+    }
   };
 
   const handleBookingForPhysio = async () => {
@@ -292,6 +302,19 @@ const DetailView = () => {
       setDate(new Date(date));
     }
   };
+
+  useEffect(( ) => {
+    if( selectedGame) {
+      console.log("Selected Game:", selectedGame);
+      if(selectedGame.scheduledPlayers.includes("USER_JWXJ19")){
+        setIsBooked(true);
+      }
+      else {
+      setIsBooked(false);
+    }
+    }
+    
+  }, [selectedGame])
   if (index < 0) {
     return <span>Invalid Page</span>;
   }
@@ -309,7 +332,8 @@ const DetailView = () => {
         </div>
         <div className="--line" />
         <div className="--page-title">
-          <span>{obj.title}</span>
+          {/* <span>{obj.title}</span> */}
+          <span>{selectedType === "group" ? "Group Session" : "1-on-1 Session"}</span>
         </div>
         <div className="detail-view-table-content-container">
           <div className="detail-view-table-top-container">
@@ -333,8 +357,21 @@ const DetailView = () => {
             games={games}
             setSelectedGame={setSelectedGame}
             selectedGame={selectedGame}
+            selectedType = {selectedType}
           ></Content>
           <div className="--btn">
+            {isBooked ? 
+            <Button
+              onClick={() => {
+                enqueueSnackbar({
+                  message: "You have already booked this session.",
+                  autoHideDuration: SNACK_AUTO_HIDE,
+                  variant: "info",
+                });
+              }}
+              
+              text="Booked"
+            /> : 
             <Button
               onClick={
                 descriptor.name === "Physio"
@@ -343,6 +380,7 @@ const DetailView = () => {
               }
               text="Book Now"
             />
+}
           </div>
         </div>
       </div>

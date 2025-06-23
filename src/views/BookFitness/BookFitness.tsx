@@ -19,6 +19,7 @@ import { SNACK_AUTO_HIDE } from "../../default";
 import type { t_court } from "../../types/court";
 import type { t_slot } from "../../types/slot";
 import type { t_sport } from "../../types/sports";
+import { useLocation } from "react-router-dom";
 
 const BookFitness = () => {
   const [courts, setCourts] = useState<t_court[]>([]);
@@ -30,7 +31,10 @@ const BookFitness = () => {
   const [activeSport, setActiveSport] = useState<t_sport>();
   const [showBook, setShowBook] = useState(false);
   const [showTimeSlots, setShowTimeSlots] = useState(true);
-
+  const location = useLocation();
+  const { descriptor } = location.state;
+  console.log(descriptor);
+  
   useEffect(() => {
     if(activeSport){
     getCourtBySportId(

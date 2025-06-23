@@ -5,7 +5,7 @@ import DropdownMenu, {
   DropdownItemRadio,
   DropdownItemRadioGroup,
 } from "@atlaskit/dropdown-menu";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {getCourtById} from "../../../api/courts";
 import type { t_court } from "../../../types/court";
 import type { t_slot } from "../../../types/slot";
@@ -31,6 +31,7 @@ export default function Content({
   setDateOfGame,
   setSelectedGame,
   selectedGame,
+  selectedType
 }: {
   court: t_court | undefined;
   slots: t_slot[];
@@ -50,6 +51,7 @@ export default function Content({
   setDateOfGame: (date: Date) => void;
   setSelectedGame: (game: t_game | null) => void;
   selectedGame: t_game | null | undefined;
+  selectedType: any;
 }) {
   const [courtName , setCourtName] = useState<string>("");
   const location = useLocation();
@@ -98,9 +100,13 @@ export default function Content({
   useEffect(() => {
     setSelectedGame(null);
   },[dateOfGame])
+  useEffect(() => {
+    console.log(selectedType);
+    
+  },[]);
   return (
     <div className="--content">
-      {descriptor.name === "yoga" && (
+      {selectedType === "group" && (
         <>
           <div className="--row">
             <span className="--title">Court</span>
@@ -191,7 +197,7 @@ export default function Content({
         </>
       )}
 
-      {descriptor.name === "Physio" && (
+      {selectedType === "personal" && (
         <>
         <div className="--row">
             <span className="--title">Select A Date</span>
