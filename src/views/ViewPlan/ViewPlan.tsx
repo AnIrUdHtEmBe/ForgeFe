@@ -20,7 +20,8 @@ import { FullScreenLoader } from "../../components/Loader/CustomLoader";
 import { enqueueSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import E_Routes from "../../types/routes";
-
+import  Button  from "../../components/Button/Button.tsx";
+import { getUserById } from "../../api/user";
 const ViewPlan = () => {
   //current week plan
   const [showModal, setShowModal] = useState(false);
@@ -32,6 +33,7 @@ const ViewPlan = () => {
   const { startOfWeek, endOfWeek, dayOfWeek } = getWeekRange(new Date());
   const [getDate, setgetDate] = useState<Date>(startOfWeek);
   const [type, setType] = useState<string>("");
+  const [createGame, setCreateGame] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const clickHandler = (value: string, category: string) => {
@@ -41,6 +43,38 @@ const ViewPlan = () => {
     } 
     else navigate(E_Routes.bookWellness, { state: { descriptor: value , category : "WELLNESS" } });
   };
+
+  const getUser = (id: string) => {
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === HttpStatusCode.Ok) {
+
+        console.log(response.data);
+        if(response.data.type === "admin"){
+          setCreateGame(true);
+        }
+      } else {
+        enqueueSnackbar({
+          message: "Failed to fetch the user data!",
+          autoHideDuration: SNACK_AUTO_HIDE,
+          variant: "error",
+        });
+      }
+    }
+    const onReject = (e: unknown) => {
+      console.log(e);
+      enqueueSnackbar({
+        message: "Failed to fetch the user data!",
+        autoHideDuration: SNACK_AUTO_HIDE,
+        variant: "error",
+      });
+    }
+    getUserById(onAccept, onReject, id);
+  }
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId")?.slice(1, -1);
+    getUser(userId || "");
+  }, []);
 
   //fetch the plan for user with regard to current week and assign that plan with plan state
   const getUserPlan = () => {
@@ -341,8 +375,11 @@ const ViewPlan = () => {
       </button>
     </div>
   </div>
-)}
-
+)}  {createGame && (
+    <div className="buttonContainer">
+      <Button onClick={() => {navigate(E_Routes.bookFitness)}} text="➕Create Game"></Button>
+    </div>)
+    }
     </div>
   );
 };
