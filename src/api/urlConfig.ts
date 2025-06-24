@@ -1,3 +1,5 @@
+import type { RegisterFormData } from "../components/Register/Register";
+
 export const PATH = 'https://forge-play-backend.forgehub.in';
 export const PATH_V2 = 'https://play-os-backend.forgehub.in'
 
@@ -22,5 +24,9 @@ export const ADD_PLAYES_TO_GAME = (gameId: string , userId : string , target : s
 
 export const GET_HUMAN_BY_ID = (id: string) =>
 	`/human/${id}`;
+
+
+export const REGISTER_HUMANS = () => 
+	`/human/register`;
 
 

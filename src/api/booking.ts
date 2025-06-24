@@ -2,7 +2,6 @@ import type { AxiosResponse } from "axios";
 import { CheckJWT } from "./jwt";
 import { ADD_PLAYES_TO_GAME, PATH, PATH_V2 } from "./urlConfig";
 import axios from "axios";
-import type { t_session } from "../types/session";
 
 export const addPlayersToGame = async (
   onAccept : (response: AxiosResponse) => void,

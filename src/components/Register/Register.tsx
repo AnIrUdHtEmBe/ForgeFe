@@ -1,13 +1,166 @@
-import React from 'react'
-import './styles.css'
+import React, { useState } from "react";
+import "./styles.css";
+import type { AxiosResponse } from "axios";
+import { enqueueSnackbar } from "notistack";
+import { RegiterUser } from "../../api/auth";
 
-function Register() {
-  return (
-    <div className='register-container'>
-      
-      
-    </div>
-  )
+export interface RegisterFormData {
+  name: string;
+  age: number;
+  gender: string;
+  mobile: string;
+  email: string;
+  password: string;
+  type: string;
 }
 
-export default Register
+interface RegisterProps {
+  handleModal: () => void;
+}
+
+function Register(props: RegisterProps) {
+  const [formData, setFormData] = useState<RegisterFormData>({
+    type: "play",
+    name: "",
+    age: 0,
+    gender: "",
+    mobile: "",
+    email: "",
+    password: "",
+  });
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "age" ? Number(value) : value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    console.log(formData)
+
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === 200) {
+        enqueueSnackbar({
+          message: "User registered Successfully",
+          autoHideDuration: 3000,
+          variant: "success",
+        });
+      }
+    };
+
+    const onReject = (error: unknown) => {
+      console.error("Error fetching games:", error);
+      enqueueSnackbar({
+        message: "Failed to fetch the data!",
+        autoHideDuration: 3000,
+        variant: "error",
+      });
+    };
+
+    RegiterUser(onAccept , onReject , formData)
+  };
+
+  return (
+    <div className="register-modal-overlay" onClick={props.handleModal}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="close-btn" onClick={props.handleModal}>
+          &times;
+        </button>
+        <h2 className="modal-heading">Register</h2>
+
+        <form className="register-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="age">Age:</label>
+            <input
+              type="number"
+              id="age"
+              name="age"
+              required
+              value={formData.age}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="gender">Gender:</label>
+            <input
+              type="text"
+              id="gender"
+              name="gender"
+              required
+              value={formData.gender}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="mobile">Mobile:</label>
+            <input
+              type="text"
+              id="mobile"
+              name="mobile"
+              required
+              value={formData.mobile}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password:</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="user">Select User Type:</label>
+            <select
+              id="user"
+              name="user"
+              value={formData.type}
+              onChange={handleChange}
+            >
+              <option value="play">Play User</option>
+              <option value="forge">Forge User</option>
+            </select>
+          </div>
+
+          <button type="submit" className="register-btn">
+            Register
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default Register;

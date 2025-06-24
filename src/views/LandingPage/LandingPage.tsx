@@ -59,7 +59,7 @@ function LandingPage() {
         <Login></Login>
       )}
       {registerModal && (
-        <Register></Register>
+        <Register handleModal={handleRegisterClick}></Register>
       )}
     </div>
   );
