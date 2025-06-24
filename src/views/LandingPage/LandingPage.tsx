@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './styles.css';
 import Login from '../../components/Login/Login';
 import Register from '../../components/Register/Register';
+import LoginV2 from '../../components/Login/LoginV2';
 
 function LandingPage() {
   const [loginModal , setLoginModal] = useState(false);
@@ -56,7 +57,7 @@ function LandingPage() {
 
 
       {loginModal && (
-        <Login></Login>
+        <LoginV2 handleModal={handleLoginClick}></LoginV2>
       )}
       {registerModal && (
         <Register handleModal={handleRegisterClick}></Register>

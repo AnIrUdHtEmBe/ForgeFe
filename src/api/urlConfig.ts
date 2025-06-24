@@ -30,3 +30,5 @@ export const REGISTER_HUMANS = () =>
 	`/human/register`;
 
 
+export const LOGIN_HUMANS = () => 
+	`/human/login`;

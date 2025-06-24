@@ -1,0 +1,101 @@
+import React, { useState } from "react";
+import "./styles.css";
+import type { AxiosResponse } from "axios";
+import { enqueueSnackbar } from "notistack";
+import { LoginUser } from "../../api/auth";
+
+export interface  LoginFormData {
+  email: string;
+  password: string;
+}
+
+interface LoginProps {
+  handleModal: () => void;
+}
+
+function LoginV2(props: LoginProps) {
+  const [formData, setFormData] = useState<LoginFormData>({
+    email: "",
+    password: "",
+  });
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    console.log(formData)
+
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === 200) {
+        console.log(response.data)
+        enqueueSnackbar({
+          message: "User registered Successfully",
+          autoHideDuration: 3000,
+          variant: "success",
+        });
+      }
+    };
+
+    const onReject = (error: unknown) => {
+      console.error("Error fetching games:", error);
+      enqueueSnackbar({
+        message: "Failed to fetch the data!",
+        autoHideDuration: 3000,
+        variant: "error",
+      });
+    };
+
+    LoginUser(onAccept , onReject , formData)
+  };
+
+  return (
+    <div className="register-modal-overlay" onClick={props.handleModal}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="close-btn" onClick={props.handleModal}>
+          &times;
+        </button>
+        <h2 className="modal-heading">Login</h2>
+
+        <form className="register-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password:</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+            />
+          </div>
+
+          <button type="submit" className="register-btn">
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default LoginV2;
