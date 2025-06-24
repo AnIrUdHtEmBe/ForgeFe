@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import E_Routes from './types/routes';
 import Outlay from './views/Outlay/Outlay';
-import Login from './views/Login/Login';
+// import Login from './views/Login/Login';
 import { SnackbarProvider } from 'notistack';
 import BookSport from './views/BookSport/BookSport';
 import ViewCards from './views/ViewCards/ViewCards';
@@ -11,6 +11,9 @@ import BookWellness from './views/BookWellness/BookWellness';
 import DetailView from './views/BookWellness/components/DetailView';
 import ViewPlan from './views/ViewPlan/ViewPlan';
 import GameDetails from './components/GameDetails/GameDetails';
+// import Register from './views/Register/Register';
+import LandingPage from './views/LandingPage/LandingPage';
+import Login from './components/Login/Login';
 
 function App() {
 	return (
@@ -23,7 +26,7 @@ function App() {
 					/>
 					<Route                                                                                                                                  
 						path={E_Routes.home}
-						element={<Outlay children={<ViewPlan />} />}
+						element={<Outlay children={<LandingPage></LandingPage>} />}
 					/>
 					<Route
 						path={E_Routes.login}
