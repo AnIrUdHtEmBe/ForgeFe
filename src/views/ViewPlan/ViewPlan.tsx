@@ -36,10 +36,10 @@ const ViewPlan = () => {
 
   const clickHandler = (value: string, category: string) => {
     if (category === "FITNESS") {
-      if (value === "personal") navigate(E_Routes.bookFitness, { state: { descriptor: value } });
+      if (value === "personal") navigate(E_Routes.bookWellness, { state: { descriptor: value , category: "FITNESS"} });
       else navigate(E_Routes.viewCards, { state: { descriptor: value } });
     } 
-    else navigate(E_Routes.bookWellness, { state: { descriptor: value } });
+    else navigate(E_Routes.bookWellness, { state: { descriptor: value , category : "WELLNESS" } });
   };
   console.log(activeIndex);
   console.log("getDate", getDate);
@@ -164,29 +164,36 @@ const ViewPlan = () => {
       } else window.location.href = "/bookFitness";
     } else if (sessionCategory === "WELLNESS") {
       if (type === "group") {
-        clickHandler("group", sessionCategory);
+       if(sessionForCurrentDate?.status === "SCHEDULED"){
+           navigate(E_Routes.viewCards, {
+              state: {
+                selectedDate: selectedDateISO,
+                category: "WELLNESS",
+              },
+            })
+          }
         return;
       } else if (type === "personal") {
         clickHandler("personal", sessionCategory);
         return;
       } else window.location.href = "/bookWellness";
     } else if (sessionCategory === "SPORTS") {
-        sessionForCurrentDate?.status === "SCHEDULED"
-          ? navigate(E_Routes.viewCards, {
+        if(sessionForCurrentDate?.status === "SCHEDULED"){
+          navigate(E_Routes.viewCards, {
               state: {
                 selectedDate: selectedDateISO,
                 category: "SPORTS",
                 session : sessionForCurrentDate,
               },
             })
-          : navigate(E_Routes.gameDetails, {
+          }
+          else{ navigate(E_Routes.gameDetails, {
             state : {
               gameId: sessionForCurrentDate?.gameId,
             }
           });
+        }
       
-    } else if (sessionCategory === "WELLNESS") {
-      window.location.href = "/bookWellness";
     }
   };
 

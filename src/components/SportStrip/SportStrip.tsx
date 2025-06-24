@@ -3,14 +3,13 @@ import "./styles.css";
 import { HttpStatusCode, type AxiosResponse } from "axios";
 import type { t_sport } from "../../types/sports";
 import { enqueueSnackbar } from "notistack";
-import { getSports } from "../../api/sports";
+import { getSports , getAllSport} from "../../api/sports";
 import { E_PageState } from "../../types/state";
 import { FullScreenLoader } from "../Loader/CustomLoader";
-
 interface SportStripProps {
   activeSport: { name: string; icon?: JSX.Element };
   changeActiveSport: (newSport: t_sport) => void;
-  category: string;
+  category?: string;
 }
 
 const SportStrip = (props: SportStripProps) => {
@@ -48,8 +47,9 @@ const SportStrip = (props: SportStripProps) => {
         variant: "error",
       });
     };
-
-    getSports(onAccept, onReject, props.category);
+    
+     if(props.category)  getSports(onAccept, onReject, props.category);
+      else getAllSport(onAccept, onReject);
   };
 
   useEffect(() => {

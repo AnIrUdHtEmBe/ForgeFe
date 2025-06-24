@@ -100,4 +100,28 @@ export const detailsInfoWellness = {
 			selectATime: 'time',
 		},
 	},
+	BodyBuilding: {
+		path: 'yoga.jpeg',
+		fullName: 'Body Building', 
+		title: '1-on-1 Session',
+		description: 'edwawdwd',
+		fields: {
+			operatingHours: 'awjkld',
+			doctor: 'dw',
+			moreInfo: 'wd',
+			selectATime: 'time',
+		},
+	},
+	Strength: {
+		path: 'yoga.jpeg',
+		fullName: 'Strength Training', 
+		title: '1-on-1 Session',
+		description: 'edwawdwd',
+		fields: {
+			operatingHours: 'awjkld',
+			doctor: 'dw',
+			moreInfo: 'wd',
+			selectATime: 'time',
+		},
+	},
 };

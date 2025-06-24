@@ -13,9 +13,10 @@ import type { AxiosResponse } from 'axios';
 const BookWellness = () => {
 	const [sports, setSports] = useState<t_sport[]>([]);  
 	const location = useLocation();
-  const { descriptor } = location.state;
-  console.log(descriptor);
-  
+  	const { descriptor , category } = location.state;
+ 	console.log(descriptor);
+	console.log(category);
+	
 	  const getAllSports = () => {
 		const onAccept = (response: AxiosResponse) => {
 		  if (response.status === HttpStatusCode.Ok) {
@@ -37,7 +38,7 @@ const BookWellness = () => {
 			variant: "error",
 		  });
 		};
-		getSports(onAccept, onReject, "WELLNESS");
+		getSports(onAccept, onReject, category);
 	  };
 	
 	  useEffect(() => {
@@ -48,7 +49,8 @@ const BookWellness = () => {
 
 	const clickHandler = (value: t_sport) => {
 		navigate(E_Routes.detailedViewWellness, { state: { descriptor: value , 
-			selectedType: descriptor
+			selectedType: descriptor,
+			selectedCategory: category
 		} });
 	};
 

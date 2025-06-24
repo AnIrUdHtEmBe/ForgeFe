@@ -8,7 +8,7 @@ import {
   SNACK_AUTO_HIDE,
 } from "../../../default";
 import Button from "../../../components/Button/Button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { getAllUsers, getCoachDetails } from "../../../api/user";
 import {
   bookCourt,
@@ -27,7 +27,7 @@ import type { doctor } from "../../../types/doctor";
 
 const DetailView = () => {
   const location = useLocation();
-  const { descriptor , selectedType } = location.state;
+  const { descriptor , selectedType , selectedCategory} = location.state;
   const [doctors, setDoctors] = useState<doctor[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<any>("");
   const [courtId, setCourtId] = useState<string>("");
@@ -44,7 +44,7 @@ const DetailView = () => {
   const index = Object.keys(detailsInfoWellness).findIndex(
     (el) => el.toLowerCase() === descriptor.name.toLowerCase()
   );
-  
+
   const keys = Object.keys(detailsInfoWellness);
   const name = keys[index];
   const obj = detailsInfoWellness[name as keyof typeof detailsInfoWellness];
@@ -53,11 +53,6 @@ const DetailView = () => {
     window.history.back();
   };
 
-
-  useEffect(() => {
-    console.log("SelectedType", selectedType);
-    
-  },[selectedType]);
   useEffect(() => {
     if (courtId && date) {
       getTimeSlotForCourt(
@@ -123,7 +118,7 @@ const DetailView = () => {
       (error) => {
         console.error("Failed to fetch doctors", error);
       },
-      "coach_wellness"
+      "coach_" + selectedCategory.toLowerCase()
     );
   }, []);
 
@@ -357,6 +352,7 @@ const DetailView = () => {
             setSelectedGame={setSelectedGame}
             selectedGame={selectedGame}
             selectedType = {selectedType}
+            category={selectedCategory}
           ></Content>
           <div className="--btn">
             {isBooked ? 
@@ -373,9 +369,7 @@ const DetailView = () => {
             /> : 
             <Button
               onClick={
-                descriptor.name === "Physio"
-                  ? handleBookingForPhysio
-                  : handleBookingForYoga
+               handleBookingForPhysio
               }
               text="Book Now"
             />

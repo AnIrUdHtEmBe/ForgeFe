@@ -24,6 +24,7 @@ interface PlayerInfoCardProps {
   endTime?: Date;
   sport?: string;
   session? : t_session;
+  maxPlayers?: number;
 }
 
 // inside component:
@@ -131,7 +132,7 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
             text={
               game && game.maxPlayers != null && game.scheduledPlayers
                 ? game.maxPlayers - game.scheduledPlayers.length
-                : "-"
+                : props.maxPlayers ? props.maxPlayers : "0"
             }
             showSlots={true}
           />

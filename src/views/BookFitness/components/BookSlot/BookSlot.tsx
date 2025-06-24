@@ -5,10 +5,11 @@ import PlayerInfoCard from '../../../../components/PlayerCard/PlayerCard';
 import { DEFAULT_ICON_SIZE, SNACK_AUTO_HIDE } from '../../../../default';
 import './styles.css';
 import { RxCross1 } from 'react-icons/rx';
-import { bookCourt } from '../../../../api/courts';
+// import { bookCourt } from '../../../../api/courts';
 import { HttpStatusCode, type AxiosResponse } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import type { t_sport } from '../../../../types/sports';
+import { createGame } from '../../../../api/games';
 interface BookSlotProps {
 	onClose: () => void;
 	startTime?: Date; // ISO datetime string
@@ -23,13 +24,17 @@ interface BookSlotProps {
 
 const BookSlot = (props: BookSlotProps) => {
 	const handleConfirm = async () => {
-	if (!props.startTime || !props.endTime || !props.courtId) {
+	if (!props.startTime || !props.endTime || !props.courtId || !props.sport?.sportId) {
 		console.error('Missing required booking information');
-		return;
+		return; 
 	}
 
 	const bookingData = {
+		hostId: "USER_HZSU81",
+		sport:props.sport.name,
+		bookedBy: "Forge Hub",
 		courtId: props.courtId,
+		maxPlayers: props.sport?.maxPlayers,
 		startTime: props.startTime.toISOString(),
 		endTime: props.endTime.toISOString(),
 		sportId: props.sport?.sportId ?? '' // Use sportId if available, otherwise an empty string
@@ -63,7 +68,7 @@ const BookSlot = (props: BookSlotProps) => {
 		});
 	};
 
-	await bookCourt(onAccept, onReject, bookingData.courtId, bookingData.sportId, bookingData.startTime, bookingData.endTime);
+	await createGame(onAccept, onReject, bookingData);
 	props.viewTimeSlots?.(); // Call the viewTimeSlots function if provided
 	props.setShowTimeSlots?.(true); // Hide time slots if setShowTimeSlots is provided
 };
@@ -88,13 +93,13 @@ const BookSlot = (props: BookSlotProps) => {
 				</div>
 				{/* stepper to be done */}
 				<div className="book-slot-player-card-container">
-					<PlayerInfoCard courtId={props.courtId} startTime={props.startTime} endTime={props.endTime} sport={props.sport?.name}/>
+					<PlayerInfoCard courtId={props.courtId} startTime={props.startTime} endTime={props.endTime} sport={props.sport?.name} maxPlayers={props.sport?.maxPlayers}/>
 				</div>
 				<div className="--first-time-user">
 					{/* insert the coupon component here */}
 				</div>
 				<div className="bottom-btn-container">
-					<Button text="Confirm" onClick={handleConfirm}/>
+					<Button text="Add Game" onClick={handleConfirm}/>
 				</div>
 			</div>
 		</div>

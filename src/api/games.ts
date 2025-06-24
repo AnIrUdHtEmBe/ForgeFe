@@ -4,6 +4,7 @@ import axios from "axios";
 import { GET_ALL_GAMES, PATH_V2 } from "./urlConfig";
 
 
+
 export const getGamesByDateAndSports = async (
   onAccept : (response : AxiosResponse) =>  void,
   onReject : (error : unknown) => void,
@@ -68,6 +69,23 @@ export const getGamesById = async (
       { headers: { Authorization: 'Bearer ' + token } }
     );
     onAccept(res);
+  } catch (e) {
+    onReject(e);
+  }
+}
+
+export const createGame = async (onAccept: (response: AxiosResponse) => void,
+  onReject: (error: unknown) => void,
+  gameData: unknown // Replace with actual type if available
+) => {
+  try {
+    const token = await CheckJWT();
+    const res = await axios.post(
+      `${PATH_V2}/game/create`,
+      gameData,
+      { headers: { Authorization: 'Bearer ' + token } }
+    );
+    onAccept(res);  
   } catch (e) {
     onReject(e);
   }

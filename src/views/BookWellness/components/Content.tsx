@@ -32,7 +32,8 @@ export default function Content({
   setDateOfGame,
   setSelectedGame,
   selectedGame,
-  selectedType
+  selectedType,
+  category
 }: {
   court: t_court | undefined;
   slots: t_slot[];
@@ -52,6 +53,7 @@ export default function Content({
   setSelectedGame: (game: t_game | null) => void;
   selectedGame: t_game | null | undefined;
   selectedType: string;
+  category: string;
 }) {
   const [courtName , setCourtName] = useState<string>("");
   const location = useLocation();
@@ -108,10 +110,17 @@ export default function Content({
     <div className="--content">
       {selectedType === "group" && (
         <>
-          <div className="--row">
-            <span className="--title">Court</span>
-            <span className="--val">{!courtName ? "Select a game to view the court" : courtName}</span>
+        <div className="--row">
+            <span className="--title">Select A Date</span>
+            <input
+              type="date"
+              onChange={(e) => {
+                const selectedDate = new Date(e.target.value);
+                setDateOfGame(selectedDate);
+              }}
+            />
           </div>
+          
           <div className="--row">
             <span className="--title"> Games</span>
             <span className="--val">
@@ -135,11 +144,11 @@ export default function Content({
                 `  : "Select Time Slot"}
               shouldRenderToParent
             >
-              <DropdownItemRadioGroup id="games">
+              <DropdownItemGroup id="games">
                 {games.map((game: t_game) => (
-                  <DropdownItemRadio
+                  <DropdownItem
                     key={game.bookingId}
-                    id={game.bookingId}
+                    
                      isSelected={selectedGame?.gameId === game.gameId}
                      onClick={() => setSelectedGame(game)}
                   >
@@ -161,11 +170,15 @@ export default function Content({
                         }
                       )}
 
-                  </DropdownItemRadio>
+                  </DropdownItem>
                 ))}
-              </DropdownItemRadioGroup>
+              </DropdownItemGroup>
             </DropdownMenu>
             </span>
+          </div>
+          <div className="--row">
+            <span className="--title">Court</span>
+            <span className="--val">{!courtName ? "Select a game to view the court" : courtName}</span>
           </div>
           <div className="--row">
             <span className="--title">Coach</span>
@@ -173,16 +186,7 @@ export default function Content({
               {selectedGame ? selectedGame.hostName : "Select a game to view coach"}
             </span>
           </div>
-          <div className="--row">
-            <span className="--title">Select A Date</span>
-            <input
-              type="date"
-              onChange={(e) => {
-                const selectedDate = new Date(e.target.value);
-                setDateOfGame(selectedDate);
-              }}
-            />
-          </div>
+          
 
           <div className="--row">
             <span className="--title">More Info</span>

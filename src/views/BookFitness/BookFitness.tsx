@@ -31,51 +31,84 @@ const BookFitness = () => {
   const [activeSport, setActiveSport] = useState<t_sport>();
   const [showBook, setShowBook] = useState(false);
   const [showTimeSlots, setShowTimeSlots] = useState(true);
-  const location = useLocation();
-  const { descriptor } = location.state;
-  console.log(descriptor);
+  // const location = useLocation();
+  // const { descriptor } = location.state;
+  // console.log(descriptor);
+
+  // useEffect(() => {
+  //   if (!activeSport) return;
+  //   setSelectedCourtId("");
+  //   getCourtBySportId(
+  //     async (res: AxiosResponse) => {
+  //       if (res.status === HttpStatusCode.Ok) {
+  //         const courtsWithNames = await Promise.all(
+  //           res.data.map(async ({ name, courtId }: t_court) => {
+  //             const match = name.match(/(USER_[A-Z0-9]+)/i);
+  //             const userId = match ? match[1] : null;
+
+  //             if (userId) {
+  //               try {
+  //                 const userRes = await getUserByIdAsync(userId);
+  //                 const humanName = userRes?.name || "Unknown";
+  //                 return {
+  //                   courtId,
+  //                   name: `${humanName}'s court`,
+  //                 };
+  //               } catch (error) {
+  //                 console.error("Failed to fetch user name:", error);
+  //                 return { courtId, name: "Unknown's court" };
+  //               }
+  //             }
+
+  //             return { courtId, name };
+  //           })
+  //         );
+
+  //         setCourts(courtsWithNames);
+  //       }
+  //     },
+  //     () =>
+  //       enqueueSnackbar({
+  //         message: "Failed to fetch courts.",
+  //         variant: "error",
+  //         autoHideDuration: SNACK_AUTO_HIDE,
+  //       }),
+  //     activeSport?.sportId || ""
+  //   );
+  // }, [activeSport]);
 
   useEffect(() => {
-    if (!activeSport) return;
+  if (!activeSport) return;
+  setSelectedCourtId("");
 
-    getCourtBySportId(
-      async (res: AxiosResponse) => {
-        if (res.status === HttpStatusCode.Ok) {
-          const courtsWithNames = await Promise.all(
-            res.data.map(async ({ name, courtId }: t_court) => {
-              const match = name.match(/(USER_[A-Z0-9]+)/i);
-              const userId = match ? match[1] : null;
+  getCourtBySportId(
+    async (res: AxiosResponse) => {
+      if (res.status === HttpStatusCode.Ok) {
+        const courtsWithNames = await Promise.all(
+          res.data.map(async ({ name, courtId }: t_court) => {
+            const match = name.match(/(USER_[A-Z0-9]+)/i);
 
-              if (userId) {
-                try {
-                  const userRes = await getUserByIdAsync(userId);
-                  const humanName = userRes?.name || "Unknown";
-                  return {
-                    courtId,
-                    name: `${humanName}'s court`,
-                  };
-                } catch (error) {
-                  console.error("Failed to fetch user name:", error);
-                  return { courtId, name: "Unknown's court" };
-                }
-              }
+            // ✅ Exclude any court that has USER_XXXXX in its name
+            if (match) return null;
 
-              return { courtId, name };
-            })
-          );
+            return { courtId, name };
+          })
+        );
 
-          setCourts(courtsWithNames);
-        }
-      },
-      () =>
-        enqueueSnackbar({
-          message: "Failed to fetch courts.",
-          variant: "error",
-          autoHideDuration: SNACK_AUTO_HIDE,
-        }),
-      activeSport?.sportId || ""
-    );
-  }, [activeSport]);
+        // ✅ Remove all excluded (null) courts
+        setCourts(courtsWithNames.filter(Boolean));
+      }
+    },
+    () =>
+      enqueueSnackbar({
+        message: "Failed to fetch courts.",
+        variant: "error",
+        autoHideDuration: SNACK_AUTO_HIDE,
+      }),
+    activeSport?.sportId || ""
+  );
+}, [activeSport]);
+
 
   useEffect(() => {
     if (selectedCourtId) {
@@ -196,7 +229,6 @@ const BookFitness = () => {
         <SportStrip
           activeSport={{ name: activeSport?.name ?? "" }}
           changeActiveSport={setActiveSport}
-          category="FITNESS"
         />
       </div>
 
