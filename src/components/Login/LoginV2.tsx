@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./styles.css";
+import "./stylesV2.css";
 import type { AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 import { LoginUser } from "../../api/auth";
@@ -13,6 +13,7 @@ export interface  LoginFormData {
 
 interface LoginProps {
   handleModal: () => void;
+  registermodal: () => void;
 }
 
 function LoginV2(props: LoginProps) {
@@ -67,6 +68,12 @@ function LoginV2(props: LoginProps) {
 
   };
 
+
+  const handleClick = () => {
+    props.handleModal();
+    props.registermodal();
+  };
+
   return (
     <div className="register-modal-overlay" onClick={props.handleModal}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -102,6 +109,12 @@ function LoginV2(props: LoginProps) {
           <button type="submit" className="register-btn">
             Login
           </button>
+          <p className="register-link">
+            Don't have an account?{" "}
+            <span className="link" onClick={handleClick}>
+              Register
+            </span>
+          </p>
         </form>
       </div>
     </div>

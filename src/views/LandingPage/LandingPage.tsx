@@ -57,10 +57,10 @@ function LandingPage() {
 
 
       {loginModal && (
-        <LoginV2 handleModal={handleLoginClick}></LoginV2>
+        <LoginV2 handleModal={handleLoginClick} registermodal={handleRegisterClick}></LoginV2>
       )}
       {registerModal && (
-        <Register handleModal={handleRegisterClick}></Register>
+        <Register handleModal={handleRegisterClick} loginmodal={handleLoginClick}></Register>
       )}
     </div>
   );

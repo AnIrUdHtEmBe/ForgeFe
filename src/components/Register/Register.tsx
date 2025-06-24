@@ -6,7 +6,7 @@ import { RegiterUser } from "../../api/auth";
 
 export interface RegisterFormData {
   name: string;
-  age: number;
+  age: number |  undefined;
   gender: string;
   mobile: string;
   email: string;
@@ -16,21 +16,23 @@ export interface RegisterFormData {
 
 interface RegisterProps {
   handleModal: () => void;
+  loginmodal: () => void;
 }
 
 function Register(props: RegisterProps) {
   const [formData, setFormData] = useState<RegisterFormData>({
     type: "play",
     name: "",
-    age: 0,
+    age: undefined,
     gender: "",
     mobile: "",
     email: "",
     password: "",
   });
 
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
@@ -42,7 +44,7 @@ function Register(props: RegisterProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(formData)
+    console.log(formData);
 
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
@@ -63,7 +65,12 @@ function Register(props: RegisterProps) {
       });
     };
 
-    RegiterUser(onAccept , onReject , formData)
+    RegiterUser(onAccept, onReject, formData);
+  };
+
+  const handleClick = () => {
+    props.handleModal();
+    props.loginmodal();
   };
 
   return (
@@ -99,14 +106,20 @@ function Register(props: RegisterProps) {
           </div>
           <div className="form-group">
             <label htmlFor="gender">Gender:</label>
-            <input
-              type="text"
+            <select
               id="gender"
               name="gender"
               required
               value={formData.gender}
               onChange={handleChange}
-            />
+            >
+              <option value="" disabled>
+                Select Gender
+              </option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
           </div>
           <div className="form-group">
             <label htmlFor="mobile">Mobile:</label>
@@ -145,7 +158,7 @@ function Register(props: RegisterProps) {
             <label htmlFor="user">Select User Type:</label>
             <select
               id="user"
-              name="user"
+              name="type"
               value={formData.type}
               onChange={handleChange}
             >
@@ -157,6 +170,12 @@ function Register(props: RegisterProps) {
           <button type="submit" className="register-btn">
             Register
           </button>
+          <p className="register-link">
+            Already have an account?{" "}
+            <span className="link" onClick={handleClick}>
+              Login
+            </span>
+          </p>
         </form>
       </div>
     </div>
