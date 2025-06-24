@@ -3,6 +3,8 @@ import "./styles.css";
 import type { AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 import { LoginUser } from "../../api/auth";
+import { useNavigate } from "react-router-dom";
+import E_Routes from "../../types/routes";
 
 export interface  LoginFormData {
   email: string;
@@ -14,6 +16,7 @@ interface LoginProps {
 }
 
 function LoginV2(props: LoginProps) {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -37,11 +40,16 @@ function LoginV2(props: LoginProps) {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
         console.log(response.data)
+        localStorage.setItem("token" , JSON.stringify(response.data));
         enqueueSnackbar({
           message: "User registered Successfully",
           autoHideDuration: 3000,
           variant: "success",
         });
+
+        setTimeout(() => {
+          navigate(E_Routes.viewPlan)
+        }, 1500)
       }
     };
 
@@ -55,6 +63,8 @@ function LoginV2(props: LoginProps) {
     };
 
     LoginUser(onAccept , onReject , formData)
+
+
   };
 
   return (
