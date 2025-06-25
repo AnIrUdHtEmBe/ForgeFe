@@ -31,4 +31,4 @@ export const REGISTER_HUMANS = () =>
 
 
 export const LOGIN_HUMANS = () => 
-	`/human/login`;
+	`/auth/login`;

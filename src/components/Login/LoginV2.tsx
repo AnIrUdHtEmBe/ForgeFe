@@ -43,7 +43,7 @@ function LoginV2(props: LoginProps) {
         console.log(response.data)
         localStorage.setItem("token" , JSON.stringify(response.data));
         enqueueSnackbar({
-          message: "User registered Successfully",
+          message: "Success , Redirectiong.............",
           autoHideDuration: 3000,
           variant: "success",
         });
@@ -73,6 +73,11 @@ function LoginV2(props: LoginProps) {
     props.handleModal();
     props.registermodal();
   };
+
+
+  const handleRoute = () => {
+    navigate(E_Routes.passwordReset)
+  }
 
   return (
     <div className="register-modal-overlay" onClick={props.handleModal}>
@@ -113,6 +118,13 @@ function LoginV2(props: LoginProps) {
             Don't have an account?{" "}
             <span className="link" onClick={handleClick}>
               Register
+            </span>
+          </p>
+
+          <p className="register-link">
+            Change Password ?
+            <span className="link" onClick={handleRoute}>
+              Reset
             </span>
           </p>
         </form>

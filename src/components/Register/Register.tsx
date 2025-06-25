@@ -9,7 +9,7 @@ export interface RegisterFormData {
   age: number |  undefined;
   gender: string;
   mobile: string;
-  email: string;
+  emailId: string;
   password: string;
   type: string;
 }
@@ -26,7 +26,7 @@ function Register(props: RegisterProps) {
     age: undefined,
     gender: "",
     mobile: "",
-    email: "",
+    emailId: "",
     password: "",
   });
 
@@ -133,13 +133,13 @@ function Register(props: RegisterProps) {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="emailId">Email:</label>
             <input
               type="email"
               id="email"
-              name="email"
+              name="emailId"
               required
-              value={formData.email}
+              value={formData.emailId}
               onChange={handleChange}
             />
           </div>

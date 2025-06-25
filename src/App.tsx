@@ -15,6 +15,7 @@ import GameDetails from "./components/GameDetails/GameDetails";
 import LandingPage from "./views/LandingPage/LandingPage";
 import Login from "./components/Login/Login";
 import PrivateRoute from "./components/ProtectectedRoute/PrivateRoute";
+import PasswordReset from "./views/PasswordReset/PasswordReset";
 
 function App() {
   return (
@@ -31,11 +32,15 @@ function App() {
 						/> */}
 
           <Route
+            path={E_Routes.passwordReset}
+            element={<Outlay children={<PasswordReset />} />}
+          />
+
+          <Route
             path={E_Routes.viewPlan}
             element={
               <PrivateRoute>
-								 <Outlay children={ <ViewPlan  />} />
-               
+                <Outlay children={<ViewPlan />} />
               </PrivateRoute>
             }
           />

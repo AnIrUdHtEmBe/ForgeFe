@@ -30,3 +30,19 @@ export const LoginUser = async (
     onReject(e);
   }
 };
+
+
+export const ResetPassword = async (
+  onAccept: (response: AxiosResponse) => void,
+  onReject: (error: unknown) => void,
+  email: string,
+  oldPassword: string,
+  newPassword: string
+) => {
+  try {
+    const response = await axios.post(PATH_V2 + '/auth/reset-password', { email , oldPassword, newPassword });
+    onAccept(response);
+  } catch (e) {
+    onReject(e);
+  }
+} 
