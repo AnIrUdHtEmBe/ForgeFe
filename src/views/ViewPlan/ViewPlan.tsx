@@ -20,7 +20,7 @@ import { FullScreenLoader } from "../../components/Loader/CustomLoader";
 import { enqueueSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
 import E_Routes from "../../types/routes";
-import  Button  from "../../components/Button/Button.tsx";
+import Button from "../../components/Button/Button.tsx";
 import { getUserById } from "../../api/user";
 const ViewPlan = () => {
   //current week plan
@@ -36,20 +36,38 @@ const ViewPlan = () => {
   const [createGame, setCreateGame] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const clickHandler = (value: string, category: string ,selectedDateISO: string) => {
+  const clickHandler = (
+    value: string,
+    category: string,
+    selectedDateISO: string
+  ) => {
     if (category === "FITNESS") {
-      if (value === "personal") navigate(E_Routes.bookWellness, { state: { descriptor: value , category: "FITNESS" , selectedDate: selectedDateISO , sessionForCurrentDate: sessionForCurrentDate} });
+      if (value === "personal")
+        navigate(E_Routes.bookWellness, {
+          state: {
+            descriptor: value,
+            category: "FITNESS",
+            selectedDate: selectedDateISO,
+            sessionForCurrentDate: sessionForCurrentDate,
+          },
+        });
       else navigate(E_Routes.viewCards, { state: { descriptor: value } });
-    } 
-    else navigate(E_Routes.bookWellness, { state: { descriptor: value , category : "WELLNESS" , selectedDate: selectedDateISO, sessionForCurrentDate : sessionForCurrentDate} });
+    } else
+      navigate(E_Routes.bookWellness, {
+        state: {
+          descriptor: value,
+          category: "WELLNESS",
+          selectedDate: selectedDateISO,
+          sessionForCurrentDate: sessionForCurrentDate,
+        },
+      });
   };
 
   const getUser = (id: string) => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
-
         console.log(response.data);
-        if(response.data.type === "admin"){
+        if (response.data.type === "admin") {
           setCreateGame(true);
         }
       } else {
@@ -59,7 +77,7 @@ const ViewPlan = () => {
           variant: "error",
         });
       }
-    }
+    };
     const onReject = (e: unknown) => {
       console.log(e);
       enqueueSnackbar({
@@ -67,9 +85,9 @@ const ViewPlan = () => {
         autoHideDuration: SNACK_AUTO_HIDE,
         variant: "error",
       });
-    }
+    };
     getUserById(onAccept, onReject, id);
-  }
+  };
 
   useEffect(() => {
     const userId = localStorage.getItem("userId")?.slice(1, -1);
@@ -83,7 +101,7 @@ const ViewPlan = () => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data);
-      setWeekPlan(response.data[0]);
+        setWeekPlan(response.data[0]);
         if (weekNumber != 0) {
           setActiveIndex(0);
         } else {
@@ -165,78 +183,89 @@ const ViewPlan = () => {
       weekStartToEndDates[activeIndex]
     ).toISOString();
 
-    console.log(sessionCategory)
+    console.log(sessionCategory);
 
     if (sessionCategory === "FITNESS") {
-      if(sessionForCurrentDate?.status === "SCHEDULED"){
-              if (type === "group") {
-              // clickHandler("group", sessionCategory);
-              if(sessionForCurrentDate?.status === "SCHEDULED"){
-                navigate(E_Routes.viewCards, {
-                    state: {
-                      selectedDate: selectedDateISO,
-                      category: "FITNESS",
-                      session : sessionForCurrentDate
-                    },
-                  })
-                }
-              return;
-            } else if (type === "personal") {
-              clickHandler("personal", sessionCategory, selectedDateISO);
-              return;
-            } else window.location.href = "/bookFitness";
-        }
-          else{ navigate(E_Routes.bookingDetails, {
-            state : {
+      if (sessionForCurrentDate?.status === "SCHEDULED") {
+        if (type === "group") {
+          // clickHandler("group", sessionCategory);
+          if (sessionForCurrentDate?.status === "SCHEDULED") {
+            navigate(E_Routes.viewCards, {
+              state: {
+                selectedDate: selectedDateISO,
+                category: "FITNESS",
+                session: sessionForCurrentDate,
+              },
+            });
+          }
+          return;
+        } else if (type === "personal") {
+          clickHandler("personal", sessionCategory, selectedDateISO);
+          return;
+        } else window.location.href = "/bookFitness";
+      } else {
+        if (sessionForCurrentDate?.oneOnoneId == null) {
+          navigate(E_Routes.gameDetails, {
+            state: {
+              gameId: sessionForCurrentDate?.gameId,
+            },
+          });
+        } else {
+          navigate(E_Routes.bookingDetails, {
+            state: {
               bookingId: sessionForCurrentDate?.oneOnoneId,
-            }
+            },
           });
         }
-      
+      }
     } else if (sessionCategory === "WELLNESS") {
-      if(sessionForCurrentDate?.status === "SCHEDULED"){
-      if (type === "group") {
-       if(sessionForCurrentDate?.status === "SCHEDULED"){
-           navigate(E_Routes.viewCards, {
+      if (sessionForCurrentDate?.status === "SCHEDULED") {
+        if (type === "group") {
+          if (sessionForCurrentDate?.status === "SCHEDULED") {
+            navigate(E_Routes.viewCards, {
               state: {
                 selectedDate: selectedDateISO,
                 category: "WELLNESS",
-                 session : sessionForCurrentDate
+                session: sessionForCurrentDate,
               },
-            })
+            });
           }
-        return;
-      } else if (type === "personal") {
-        clickHandler("personal", sessionCategory , selectedDateISO);
-        return;
-      }
-    
-      else window.location.href = "/bookWellness";
-    }
-    else{
-      navigate(E_Routes.bookingDetails, {
-            state : {
-              bookingId: sessionForCurrentDate?.oneOnoneId,
-            }
-          });
-    }
-    } else if (sessionCategory === "SPORTS") {
-        if(sessionForCurrentDate?.status === "SCHEDULED"){
-          navigate(E_Routes.viewCards, {
-              state: {
-                selectedDate: selectedDateISO,
-                category: "SPORTS",
-                session : sessionForCurrentDate,
-              },
-            })
-          }
-          else{ navigate(E_Routes.gameDetails, {
-            state : {
+          return;
+        } else if (type === "personal") {
+          clickHandler("personal", sessionCategory, selectedDateISO);
+          return;
+        } else window.location.href = "/bookWellness";
+      } else {
+        if (sessionForCurrentDate?.oneOnoneId == null) {
+          navigate(E_Routes.gameDetails, {
+            state: {
               gameId: sessionForCurrentDate?.gameId,
-            }
+            },
+          });
+        } else {
+          navigate(E_Routes.bookingDetails, {
+            state: {
+              bookingId: sessionForCurrentDate?.oneOnoneId,
+            },
           });
         }
-      
+      }
+    } else if (sessionCategory === "SPORTS") {
+      if (sessionForCurrentDate?.status === "SCHEDULED") {
+        navigate(E_Routes.viewCards, {
+          state: {
+            selectedDate: selectedDateISO,
+            category: "SPORTS",
+            session: sessionForCurrentDate,
+          },
+        });
+      } else {
+        navigate(E_Routes.gameDetails, {
+          state: {
+            gameId: sessionForCurrentDate?.gameId,
+          },
+        });
+      }
     }
   };
 
@@ -280,7 +309,6 @@ const ViewPlan = () => {
         </div>
       </div>
       {/* )} */}
-
       {/* {weekPlan && ( */}
       <div className="view-plan-sessions-view-container">
         <WeekPlanView
@@ -290,7 +318,6 @@ const ViewPlan = () => {
         />
       </div>
       {/* )} */}
-
       <div className="view-plan-schedule-container">
         <div className="--top">
           <div className="--your-schedule">
@@ -298,18 +325,16 @@ const ViewPlan = () => {
           </div>
           <div
             className={`--book-slot ${
-              sessionForCurrentDate 
-                ? ""
-                : "--inActive"
+              sessionForCurrentDate ? "" : "--inActive"
             }`}
             onClick={() => {
-              if (!(sessionForCurrentDate )) return;
-              
+              if (!sessionForCurrentDate) return;
+
               if (
                 sessionForCurrentDate?.category === "FITNESS" ||
                 sessionForCurrentDate?.category === "WELLNESS"
               ) {
-                if( sessionForCurrentDate?.status == "SCHEDULED"){
+                if (sessionForCurrentDate?.status == "SCHEDULED") {
                   setShowModal(true);
                   return;
                 }
@@ -369,42 +394,54 @@ const ViewPlan = () => {
         )}
       </div>
       {showModal && (
-  <div className="modal-overlay">
-    <div className="modal-box">
-      <button
-        className="modal-close"
-        aria-label="Close modal"
-        onClick={() => setShowModal(false)}
-      >
-        &times;
-      </button>
-      <div className="modal-title">Choose Type</div>
-      <button
-        className={`modal-button group ${type === "group" ? "active" : ""}`}
-        onClick={() => setType("group")}
-      >
-        Group Session
-      </button>
-      <button
-        className={`modal-button group ${type === "personal" ? "active" : ""}`}
-        onClick={() => setType("personal")}
-      >
-        1-on-1 Session
-      </button>
-      <button
-        className="modal-confirm"
-        disabled={type === ""}
-        onClick={() => slotBookingHandler(sessionForCurrentDate?.category)}
-      >
-        Confirm
-      </button>
-    </div>
-  </div>
-)}  {createGame && (
-    <div className="buttonContainer">
-      <Button onClick={() => {navigate(E_Routes.bookFitness)}} text="➕Create Game"></Button>
-    </div>)
-    }
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <button
+              className="modal-close"
+              aria-label="Close modal"
+              onClick={() => setShowModal(false)}
+            >
+              &times;
+            </button>
+            <div className="modal-title">Choose Type</div>
+            <button
+              className={`modal-button group ${
+                type === "group" ? "active" : ""
+              }`}
+              onClick={() => setType("group")}
+            >
+              Group Session
+            </button>
+            <button
+              className={`modal-button group ${
+                type === "personal" ? "active" : ""
+              }`}
+              onClick={() => setType("personal")}
+            >
+              1-on-1 Session
+            </button>
+            <button
+              className="modal-confirm"
+              disabled={type === ""}
+              onClick={() =>
+                slotBookingHandler(sessionForCurrentDate?.category)
+              }
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      )}{" "}
+      {createGame && (
+        <div className="buttonContainer">
+          <Button
+            onClick={() => {
+              navigate(E_Routes.bookFitness);
+            }}
+            text="➕Create Game"
+          ></Button>
+        </div>
+      )}
     </div>
   );
 };
