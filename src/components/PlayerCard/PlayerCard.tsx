@@ -61,7 +61,7 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
           variant: "success",
         });
         sessionStorage.setItem("shouldRefetchGames", "true");
-        navigate(-1);
+        navigate("/viewPlan") 
       } else {
         enqueueSnackbar({
           message: "Failed to join the game!",
@@ -85,7 +85,7 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
       onAccept,
       onReject,
       gameId,
-      "USER_FATJ79",
+      localStorage.getItem("userId")?.slice(1,-1) || "",
       "scheduledPlayers"
     ); // Replace "userId" with actual user ID
 
@@ -154,7 +154,7 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
         {props.showBtn && (
           <div className="player-info-bottom-btn">
             {game?.scheduledPlayers.find(
-              (userId) => userId === "USER_FATJ79"
+              (userId) => userId === localStorage.getItem("userId")?.slice(1,-1) || ""
             ) ? (
               <Button text={"Booked"} />
             ) : (

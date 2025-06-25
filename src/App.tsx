@@ -34,7 +34,8 @@ function App() {
             path={E_Routes.viewPlan}
             element={
               <PrivateRoute>
-                <ViewPlan  />
+								 <Outlay children={ <ViewPlan  />} />
+               
               </PrivateRoute>
             }
           />

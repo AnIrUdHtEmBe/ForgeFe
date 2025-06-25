@@ -113,7 +113,7 @@ const ViewPlan = () => {
     getPlans(
       onAccept,
       onReject,
-      localStorage.getItem("userId") || "",
+      localStorage.getItem("userId")?.slice(1,-1) || "",
       formatDateForB(getDate),
       formatDateForB(new Date(getDate.getTime() + 7 * 24 * 60 * 60 * 1000))
     );
