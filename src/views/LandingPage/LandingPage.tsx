@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./styles.css";
 import Login from "../../components/Login/Login";
 import Register from "../../components/Register/Register";
 import LoginV2 from "../../components/Login/LoginV2";
+import { useLocation } from "react-router-dom";
 
 function LandingPage() {
   const [loginModal, setLoginModal] = useState(false);
@@ -15,6 +16,15 @@ function LandingPage() {
   const handleRegisterClick = () => {
     setRegisterModal(!registerModal);
   };
+
+  const location = useLocation();
+  useEffect(() => {
+    if (location.pathname === "/") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userName");
+    }
+  }, [location.pathname]); 
 
   return (
     <div className="landing-container">
