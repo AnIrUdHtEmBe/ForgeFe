@@ -22,9 +22,23 @@
   margin-left: 8px;
 }
 
-.date-box {
-  margin-top: 16px;
+.datee-box{
   background-color: #dbeafe;
+  border-radius: 10px;
+  /* padding: 6px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.date-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  /* margin-top: 16px; */
+  /* background-color: #dbeafe; */
   padding: 12px;
   border-radius: 10px;
   text-align: center;
@@ -34,8 +48,18 @@
   font-weight: 600;
 }
 
+.time-box{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
 .date-box .time {
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'roboto', sans-serif;
   color: #333;
 }
 

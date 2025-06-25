@@ -347,9 +347,9 @@ const ViewPlan = () => {
             }}
           >
             <span>
-              {sessionForCurrentDate?.status === "SCHEDULED"
-                ? "Book Slot"
-                : "View Booking"}
+              {sessionForCurrentDate?.status === "BOOKED"
+                ? "View Booking" :  "Book Slot"
+                }
             </span>
           </div>
         </div>

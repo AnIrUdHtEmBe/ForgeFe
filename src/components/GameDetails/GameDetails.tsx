@@ -63,19 +63,42 @@ const GameDetails = () => {
       </div>
 
       {/* Date/Time */}
-      <div className="date-box">
-        <p className="date">
-          {new Date(gameDetails?.startTime).toLocaleString("en-IN", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
-        </p>
-        <p className="time">
-          {new Date(gameDetails?.startTime).toLocaleString("en-IN", {
-            weekday: "long",
-          })}
-        </p>
+      <div className="datee-box">
+        <div className="date-box">
+          <p className="date">
+            {new Date(gameDetails?.startTime).toLocaleString("en-IN", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+          <p className="time">
+            {new Date(gameDetails?.startTime).toLocaleString("en-IN", {
+              weekday: "long",
+            })}
+          </p>
+        </div>
+        <div className="time-box">
+          <p className="time">
+            {new Date(
+              new Date(gameDetails?.startTime).getTime() + 5.5 * 60 * 60 * 1000
+            ).toLocaleTimeString("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })}
+          </p>
+          <div>-</div>
+          <p className="time">
+            {new Date(
+              new Date(gameDetails?.endTime).getTime() + 5.5 * 60 * 60 * 1000
+            ).toLocaleTimeString("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })}
+          </p>
+        </div>
       </div>
 
       {/* Players */}
@@ -90,7 +113,9 @@ const GameDetails = () => {
               <img src={player.photo} />
               <p className="player-name">{player.name}</p>
               <div className="badges">
-                <span className="badge host">{i === 0 ? "Host" : "Player"}</span>
+                <span className="badge host">
+                  {i === 0 ? "Host" : "Player"}
+                </span>
               </div>
               <p className="rating">⭐ {5}</p>
             </div>
