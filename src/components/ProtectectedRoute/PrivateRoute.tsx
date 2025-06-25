@@ -21,6 +21,7 @@ const isValidToken = (): boolean => {
     }
 
     localStorage.setItem("userId", JSON.stringify(decoded.sub));
+    localStorage.setItem("userName", JSON.stringify(decoded.name));
     return true;
   } catch (error) {
     console.error("Error decoding JWT:", error);

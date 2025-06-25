@@ -289,16 +289,19 @@ const ViewPlan = () => {
       {/* {weekPlan && ( */}
       <div className="view-plan-today-information-container">
         <div className="view-plan-top-information-top-container">
-          <div className="--date">
-            {formatDate(weekStartToEndDates[activeIndex])}
-          </div>
           <div className="--arrows">
-            <div className="--arrow-left">
+          <div className="--arrow-left">
               <FaChevronLeft
                 onClick={arrowLeftHandler}
                 size={DEFAULT_ICON_SIZE - 10}
               />
             </div>
+          </div>
+          <div className="--date">
+            {formatDate(weekStartToEndDates[activeIndex])}
+          </div>
+          <div className="--arrows">
+           
             <div className="--arrow-right">
               <FaChevronRight
                 onClick={arrowRightHandler}
@@ -374,12 +377,12 @@ const ViewPlan = () => {
                       <span className="--desc">{activity.customReps}</span>
                     </div>
                   </div>
-                  {i === 0 && (
+                  {/* {i === 0 && (
                     <div className="--end">
                       <span>Start</span>
                       <FaPlay />
                     </div>
-                  )}
+                  )} */}
                 </div>
                 {i < sessionForCurrentDate.activities.length - 1 && (
                   <div className="--line" />
