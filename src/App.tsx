@@ -16,6 +16,7 @@ import LandingPage from "./views/LandingPage/LandingPage";
 import Login from "./components/Login/Login";
 import PrivateRoute from "./components/ProtectectedRoute/PrivateRoute";
 import PasswordReset from "./views/PasswordReset/PasswordReset";
+import BookingDetails from "./views/BookingDetails/BookingDetails";
 
 function App() {
   return (
@@ -81,6 +82,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Outlay children={<DetailView />} />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path={E_Routes.bookingDetails}
+            element={
+              <PrivateRoute>
+                <Outlay children={<BookingDetails/>} />
               </PrivateRoute>
             }
           />

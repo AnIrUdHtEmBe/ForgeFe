@@ -33,7 +33,7 @@ export default function Content({
   setSelectedGame,
   selectedGame,
   selectedType,
-  category
+  date
 }: {
   court: t_court | undefined;
   slots: t_slot[];
@@ -53,7 +53,7 @@ export default function Content({
   setSelectedGame: (game: t_game | null) => void;
   selectedGame: t_game | null | undefined;
   selectedType: string;
-  category: string;
+  date: Date | null;
 }) {
   const [courtName , setCourtName] = useState<string>("");
   const location = useLocation();
@@ -106,6 +106,8 @@ export default function Content({
     console.log(selectedType);
     
   },[]);
+  console.log(date);
+  
   return (
     <div className="--content">
       {selectedType === "group" && (
@@ -205,13 +207,15 @@ export default function Content({
         <>
         <div className="--row">
             <span className="--title">Select A Date</span>
-            <input
+            {/* <input
               type="date"
+              value={date ? date.toISOString().split("T")[0] : ""}
               onChange={(e) => {
                 const selectedDate = new Date(e.target.value);
                 setDate(selectedDate);
               }}
-            />
+            /> */}
+            <span>{date ? date.toISOString().split("T")[0].split("-").reverse().join("-") : ""}</span>
           </div>
 
           <div className="--row">

@@ -24,22 +24,24 @@ import { getGamesByDateAndSports, joinGame } from "../../../api/games";
 import type { t_game } from "../../../types/games";
 import type { t_slot } from "../../../types/slot";
 import type { doctor } from "../../../types/doctor";
+import { patchSession } from "../../../api/booking";
 
 const DetailView = () => {
   const location = useLocation();
-  const { descriptor , selectedType , selectedCategory} = location.state;
+  const { descriptor , selectedType , selectedCategory , selectedDate , sessionForCurrentDate} = location.state;
   const [doctors, setDoctors] = useState<doctor[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<any>("");
   const [courtId, setCourtId] = useState<string>("");
   const [court, setCourt] = useState<t_court>();
   const [operatingHours, setOperatingHours] = useState<string>("");
-  const [date, setDate] = useState<Date | null>(null);
+  const [date, setDate] = useState<Date | null>(new Date(selectedDate ));
   const [selectedSlotIds, setSelectedSlotIds] = useState<string[]>([]);
   const [slots, setSlots] = useState<t_slot[]>([]);
   const [games, setGames] = useState<t_game[]>([]);
   const [dateOfGame, setDateOfGame] = useState<Date | null>(null);
   const [selectedGame, setSelectedGame] = useState<t_game | null>();
   const [isBooked, setIsBooked] = useState<boolean>(false);
+  const [bookingDetails, setBookingDetails] = useState<any>(null);
 
   const index = Object.keys(detailsInfoWellness).findIndex(
     (el) => el.toLowerCase() === descriptor.name.toLowerCase()
@@ -52,6 +54,8 @@ const DetailView = () => {
   const backBtnHandler = () => {
     window.history.back();
   };
+  console.log(selectedDate);
+  
 
   useEffect(() => {
     if (courtId && date) {
@@ -261,6 +265,7 @@ const DetailView = () => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
         console.log("Booking successful:", response.data);
+        setBookingDetails(response.data);
         enqueueSnackbar({
           message: "Booking successful!",
           autoHideDuration: SNACK_AUTO_HIDE,
@@ -293,11 +298,49 @@ const DetailView = () => {
       bookingData.endTime
     );
 
+    
     if (date) {
       setDate(new Date(date));
     }
   };
 
+  const patchSessionToInstance = async () =>{
+    await patchSession(
+      (response: AxiosResponse) => {
+        if (response.status === HttpStatusCode.Ok) {
+          console.log("Session patched successfully:", response.data);
+          
+          enqueueSnackbar({
+            message: "Session patched successfully!",
+            autoHideDuration: SNACK_AUTO_HIDE,
+            variant: "success",
+          });
+        } else {
+          console.error("Failed to patch session:", response.data);
+          enqueueSnackbar({
+            message: "Failed to patch session!",
+            autoHideDuration: SNACK_AUTO_HIDE,
+            variant: "error",
+          });
+        }
+      },
+      (error: any) => {
+        console.error("Error patching session:", error);
+        enqueueSnackbar({
+          message: "Error while patching session!",
+          autoHideDuration: SNACK_AUTO_HIDE,
+          variant: "error",
+        });
+      },
+      sessionForCurrentDate?.sessionInstanceId || "",
+      bookingDetails?.bookingId || ""
+    );
+  }
+  useEffect(() => {
+    if(bookingDetails){
+      patchSessionToInstance();
+    }
+  }, [bookingDetails]);
   useEffect(( ) => {
     if( selectedGame) {
       console.log("Selected Game:", selectedGame);
@@ -352,7 +395,7 @@ const DetailView = () => {
             setSelectedGame={setSelectedGame}
             selectedGame={selectedGame}
             selectedType = {selectedType}
-            category={selectedCategory}
+            date={date}
           ></Content>
           <div className="--btn">
             {isBooked ? 

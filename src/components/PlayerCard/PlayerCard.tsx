@@ -90,7 +90,7 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
     ); // Replace "userId" with actual user ID
 
     patchSession(
-      onAccept,
+      onAccept, 
       onReject,
       props.session?.sessionInstanceId || "",
       gameId 

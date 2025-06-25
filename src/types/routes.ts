@@ -9,5 +9,6 @@ enum E_Routes {
 	detailedViewWellness = '/detailedViewWellness',
 	gameDetails = '/gameDetails',
 	passwordReset = '/passwordReset',
+	bookingDetails = '/bookingDetails',
 }
 export default E_Routes;

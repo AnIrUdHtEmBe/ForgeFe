@@ -43,3 +43,38 @@ export const patchSession =  async (
     onReject(e);
   }
 }
+
+export const getBookingById = async (
+  onAccept: (response: AxiosResponse) => void,
+  onReject: (error: unknown) => void,
+  bookingId: string
+) => {
+  try {
+    const token = await CheckJWT();
+    const response = await axios.get(
+      PATH_V2  + `/booking/${bookingId}`,
+      { headers: { Authorization: 'Bearer ' + token } }
+    );
+    onAccept(response);
+  } catch (e) {
+    onReject(e);
+  }
+}
+
+export const rescheduleBooking = async (
+  onAccept: (response: AxiosResponse) => void,
+  onReject: (error: unknown) => void,
+  bookingId: string,
+  newDate: string,
+) => {
+  try {
+    const token = await CheckJWT();
+    const response = await axios.patch(
+      PATH_V2 + `/court/booking/${bookingId}/reschedule-by-time?newStartTime=${newDate}`,
+      { headers: { Authorization: 'Bearer ' + token } }
+    );
+    onAccept(response);
+  } catch (e) {
+    onReject(e);
+  }
+}

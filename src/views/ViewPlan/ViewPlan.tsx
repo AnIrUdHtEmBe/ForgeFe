@@ -36,12 +36,12 @@ const ViewPlan = () => {
   const [createGame, setCreateGame] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const clickHandler = (value: string, category: string) => {
+  const clickHandler = (value: string, category: string ,selectedDateISO: string) => {
     if (category === "FITNESS") {
-      if (value === "personal") navigate(E_Routes.bookWellness, { state: { descriptor: value , category: "FITNESS"} });
+      if (value === "personal") navigate(E_Routes.bookWellness, { state: { descriptor: value , category: "FITNESS" , selectedDate: selectedDateISO , sessionForCurrentDate: sessionForCurrentDate} });
       else navigate(E_Routes.viewCards, { state: { descriptor: value } });
     } 
-    else navigate(E_Routes.bookWellness, { state: { descriptor: value , category : "WELLNESS" } });
+    else navigate(E_Routes.bookWellness, { state: { descriptor: value , category : "WELLNESS" , selectedDate: selectedDateISO, sessionForCurrentDate : sessionForCurrentDate} });
   };
 
   const getUser = (id: string) => {
@@ -113,7 +113,8 @@ const ViewPlan = () => {
     getPlans(
       onAccept,
       onReject,
-      localStorage.getItem("userId")?.slice(1,-1) || "",
+      // localStorage.getItem("userId") || "",
+      localStorage.getItem("userId")?.slice(1, -1) || "",
       formatDateForB(getDate),
       formatDateForB(new Date(getDate.getTime() + 7 * 24 * 60 * 60 * 1000))
     );
@@ -167,36 +168,58 @@ const ViewPlan = () => {
     console.log(sessionCategory)
 
     if (sessionCategory === "FITNESS") {
-      if (type === "group") {
-        // clickHandler("group", sessionCategory);
-        if(sessionForCurrentDate?.status === "SCHEDULED"){
-           navigate(E_Routes.viewCards, {
-              state: {
-                selectedDate: selectedDateISO,
-                category: "FITNESS",
-              },
-            })
-          }
-        return;
-      } else if (type === "personal") {
-        clickHandler("personal", sessionCategory);
-        return;
-      } else window.location.href = "/bookFitness";
+      if(sessionForCurrentDate?.status === "SCHEDULED"){
+              if (type === "group") {
+              // clickHandler("group", sessionCategory);
+              if(sessionForCurrentDate?.status === "SCHEDULED"){
+                navigate(E_Routes.viewCards, {
+                    state: {
+                      selectedDate: selectedDateISO,
+                      category: "FITNESS",
+                      session : sessionForCurrentDate
+                    },
+                  })
+                }
+              return;
+            } else if (type === "personal") {
+              clickHandler("personal", sessionCategory, selectedDateISO);
+              return;
+            } else window.location.href = "/bookFitness";
+        }
+          else{ navigate(E_Routes.bookingDetails, {
+            state : {
+              bookingId: sessionForCurrentDate?.oneOnoneId,
+            }
+          });
+        }
+      
     } else if (sessionCategory === "WELLNESS") {
+      if(sessionForCurrentDate?.status === "SCHEDULED"){
       if (type === "group") {
        if(sessionForCurrentDate?.status === "SCHEDULED"){
            navigate(E_Routes.viewCards, {
               state: {
                 selectedDate: selectedDateISO,
                 category: "WELLNESS",
+                 session : sessionForCurrentDate
               },
             })
           }
         return;
       } else if (type === "personal") {
-        clickHandler("personal", sessionCategory);
+        clickHandler("personal", sessionCategory , selectedDateISO);
         return;
-      } else window.location.href = "/bookWellness";
+      }
+    
+      else window.location.href = "/bookWellness";
+    }
+    else{
+      navigate(E_Routes.bookingDetails, {
+            state : {
+              bookingId: sessionForCurrentDate?.oneOnoneId,
+            }
+          });
+    }
     } else if (sessionCategory === "SPORTS") {
         if(sessionForCurrentDate?.status === "SCHEDULED"){
           navigate(E_Routes.viewCards, {
@@ -281,13 +304,15 @@ const ViewPlan = () => {
             }`}
             onClick={() => {
               if (!(sessionForCurrentDate )) return;
-
+              
               if (
                 sessionForCurrentDate?.category === "FITNESS" ||
                 sessionForCurrentDate?.category === "WELLNESS"
               ) {
-                setShowModal(true);
-                return;
+                if( sessionForCurrentDate?.status == "SCHEDULED"){
+                  setShowModal(true);
+                  return;
+                }
               }
 
               slotBookingHandler(sessionForCurrentDate?.category);

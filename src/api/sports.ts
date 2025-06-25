@@ -43,3 +43,20 @@ export const getAllSport = async (
     onReject(e);
   }
 }; 
+
+export const getSportsById = async (
+  onAccept: (response: AxiosResponse) => void,
+  onReject: (error: unknown) => void,
+  sportId: string
+) => {
+  try {
+    const token = await CheckJWT();
+    const response = await axios.get(
+      PATH_V2 + `/sports/id/${sportId}`,
+      { headers: { Authorization: 'Bearer ' + token } }
+    );
+    onAccept(response);
+  } catch (e) {
+    onReject(e);
+  }
+};

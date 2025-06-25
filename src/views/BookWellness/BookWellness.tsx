@@ -13,7 +13,7 @@ import type { AxiosResponse } from 'axios';
 const BookWellness = () => {
 	const [sports, setSports] = useState<t_sport[]>([]);  
 	const location = useLocation();
-  	const { descriptor , category } = location.state;
+  	const { descriptor , category ,selectedDate ,sessionForCurrentDate } = location.state;
  	console.log(descriptor);
 	console.log(category);
 	
@@ -50,7 +50,9 @@ const BookWellness = () => {
 	const clickHandler = (value: t_sport) => {
 		navigate(E_Routes.detailedViewWellness, { state: { descriptor: value , 
 			selectedType: descriptor,
-			selectedCategory: category
+			selectedCategory: category,
+			selectedDate: selectedDate,
+			sessionForCurrentDate: sessionForCurrentDate,
 		} });
 	};
 
