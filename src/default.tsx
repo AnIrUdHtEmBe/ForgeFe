@@ -1,10 +1,10 @@
 import { MdFitnessCenter } from 'react-icons/md';
-import { IoIosFootball } from 'react-icons/io';
+import { IoIosFitness, IoIosFootball } from 'react-icons/io';
 import { MdSportsTennis } from 'react-icons/md';
 import { GiShuttlecock } from 'react-icons/gi';
 import { VscWorkspaceUnknown } from 'react-icons/vsc';
 import { IoIosInfinite } from 'react-icons/io';
-import { TbYoga } from 'react-icons/tb';
+import {  TbWeight, TbYoga } from 'react-icons/tb';
 import { TbPhysotherapist } from 'react-icons/tb';
 
 export const DEFAULT_ICON_SIZE = 30;
@@ -54,10 +54,9 @@ export const UNKNOWN_SPORTS_ICON = (
 	<VscWorkspaceUnknown size={DEFAULT_ICON_SIZE} />
 );
 
-export const wellnessWindows = {
-	Wellness: [
+export const wellnessWindows =  [
 		{
-			name: 'Yoga',
+			name: 'yoga',
 			icon: <TbYoga />,
 		},
 		{
@@ -65,15 +64,14 @@ export const wellnessWindows = {
 			icon: <TbPhysotherapist />,
 		},
 		{
-			name: 'Physio',
-			icon: <TbPhysotherapist />,
+			name: 'strength',
+			icon: <TbWeight/>
 		},
 		{
-			name: 'Physio',
-			icon: <TbPhysotherapist />,
+			name: 'bodybuilding',
+			icon: <IoIosFitness />,
 		},
-	],
-};
+	];
 
 export const detailsInfoWellness = {
 	Yoga: {
@@ -101,7 +99,7 @@ export const detailsInfoWellness = {
 		},
 	},
 	BodyBuilding: {
-		path: 'yoga.jpeg',
+		path: 'fitness.jpg',
 		fullName: 'Body Building', 
 		title: '1-on-1 Session',
 		description: 'edwawdwd',
@@ -113,7 +111,7 @@ export const detailsInfoWellness = {
 		},
 	},
 	Strength: {
-		path: 'yoga.jpeg',
+		path: 'fitness.jpg',
 		fullName: 'Strength Training', 
 		title: '1-on-1 Session',
 		description: 'edwawdwd',

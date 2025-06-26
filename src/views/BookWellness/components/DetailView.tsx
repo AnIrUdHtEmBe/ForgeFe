@@ -25,9 +25,10 @@ import type { t_game } from "../../../types/games";
 import type { t_slot } from "../../../types/slot";
 import type { doctor } from "../../../types/doctor";
 import { patchSession } from "../../../api/booking";
-
+import { useNavigate } from "react-router-dom";
 const DetailView = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { descriptor , selectedType , selectedCategory , selectedDate , sessionForCurrentDate} = location.state;
   const [doctors, setDoctors] = useState<doctor[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<any>("");
@@ -271,6 +272,7 @@ const DetailView = () => {
           autoHideDuration: SNACK_AUTO_HIDE,
           variant: "success",
         });
+        navigate("/viewPlan");
       } else {
         console.error("Booking failed:", response.data);
         enqueueSnackbar({

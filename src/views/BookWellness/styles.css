@@ -31,6 +31,7 @@
 }
 
 .book-wellness-container .book-wellness-top-heading-container .--top-heading {
+	margin-top: 3px;
 	font-size: 20px;
 	font-weight: 600;
 }

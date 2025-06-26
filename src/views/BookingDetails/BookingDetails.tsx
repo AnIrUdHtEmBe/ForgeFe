@@ -12,6 +12,7 @@ import { HttpStatusCode, type AxiosResponse } from 'axios';
 import DropdownMenu, { DropdownItemCheckboxGroup, DropdownItemCheckbox, DropdownItem } from '@atlaskit/dropdown-menu';
 import { enqueueSnackbar } from 'notistack';
 import type { t_slot } from '../../types/slot';
+import { convertUnixToLocalDateString} from '../../utils/date';
 function BookingDetails() {
     
     
@@ -96,7 +97,8 @@ function BookingDetails() {
                     autoHideDuration: SNACK_AUTO_HIDE,
                   }),
                 bookingDetails.courtId,
-                bookingDetails.startTime
+                // convertUTCToLocalDateString(bookingDetails.startTime),
+                convertUnixToLocalDateString(bookingDetails.st_unix)
               );
     }, [bookingDetails]);
     useEffect(() => {
@@ -227,15 +229,17 @@ function BookingDetails() {
           </div>
            <div className="--content">
           <div className="--row">
-            <span className="--title">Select A Date</span>
-            <span>{new Date().toISOString().split("T")[0].split("-").reverse().join("-") }</span>
+            <span className="--title">Date</span>
+            <span>
+              {convertUnixToLocalDateString(bookingDetails?.st_unix)?.split("-").reverse().join("-")}
+            </span>
           </div>
           <div className="--row">
             <span className="--title">Doctor</span>
                 {doctor?.name}
              </div>
              <div className="--row">
-            <span className="--title">Select A Slot</span>
+            <span className="--title">Slots </span>
             <div className="--time-slot-drop-down">
               
               <DropdownMenu
@@ -256,7 +260,22 @@ function BookingDetails() {
                           hour12: true,
                         }
                       )}` :
-                     "Select Time Slot"
+                      `${new Date(bookingDetails?.st_unix * 1000).toLocaleTimeString(
+                        [],
+                        {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        }
+                      )} - ${new Date(bookingDetails?.et_unix * 1000).toLocaleTimeString(
+                        [],
+                        {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        }
+                      )}`
+                     
                 }
                 shouldFitContainer
                 shouldRenderToParent
