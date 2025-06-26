@@ -120,7 +120,7 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
         <div className="player-info-event-info">
           <div className="--game">
             {/* {games[0].icon(20)} */}
-            <span>{props.sport}</span>
+            <span>{game?.sport}</span>
           </div>
           <div className="--delim">.</div>
           <div className="--side">{/* <span>5 A Side</span> */}</div>
