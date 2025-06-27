@@ -32,3 +32,9 @@ export const REGISTER_HUMANS = () =>
 
 export const LOGIN_HUMANS = () => 
 	`/auth/login`;
+
+export const GET_IMAGE_BY_ID = () =>
+	`/human/human/get-photo`;
+
+export const GET_ALL_IMAGES = () =>
+	`/human/human/get-photo-bulk`;

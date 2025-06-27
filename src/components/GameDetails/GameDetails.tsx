@@ -5,27 +5,43 @@ import { DEFAULT_ICON_SIZE } from "../../default";
 import { useLocation } from "react-router-dom";
 import type { AxiosResponse } from "axios";
 import { getGamesById } from "../../api/games";
-
-const players = [
-  {
-    name: "Aman",
-    role: "Host",
-    level: "Professional",
-    rating: 4.5,
-    image: "/user1.jpg",
-  },
-  { name: "Sidharth", level: "Beginner", rating: 4.5, image: "/user2.jpg" },
-  { name: "James", level: "Beginner", rating: 4.5, image: "/user3.jpg" },
-  { name: "Zaire", level: "Beginner", rating: 4.5, image: "/user4.jpg" },
-  { name: "Phillip", level: "Beginner", rating: 4.5, image: "/user5.jpg" },
-  { name: "Alfredo", level: "Beginner", rating: 4.5, image: "/user6.jpg" },
-];
+import { enqueueSnackbar } from "notistack";
+import { getAllImages } from "../../api/images";
 
 const GameDetails = () => {
   const location = useLocation();
   const [gameDetails, setGameDetails] = useState();
+  const [images, setImages] = useState({});
+  console.log(images);
 
   const { gameId } = location.state;
+
+  const getAllImg = () => {
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === 200) {
+        // console.log(response.data);
+        setImages(response.data);
+      } else {
+        enqueueSnackbar("Failed to fetch images", { variant: "error" });
+        console.error("Failed to fetch images");
+      }
+    };
+
+    const onReject = (error: unknown) => {
+      enqueueSnackbar("Error fetching images", { variant: "error" });
+      console.error("Error fetching images:", error);
+    };
+
+    console.log("Fetching images for players:", gameDetails?.scheduledPlayers);
+
+    getAllImages(
+      onAccept,
+      onReject,
+      gameDetails?.scheduledPlayers.length > 0
+        ? gameDetails?.scheduledPlayers
+        : []
+    );
+  };
 
   const getGameById = () => {
     const onAccept = (response: AxiosResponse) => {
@@ -53,6 +69,12 @@ const GameDetails = () => {
   };
 
   console.log(gameDetails);
+
+  useEffect(() => {
+    if (gameDetails !== null && gameDetails !== undefined) {
+      getAllImg();
+    }
+  }, [gameDetails]);
 
   return (
     <div className="game-container">
@@ -110,7 +132,12 @@ const GameDetails = () => {
         <div className="players-grid">
           {gameDetails?.scheduledPlayersDetails?.map((player, i) => (
             <div key={i} className="player-card">
-              <img src={player.photo} />
+              {images[player.userId] ? (
+                <img src={images[player.userId]} alt="Player" />
+              ) : (
+                <img src={player.photo} />
+              )}
+
               <p className="player-name">{player.name}</p>
               <div className="badges">
                 <span className="badge host">
