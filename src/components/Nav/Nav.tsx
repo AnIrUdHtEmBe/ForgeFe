@@ -53,7 +53,7 @@ const Nav = () => {
     if (currentPath !== "/") {
       getProfilePhoto();
     }
-  }, []);
+  }, [currentPath]);
 
   return (
     <div className="top-nav-container">
