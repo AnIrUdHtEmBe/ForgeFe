@@ -38,3 +38,6 @@ export const GET_IMAGE_BY_ID = () =>
 
 export const GET_ALL_IMAGES = () =>
 	`/human/human/get-photo-bulk`;
+
+export const UPLOAD_IMAGE = () =>
+	`/human/human/upload-photo`;
