@@ -316,6 +316,7 @@ const ViewPlan = () => {
       <div className="view-plan-sessions-view-container">
         <WeekPlanView
           activeIndex={activeIndex}
+          setActiveIndex={setActiveIndex}
           // sessions={weekPlan.sessionInstances}
           weekStartToEndDates={weekStartToEndDates}
         />
