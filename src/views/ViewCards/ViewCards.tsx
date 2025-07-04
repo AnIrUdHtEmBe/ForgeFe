@@ -57,7 +57,7 @@ const ViewCards = () => {
   useEffect(() => {
     if (sports.length > 0) {
       sports.forEach((sport: t_sport) => {
-        // console.log("Sport ID:", sport.sportId);
+        console.log("Sport ID  :", sport.sportId);
         fetchGames(sport.sportId);
       });
     }
@@ -66,7 +66,7 @@ const ViewCards = () => {
   const fetchGames = (sportId: string) => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
-        // console.log(response.data);
+        console.log(response.data);
         setGames((prev) => [...prev, ...response.data]);
       } else {
         enqueueSnackbar({
@@ -83,6 +83,9 @@ const ViewCards = () => {
     getGamesByDateAndSports(onAccept, onReject, selectedDate, sportId);
   };
 
+  useEffect(()=>{
+    console.log(games)
+  },[games])
   const date = new Date(selectedDate);
 
   return (

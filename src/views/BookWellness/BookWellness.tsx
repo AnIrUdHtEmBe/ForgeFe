@@ -15,7 +15,7 @@ const BookWellness = () => {
   const location = useLocation();
   const { descriptor, category, selectedDate, sessionForCurrentDate } =
     location.state;
-  console.log(descriptor);
+  console.log(descriptor,"desc");
   console.log(category);
 
   const getAllSports = () => {

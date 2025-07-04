@@ -91,15 +91,36 @@
 
 .view-plan-schedule-container .--top .--your-schedule {
 	color: #0a0a0a;
-	font-size: 20px;
-	font-weight: 400;
+	font-size: 30px;
+	font-weight: 700;
+	padding: 2px;
+	margin-bottom: 12px;
+}
+.--schedule-container{
+	padding: 2px 2px 2px 2px;
+	margin-top: 32px;
+	margin-bottom: 22px;
+}
+.--schedule-templat-container{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	/* border: 2px solid saddlebrown; */
+}
+.--schedule-template-title{
+	font-size: 22px;
+	padding: 2px;
+	margin-top: 22px;
+	font-weight: 600;
 }
 
 .view-plan-schedule-container .--bottom {
-	gap: 50px;
+	gap: 30px;
 	display: flex;
 	flex-direction: column;
 	padding-top: 20px;
+	margin-left: 22px;
 }
 
 .view-plan-schedule-container .--book-slot {
@@ -137,17 +158,29 @@
 }
 .session-information-container .--session {
 	display: flex;
-	flex-direction: column;
-	gap: 10px;
+	flex-direction: row;
+	/* justify-content: space-between; */
+	justify-content: space-between; 
+	align-items: center;
+	/* errrr */
+	width: 30vh;
+	/* border: 2px solid red; */
+	gap: 50px;
 }
 .session-information-container .--session .--name {
 	font-size: 16px;
 	font-weight: 400;
+	/* border: 2px solid green; */
 }
 .session-information-container .--session .--desc {
 	color: #0a0a0a78;
 	font-size: 14px;
+	text-align: left;
+	display: flex;
+	align-items:flex-start;
 	font-weight: 400;
+	/* margin-left:120px ; */
+
 }
 
 .session-information-container .--end {
@@ -163,7 +196,7 @@
 
 .session-information-container .--line {
 	position: absolute;
-	height: 150%;
+	height: 200%;
 	width: 100%;
 	left: 1.2%;
 	top: 100%;

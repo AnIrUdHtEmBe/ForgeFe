@@ -9,4 +9,12 @@ export type t_session = {
   scheduledDate: string;
   status: string;
   activities: t_activity[]
+  userId:string,
+  trainerId:string,
+  sessionTemplateTitle:string,
+  rating:number,
+  postSessionComment:string,
+  oneOnoneId:string| null,
+  gameId:string|null
+
 }

@@ -18,6 +18,7 @@ export const getPlans = async (
 			PATH + GET_USER_PLAN(userId) + '?' + url.toString(),
 			{ headers: { Authorization: 'Bearer ' + token } }
 		);
+		console.log
 		onAccept(response);
 	} catch (e) {
 		onReject(e);
