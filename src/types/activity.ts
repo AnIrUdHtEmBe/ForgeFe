@@ -4,4 +4,8 @@ export type t_activity = {
   icon: string;
   name: string;
   activityId: string;
+  status?:string
+  description?:string;
+  target?:number;
+  unit?:string
 }

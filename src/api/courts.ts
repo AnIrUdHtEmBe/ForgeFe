@@ -60,17 +60,38 @@ export const bookCourt = async(
     courtId: string,
     sportId: string,
     startTime: string,
-    endTime: string
+    endTime: string,
+    price:number
 ) => {
+    const userId = JSON.parse(localStorage.getItem("userId"));
+    console.log(userId)
+    const data={
+        type:"booking",
+        courtId: courtId,
+		bookedBy: userId,         
+		sportId: sportId,
+		startTime: startTime,       
+		endTime: endTime,         
+		status: 'active' ,
+		joinedUsers: [],
+		priceType: "ruppes",
+  		rackPrice: price,
+  		quotePrice: price,
+		capacity: 1,
+		st_unix:  Math.floor(new Date(startTime).getTime() / 1000),
+		et_unix: Math.floor(new Date(endTime).getTime() / 1000),
+    }
+    console.log(startTime,endTime,data,userId,"[poiuytrf")
     try {
         const token = await CheckJWT();
         const response = await axios.post(
             PATH_V2 + `/court/${courtId}/bookings/create`,
             {
-                courtId,
-                sportId,
-                startTime,
-                endTime
+                // courtId,
+                // sportId,
+                // startTime,
+                // endTime
+                ...data
             },
             { headers: { Authorization: 'Bearer ' + token } }
         );

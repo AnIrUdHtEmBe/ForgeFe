@@ -56,7 +56,10 @@ const DetailView = () => {
     window.history.back();
   };
   console.log(selectedDate);
-  
+  // const UserId:string=JSON.parse(localStorage.getItem("userId"));
+  const storedUserId = localStorage.getItem("userId");
+  const UserId: string = storedUserId ? JSON.parse(storedUserId) : "";
+
 
   useEffect(() => {
     if (courtId && date) {
@@ -64,13 +67,17 @@ const DetailView = () => {
         (res: AxiosResponse) => {
           if (res.status === HttpStatusCode.Ok) {
             const sorted = res.data
-              .map(({ st_unix, et_unix, status, slotId }: t_slot) => ({
+              .map(({ st_unix, et_unix, status, slotId ,price}: t_slot) => ({
                 startTime: st_unix,
                 endTime: et_unix,
                 status,
                 slotId,
+                price,
               }))
               .sort((a: { startTime: number; }, b: { startTime: number; }) => a.startTime - b.startTime);
+            
+
+              console.log(sorted,"this is sorted map")
             setSlots(sorted);
           }
         },
@@ -91,6 +98,12 @@ const DetailView = () => {
     .filter((slot) => selectedSlotIds.includes(slot.slotId))
     .sort((a, b) => (a.startTime as any) - (b.startTime as any));
 
+  const totalPrice = selectedSlots.reduce((total, slot) => total + (slot?.price ?? 0), 0);
+
+    // console.log(selectedSlotIds,selectedSlots,slots,totalPrice,"23ewdscfret5erdfvfcfds")
+  useEffect(()=>{
+
+  },[selectedSlots])
   const finalStartTime = Number(selectedSlots[0]?.startTime ?? 0);
   const finalEndTime = Number(selectedSlots[selectedSlots.length - 1]?.endTime ?? 0);
 
@@ -165,7 +178,7 @@ const DetailView = () => {
       new Date(court?.openingTime ?? ""),
       new Date(court?.closingTime ?? "")
     );
-    console.log(timeStr);
+    console.log(timeStr,court?.openingTime,court?.closingTime,"okugjyfhfgggggqqqq");
     setOperatingHours(timeStr);
   }, [court]);
 
@@ -212,7 +225,7 @@ const DetailView = () => {
     }
     const bookingData = {
       gameId: selectedGame.gameId,
-      playerIds: ["USER_JWXJ19"],
+      playerIds: [UserId],
     };
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
@@ -297,7 +310,8 @@ const DetailView = () => {
       bookingData.courtId,
       bookingData.sportId,
       bookingData.startTime,
-      bookingData.endTime
+      bookingData.endTime,
+      totalPrice
     );
 
     
@@ -346,7 +360,7 @@ const DetailView = () => {
   useEffect(( ) => {
     if( selectedGame) {
       console.log("Selected Game:", selectedGame);
-      if(selectedGame.scheduledPlayers.includes("USER_JWXJ19")){
+      if(selectedGame.scheduledPlayers.includes(UserId)){
         setIsBooked(true);
       }
       else {

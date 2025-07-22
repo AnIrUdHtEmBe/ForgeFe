@@ -12,7 +12,7 @@ import { HttpStatusCode, type AxiosResponse } from 'axios';
 import DropdownMenu, { DropdownItemCheckboxGroup, DropdownItemCheckbox, DropdownItem } from '@atlaskit/dropdown-menu';
 import { enqueueSnackbar } from 'notistack';
 import type { t_slot } from '../../types/slot';
-import { convertUnixToLocalDateString} from '../../utils/date';
+import { convertUnixToLocalDateString, convertUnixToLocalTime} from '../../utils/date';
 function BookingDetails() {
     
     
@@ -150,7 +150,7 @@ function BookingDetails() {
   const finalEndTime = Number(selectedSlots[selectedSlots.length - 1]?.endTime ?? 0);
    
    
-  console.log("Final Start Time:", finalStartTime);
+  console.log("Final Start Time:", finalStartTime,selectedSlots);
   
 
 
@@ -166,6 +166,8 @@ function BookingDetails() {
         const bookingData = {
             bookingId: bookingDetails.bookingId,
             startTime: new Date(finalStartTime *  1000).toISOString(),
+            endTime:new Date(finalEndTime*  1000).toISOString(),
+            courtId:bookingDetails.courtId
             
         }
         const onAccept = (response: AxiosResponse) => {
@@ -199,13 +201,31 @@ function BookingDetails() {
             onReject,
             bookingData.bookingId,
             bookingData.startTime,
+            bookingData.endTime,
+            bookingData.courtId
         )
         await getBooking();
         setSelectedSlotIds([]);
         
     }   
     
-
+    console.log(new Date(Number(bookingDetails?.endTime) * 1000).toLocaleTimeString(
+                        [],
+                        {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        }),bookingDetails?.endTime,new Date(bookingDetails?.endTime),selectedSlotIds
+,new Date(Number(bookingDetails?.startTime) * 1000).toLocaleTimeString([], {
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            }),new Date(Number(bookingDetails?.et_unix) * 1000).toLocaleTimeString([], {
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            }),convertUnixToLocalTime(bookingDetails?.startTime),"this is wont")
+    
   
   return (
     <div className="detail-view-container">
@@ -259,22 +279,24 @@ function BookingDetails() {
                           minute: "2-digit",
                           hour12: true,
                         }
-                      )}` :
-                      `${new Date(bookingDetails?.st_unix * 1000).toLocaleTimeString(
-                        [],
-                        {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        }
-                      )} - ${new Date(bookingDetails?.et_unix * 1000).toLocaleTimeString(
-                        [],
-                        {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        }
-                      )}`
+                      )}`:
+                      // `${new Date(Number(bookingDetails?.startTime) * 1000).toLocaleTimeString(
+                      //   [],
+                      //   {
+                      //     hour: "numeric",
+                      //     minute: "2-digit",
+                      //     hour12: true,
+
+                      //   }
+                      // )}234432 - ${new Date(Number(bookingDetails?.endTime) * 1000).toLocaleTimeString(
+                      //   [],
+                      //   {
+                      //     hour: "numeric",
+                      //     minute: "2-digit",
+                      //     hour12: true,
+                      //   }
+                      // )}`
+                      `${convertUnixToLocalTime(bookingDetails?.startTime)}-${convertUnixToLocalTime(bookingDetails?.endTime)}`
                      
                 }
                 shouldFitContainer
@@ -320,7 +342,7 @@ function BookingDetails() {
                               minute: "2-digit",
                               hour12: true,
                             })}{" "}
-                            -{" "}
+                            -{" AQDSFGHJ "}
                             {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
                               hour: "numeric",
                               minute: "2-digit",

@@ -9,4 +9,5 @@ export type t_slot = {
  date: string;           // ISO date string
  st_unix: number;        // Unix timestamp (seconds)
  et_unix: number;        // Unix timestamp (seconds)
+ price?:number;
 };

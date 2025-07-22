@@ -114,3 +114,18 @@ export function getDateRange(startDate: string, endDate: string) {
 
   return dates;
 }
+
+export function convertUnixToLocalTime(st_ist:any) {
+  const utcDate = new Date(st_ist);
+
+// Convert to IST (UTC+5:30)
+const istOffset = 5.5 * 60; // in minutes
+const istTime = new Date(utcDate.getTime() + istOffset * 60 * 1000);
+
+// Format as HH:MM
+const hours = istTime.getHours().toString().padStart(2, '0');
+const minutes = istTime.getMinutes().toString().padStart(2, '0');
+console.log(`${hours}:${minutes}`);
+  return `${hours}:${minutes}`
+}
+

@@ -29,7 +29,7 @@ const ViewPlan = () => {
   const [modalMap, setModalMap] = useState<{ [id: string]: boolean }>({});
 
   const [weekPlan, setWeekPlan] = useState<t_plan | null>(null);
-  const [newWeekPlan,setnewWeekPlan]=useState<t_plan[]| null>(null);
+  const [newWeekPlan, setnewWeekPlan] = useState<t_plan[] | null>(null);
   const [pageState, setPageState] = useState(E_PageState.Unknown);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [weekStartToEndDates, setWeekStartToEndDates] = useState<string[]>([]);
@@ -44,7 +44,7 @@ const ViewPlan = () => {
     value: string,
     category: string,
     selectedDateISO: string,
-    sessionCurrent:t_session
+    sessionCurrent: t_session
   ) => {
     if (category === "FITNESS") {
       if (value === "personal")
@@ -105,8 +105,8 @@ const ViewPlan = () => {
 
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
-        console.log(response.data[response.data.length-1],"wwwwsetweekplan");
-        setWeekPlan(response.data[response.data.length-1]);
+        console.log(response.data[response.data.length - 1], "wwwwsetweekplan");
+        setWeekPlan(response.data[response.data.length - 1]);
         setnewWeekPlan([response.data])
         if (weekNumber != 0) {
           setActiveIndex(0);
@@ -149,16 +149,25 @@ const ViewPlan = () => {
   }, [weekNumber]);
 
   const arrowRightHandler = () => {
-    if (activeIndex >= 6) {
+    console.log(activeIndex, weekNumber, "this is right")
+
+    if (activeIndex >= 6)
+    // return;
+
+    {
       setActiveIndex(0);
       setWeekNumber(weekNumber + 1);
       setgetDate(new Date(getDate.setDate(getDate.getDate() + 7)));
       return;
     }
-    setActiveIndex(activeIndex + 1);
+    // setActiveIndex(activeIndex + 1);
   };
   const arrowLeftHandler = () => {
-    if (activeIndex <= 0) {
+    console.log(activeIndex, weekNumber, "this is left")
+    if (activeIndex <= 0)
+    // return;
+
+    {
       if (weekNumber > 0) {
         setActiveIndex(6);
         setWeekNumber(weekNumber - 1);
@@ -168,7 +177,7 @@ const ViewPlan = () => {
       }
       return;
     }
-    setActiveIndex(activeIndex - 1);
+    // setActiveIndex(activeIndex - 1);
   };
 
   console.log(new Date(getDate.setDate(getDate.getDate())));
@@ -176,16 +185,18 @@ const ViewPlan = () => {
     const weekDates = getArrayOfDatesFromSundayToSaturday(
       new Date(getDate.setDate(getDate.getDate()))
     );
+    console.log(weekDates, "these are ween")
     setWeekStartToEndDates(weekDates);
   }, [weekNumber]);
 
   const currentDate = weekStartToEndDates[activeIndex];
 
-  console.log(newWeekPlan,"weekplan")
-// t_session
-  const [newsessionForCurrentDate,setnewsessionForCurrentDate]=useState<t_session[]>([])
- 
-  
+  console.log(newWeekPlan, "weekplan")
+  // t_session
+  const [newsessionForCurrentDate, setnewsessionForCurrentDate] = useState<t_session[]>([])
+  const [filterSession,setFilterSession]=useState('');
+
+
   // useEffect(()=>{
   //   if(!newWeekPlan) return;
   //    const temp_session:t_session[]=[];
@@ -207,9 +218,9 @@ const ViewPlan = () => {
   //         console.log("temp_seession",temp_session)
   //         temp_session.push(response)
   //       }
-        
+
   //     }
-      
+
   //   })
   //   setnewsessionForCurrentDate(temp_session)
 
@@ -217,48 +228,49 @@ const ViewPlan = () => {
   // },[newWeekPlan,currentDate])
 
   useEffect(() => {
-  if (!newWeekPlan) return;
+    if (!newWeekPlan) return;
 
-  const temp_session: t_session[] = [];
+    const temp_session: t_session[] = [];
 
-  newWeekPlan.forEach((data: t_plan) => {
-    for (const [key, value] of Object.entries(data)) {
-      const matchingSessions = value?.sessionInstances?.filter(
-        (session: t_session) =>
-          formatDate(session.scheduledDate) === formatDate(currentDate)
-      );
+    newWeekPlan.forEach((data: t_plan) => {
+      for (const [key, value] of Object.entries(data)) {
+        const matchingSessions = value?.sessionInstances?.filter(
+          (session: t_session) =>
+            formatDate(session.scheduledDate) === formatDate(currentDate) &&
+            session.status !== "REMOVED"
+        );
 
-      if (matchingSessions?.length) {
-        temp_session.push(...matchingSessions); // push all
+        if (matchingSessions?.length) {
+          temp_session.push(...matchingSessions); // push all
+        }
       }
+    });
+
+    setnewsessionForCurrentDate(temp_session);
+  }, [newWeekPlan, currentDate]);
+
+
+
+  useEffect(() => {
+    if (newsessionForCurrentDate) {
+      console.log("session found", newsessionForCurrentDate, currentDate)
     }
-  });
-
-  setnewsessionForCurrentDate(temp_session);
-}, [newWeekPlan, currentDate]);
-
-  
-
-  useEffect(()=>{
-    if(newsessionForCurrentDate){
-      console.log("session found",newsessionForCurrentDate,currentDate)
-    }
-    else{
-      console.log("no session",currentDate,newsessionForCurrentDate)
+    else {
+      console.log("no session", currentDate, newsessionForCurrentDate)
     }
     // console.log(newsessionForCurrentDate,"lk[qpkdqow")
-  },[newsessionForCurrentDate])
-  
-  
+  }, [newsessionForCurrentDate])
+
+
   // const sessionForCurrentDate = weekPlan?.sessionInstances.find(
   //   (session) => formatDate(session.scheduledDate) === formatDate(currentDate)
   // );
 
-  const slotBookingHandler = (sessionCategory: string,data1:t_session) => {
+  const slotBookingHandler = (sessionCategory: string, data1: t_session) => {
     const selectedDateISO = new Date(
       weekStartToEndDates[activeIndex]
     ).toISOString();
-    console.log(data1,"qkpwj;eoihg")
+    console.log(data1, "qkpwj;eoihg")
 
     // console.log(sessionCategory,sessionForCurrentDate,"sessionForCurrentDateddddddddddd",selectedDateISO);
 
@@ -277,7 +289,7 @@ const ViewPlan = () => {
           }
           return;
         } else if (type === "personal") {
-          clickHandler("personal", sessionCategory, selectedDateISO,data1);
+          clickHandler("personal", sessionCategory, selectedDateISO, data1);
           return;
         } else window.location.href = "/bookFitness";
       } else {
@@ -309,7 +321,7 @@ const ViewPlan = () => {
           }
           return;
         } else if (type === "personal") {
-          clickHandler("personal", sessionCategory, selectedDateISO,data1);
+          clickHandler("personal", sessionCategory, selectedDateISO, data1);
           return;
         } else window.location.href = "/bookWellness";
       } else {
@@ -355,8 +367,13 @@ const ViewPlan = () => {
     <div className="view-plan-container">
       <div className="view-plan-top-container">
         {categories.map((category, i) => {
+           const isActive = filterSession === category.name.toUpperCase();
           return (
-            <div key={i} className="view-plan-category-container">
+            <div key={i} className={`view-plan-category-container ${isActive ? "--active" : ""}`}
+            onClick={()=>{
+              
+              setFilterSession(category.name.toUpperCase())}}
+            >
               <div className="--icon"> {category.icon()}</div>
               <div className="--name"> {category.name}</div>
             </div>
@@ -367,7 +384,7 @@ const ViewPlan = () => {
       <div className="view-plan-today-information-container">
         <div className="view-plan-top-information-top-container">
           <div className="--arrows">
-          <div className="--arrow-left">
+            <div className="--arrow-left">
               <FaChevronLeft
                 onClick={arrowLeftHandler}
                 size={DEFAULT_ICON_SIZE - 10}
@@ -378,7 +395,7 @@ const ViewPlan = () => {
             {formatDate(weekStartToEndDates[activeIndex])}
           </div>
           <div className="--arrows">
-           
+
             <div className="--arrow-right">
               <FaChevronRight
                 onClick={arrowRightHandler}
@@ -405,202 +422,228 @@ const ViewPlan = () => {
             <span>Your Schedule</span>
           </div>
         </div>
-          <div>
-            {
-            newsessionForCurrentDate.length>0?(
-            <div>
-              {
-                newsessionForCurrentDate?.map((data1:t_session,index:number)=>{
-                  // for (const [key,value] of Object.entries(data1) as [string,any]){
-                  //   if(key==='category')
-                  //     console.log(key,value,"value")
-                  
-                  // }
-                  console.log(data1.category,data1.name,"cjbqkhvc")
-                  return(
-                    <>
-                    <div className="--schedule-container">
-                      <div className="--schedule-templat-container">
-                      <div>
-                          <span className="--schedule-template-title"> {data1?.sessionTemplateTitle}</span>
-                      </div>
-                      <div
-                          className={`--book-slot ${
-                            data1 ? "" : "--inActive"
-                          }`}
-                          onClick={() => {
-                            if (!data1) return;
+        <div>
+          {
+            newsessionForCurrentDate.length > 0 ? (
+              <div>
+                {
+                  newsessionForCurrentDate
+                  ?.filter(data1=>filterSession === 'ALL' || data1.category===filterSession)
+                  ?.map((data1: t_session, index: number) => {
+                    // for (const [key,value] of Object.entries(data1) as [string,any]){
+                    //   if(key==='category')
+                    //     console.log(key,value,"value")
 
-                            if (
-                              data1?.category === "FITNESS" ||
-                              data1?.category === "WELLNESS"
-                            ) {
-                              if (data1?.status == "SCHEDULED") {
-                                // setShowModal(true);
-                                 setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: true }));
-                                return;
-                              }
-                            }
-                            
-                            slotBookingHandler(data1?.category,data1);
-                          }}
-                        >
-                          <span>
-                            {data1?.status === "BOOKED"
-                              ? "View Booking" :  "Book Slot"
-                              }
-                          </span>
+                    // }
+                    console.log(data1.category, data1.name, "cjbqkhvc")
+                    const validActivities = data1.activities.filter(activity => activity.status !== 'REMOVED');
 
-                        </div>
-                      </div>
-                    {
-                      data1?(
-                        <div className="--bottom">
-                          {data1.activities.map((activity, i) => (
-                            <div key={i} className="session-information-container">
-                              <div className="--session-info">
-                                <div className="--start">
-                                  <div
-                                    className="dot"
-                                    style={
-                                      i === 0
-                                        ? {
-                                            outline: "1px solid black",
-                                            outlineOffset: "10px",
-                                          }
-                                        : {}
-                                    }
-                                  />
-                                  <div className="--session">
-                                    <div>
-                                      <span className="--name">
-                                        {activity.name || "No name"}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="--desc">{activity.customReps}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                {/* {i === 0 && (
+                    return (
+                      <>
+                        <div className="--schedule-container">
+                          <div className="--schedule-templat-container">
+                            <div>
+                              <span className="--schedule-template-title"> {data1?.sessionTemplateTitle==="DUMMY"?"ACTIVITIES":data1?.sessionTemplateTitle}</span>
+                            </div>
+                            { data1?.category !== "NUTRITION" && (<div
+                              className={`--book-slot ${data1 ? "" : "--inActive"
+                                }`}
+                              onClick={() => {
+                                if (!data1) return;
+
+                                if (
+                                  data1?.category === "FITNESS" ||
+                                  data1?.category === "WELLNESS"
+                                ) {
+                                  if (data1?.status == "SCHEDULED") {
+                                    // setShowModal(true);
+                                    setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: true }));
+                                    return;
+                                  }
+                                }
+                                if (data1?.category === 'NUTRITION') {
+                                  return
+                                }
+
+                                slotBookingHandler(data1?.category, data1);
+                              }}
+                            >
+                              <span>
+                                {data1?.status === "BOOKED"
+                                  ? "View Booking" : "Book Slot"
+                                }
+                              </span>
+
+                            </div>)}
+                          </div>
+                          {
+                            data1 ? (
+                              <div className="--bottom">
+                                {data1.activities
+                                  .filter(activity => activity.status !== 'REMOVED')
+                                  .map((activity, i) => (
+                                    <div key={i} className="session-information-container">
+                                      <div className="--session-info">
+                                        <div className="--start">
+                                          <div
+                                            className="dot"
+                                            style={
+                                              i === 0
+                                                ? {
+                                                  outline: "1px solid black",
+                                                  outlineOffset: "10px",
+                                                }
+                                                : {}
+                                            }
+                                          />
+                                          <div className="--session">
+                                            <div>
+                                              <span className="--name">
+                                                {activity.name || "No name"}
+                                              </span>
+                                            </div>
+                                            <div className="--desc">{activity.target}{activity?.unit == "weight"
+                                                        ? "Kg"
+                                                        : activity?.unit == "distance"
+                                                            ? "Km"
+                                                            : activity?.unit == "time"
+                                                                ? "Min"
+                                                                : activity?.unit == "repetitions"
+                                                                    ? "Reps"
+                                                                    : activity?.unit == "grams"
+                                                                        ? "g"
+                                                                        : activity?.unit == "meter"
+                                                                            ? "m"
+                                                                            : activity?.unit == "litre"
+                                                                                ? "L"
+                                                                                : activity?.unit == "millilitre"
+                                                                                    ? "ml"
+                                                                                    : ""
+                                                    }</div>
+                                            <div>
+                                              <span className="--desc">{activity.customReps?activity.customReps:'-'}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        {/* {i === 0 && (
                                   <div className="--end">
                                     <span>Start</span>
                                     <FaPlay />
                                   </div>
                                 )} */}
+                                      </div>
+                                      {i < validActivities.length - 1 && (
+                                        <div className="--line" ></div>
+                                      )}
+                                      {modalMap[data1.sessionInstanceId] && (
+                                        <div className="modal-overlay">
+                                          <div className="modal-box">
+                                            <button
+                                              className="modal-close"
+                                              onClick={() =>
+                                                setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: false }))
+                                              }
+                                            >
+                                              &times;
+                                            </button>
+
+                                            <div className="modal-title">Choose Type</div>
+                                            <button
+                                              className={`modal-button group ${type === "group" ? "active" : ""}`}
+                                              onClick={() => setType("group")}
+                                            >
+                                              Group Session
+                                            </button>
+                                            <button
+                                              className={`modal-button group ${type === "personal" ? "active" : ""}`}
+                                              onClick={() => setType("personal")}
+                                            >
+                                              1-on-1 Session
+                                            </button>
+
+                                            <button
+                                              className="modal-confirm"
+                                              disabled={type === ""}
+                                              onClick={() =>
+                                                slotBookingHandler(data1.category, data1)
+                                              }
+                                            >
+                                              Confirm
+                                            </button>
+                                          </div>
+                                        </div>
+                                      )}
+
+                                    </div>
+                                  ))}
                               </div>
-                              {i < data1.activities.length - 1 && (
-                                <div className="--line" />
-                              )}
-                              {modalMap[data1.sessionInstanceId] && (
-                                <div className="modal-overlay">
-                                  <div className="modal-box">
-                                    <button
-                                      className="modal-close"
-                                      onClick={() =>
-                                        setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: false }))
-                                      }
-                                    >
-                                      &times;
-                                    </button>
-
-                                    <div className="modal-title">Choose Type</div>
-                                    <button
-                                      className={`modal-button group ${type === "group" ? "active" : ""}`}
-                                      onClick={() => setType("group")}
-                                    >
-                                      Group Session
-                                    </button>
-                                    <button
-                                      className={`modal-button group ${type === "personal" ? "active" : ""}`}
-                                      onClick={() => setType("personal")}
-                                    >
-                                      1-on-1 Session
-                                    </button>
-
-                                    <button
-                                      className="modal-confirm"
-                                      disabled={type === ""}
-                                      onClick={() =>
-                                        slotBookingHandler(data1.category, data1)
-                                      }
-                                    >
-                                      Confirm {data1.sessionInstanceId}
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
-
-                            </div>
-                          ))}
+                            ) : (
+                              <div className="--noSession">
+                                <span>No session for this date.</span>
+                              </div>
+                            )
+                          }
                         </div>
-                        ):(
-                          <div className="--noSession">
-                            <span>No session for this date.</span>
-                          </div>
-                        )
-                    }
-                    </div>
-                    
-                    </>
-                  )
-                })
-              }
 
-            </div>
-            ):(
+                      </>
+                    )
+                  })
+                }
+
+              </div>
+            ) : (
               <div className="--noSession">
                 <span>No session for this date.</span>
               </div>
-              )
-            }
-          </div>
-          
+            )
+          }
         </div>
-        {
+
+      </div>
+      {
         // sessionForCurrentDate ? (
-          // <div className="--bottom">
-          //   {sessionForCurrentDate.activities.map((activity, i) => (
-          //     <div key={i} className="session-information-container">
-          //       <div className="--session-info">
-          //         <div className="--start">
-          //           <div
-          //             className="dot"
-          //             style={
-          //               i === 0
-          //                 ? {
-          //                     outline: "1px solid black",
-          //                     outlineOffset: "10px",
-          //                   }
-          //                 : {}
-          //             }
-          //           />
-          //           <div className="--session">
-          //             <span className="--name">
-          //               {activity.name || "No name"}
-          //             </span>
-          //             <span className="--desc">{activity.customReps}</span>
-          //           </div>
-          //         </div>
-          //         {/* {i === 0 && (
-          //           <div className="--end">
-          //             <span>Start</span>
-          //             <FaPlay />
-          //           </div>
-          //         )} */}
-          //       </div>
-          //       {i < sessionForCurrentDate.activities.length - 1 && (
-          //         <div className="--line" />
-          //       )}
-          //     </div>
-          //   ))}
-          // </div>
+        // <div className="--bottom">
+        //   {sessionForCurrentDate.activities.map((activity, i) => (
+        //     <div key={i} className="session-information-container">
+        //       <div className="--session-info">
+        //         <div className="--start">
+        //           <div
+        //             className="dot"
+        //             style={
+        //               i === 0
+        //                 ? {
+        //                     outline: "1px solid black",
+        //                     outlineOffset: "10px",
+        //                   }
+        //                 : {}
+        //             }
+        //           />
+        //           <div className="--session">
+        //             <span className="--name">
+        //               {activity.name || "No name"}
+        //             </span>
+        //             <span className="--desc">{activity.customReps}</span>
+        //           </div>
+        //         </div>
+        //         {/* {i === 0 && (
+        //           <div className="--end">
+        //             <span>Start</span>
+        //             <FaPlay />
+        //           </div>
+        //         )} */}
+        //       </div>
+        //       {i < sessionForCurrentDate.activities.length - 1 && (
+        //         <div className="--line" />
+        //       )}
+        //     </div>
+        //   ))}
+        // </div>
         // ) : (
         //   <div className="--noSession">
         //     <span>No session for this date.</span>
         //   </div>
         // )
-        }
+      }
       {/* </div> */}
       {/* {showModal && (
         <div className="modal-overlay">

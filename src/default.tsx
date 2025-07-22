@@ -6,29 +6,65 @@ import { VscWorkspaceUnknown } from 'react-icons/vsc';
 import { IoIosInfinite } from 'react-icons/io';
 import {  TbWeight, TbYoga } from 'react-icons/tb';
 import { TbPhysotherapist } from 'react-icons/tb';
-
+import {
+  MdSelfImprovement,
+  MdFastfood,
+  MdTimeline,
+  MdSportsSoccer,
+  MdCategory,
+  MdApps,
+} from "react-icons/md";
 export const DEFAULT_ICON_SIZE = 30;
 
+// export const categories = [
+// 	{
+// 		name: 'Fitness',
+// 		icon: () => <MdFitnessCenter size={DEFAULT_ICON_SIZE} />,
+// 	},
+// 	{
+// 		name: 'Wellness',
+// 		icon: () => <MdFitnessCenter size={DEFAULT_ICON_SIZE} />,
+// 	},
+
+// 	{
+// 		name: 'Nutrition',
+// 		icon: () => <MdFitnessCenter size={DEFAULT_ICON_SIZE} />,
+// 	},
+// 	{
+// 		name: 'Progress tracking',
+// 		icon: () => <MdFitnessCenter size={DEFAULT_ICON_SIZE} />,
+// 	},
+// ];
 export const categories = [
-	{
-		name: 'Fitness',
-		icon: () => <MdFitnessCenter size={DEFAULT_ICON_SIZE} />,
-	},
-	{
-		name: 'Wellness',
-		icon: () => <MdFitnessCenter size={DEFAULT_ICON_SIZE} />,
-	},
-
-	{
-		name: 'Nutrition',
-		icon: () => <MdFitnessCenter size={DEFAULT_ICON_SIZE} />,
-	},
-	{
-		name: 'Progress tracking',
-		icon: () => <MdFitnessCenter size={DEFAULT_ICON_SIZE} />,
-	},
+  {
+    name: "All",
+    icon: () => <MdApps size={DEFAULT_ICON_SIZE} />,
+  },
+  {
+    name: "Fitness",
+    icon: () => <MdFitnessCenter size={DEFAULT_ICON_SIZE} />,
+  },
+  {
+    name: "Wellness",
+    icon: () => <MdSelfImprovement size={DEFAULT_ICON_SIZE} />,
+  },
+  {
+    name: "Nutrition",
+    icon: () => <MdFastfood size={DEFAULT_ICON_SIZE} />,
+  },
+  {
+    name: "Progress tracking",
+    icon: () => <MdTimeline size={DEFAULT_ICON_SIZE} />,
+  },
+  {
+    name: "Sports",
+    icon: () => <MdSportsSoccer size={DEFAULT_ICON_SIZE} />,
+  },
+  {
+    name: "Other",
+    icon: () => <MdCategory size={DEFAULT_ICON_SIZE} />,
+  },
 ];
-
 export const SNACK_AUTO_HIDE = 3000;
 
 export const SPORTS = [

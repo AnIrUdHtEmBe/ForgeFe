@@ -65,12 +65,14 @@ export const rescheduleBooking = async (
   onAccept: (response: AxiosResponse) => void,
   onReject: (error: unknown) => void,
   bookingId: string,
-  newDate: string,
+  newStartDate: string,
+  newEndDate:string,
+  courtId:string
 ) => {
   try {
     const token = await CheckJWT();
     const response = await axios.patch(
-      PATH_V2 + `/court/booking/${bookingId}/reschedule-by-time?newStartTime=${newDate}`,
+      PATH_V2 + `/court/booking/${bookingId}/reschedule-by-time?newStartTime=${newStartDate}&newEndTime=${newEndDate}&courtId=${courtId}`,
       { headers: { Authorization: 'Bearer ' + token } }
     );
     onAccept(response);
