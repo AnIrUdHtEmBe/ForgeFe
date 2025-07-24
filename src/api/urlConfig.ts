@@ -1,10 +1,10 @@
 import type { RegisterFormData } from "../components/Register/Register";
 
-// export const PATH = 'https://forge-play-backend.forgehub.in';
-export const PATH='https://forge-play-backendv2.forgehub.in'
+export const PATH = 'https://forge-play-backend.forgehub.in';
+// export const PATH='https://forge-play-backendv2.forgehub.in'
 // export const PATH_V2='http://127.0.0.1:8000'
-export const PATH_V2='https://play-os-backendv2.forgehub.in'
-// export const PATH_V2 = 'https://play-os-backend.forgehub.in'
+// export const PATH_V2='https://play-os-backendv2.forgehub.in'
+export const PATH_V2 = 'https://play-os-backend.forgehub.in'
 
 export const GET_USER_PLAN = (id: string) =>
 	`/humans/${id}/plan-instances-within-date`;

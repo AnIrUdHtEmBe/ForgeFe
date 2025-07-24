@@ -194,7 +194,7 @@ const ViewPlan = () => {
   console.log(newWeekPlan, "weekplan")
   // t_session
   const [newsessionForCurrentDate, setnewsessionForCurrentDate] = useState<t_session[]>([])
-  const [filterSession,setFilterSession]=useState('');
+  const [filterSession,setFilterSession]=useState('ALL');
 
 
   // useEffect(()=>{
@@ -340,6 +340,22 @@ const ViewPlan = () => {
         }
       }
     } else if (sessionCategory === "SPORTS") {
+      if (data1?.status === "SCHEDULED") {
+        navigate(E_Routes.viewCards, {
+          state: {
+            selectedDate: selectedDateISO,
+            category: "SPORTS",
+            session: data1,
+          },
+        });
+      } else {
+        navigate(E_Routes.gameDetails, {
+          state: {
+            gameId: data1?.gameId,
+          },
+        });
+      }
+    }else{
       if (data1?.status === "SCHEDULED") {
         navigate(E_Routes.viewCards, {
           state: {

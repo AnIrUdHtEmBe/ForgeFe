@@ -52,10 +52,10 @@ export const categories = [
     name: "Nutrition",
     icon: () => <MdFastfood size={DEFAULT_ICON_SIZE} />,
   },
-  {
-    name: "Progress tracking",
-    icon: () => <MdTimeline size={DEFAULT_ICON_SIZE} />,
-  },
+//   {
+//     name: "Progress tracking",
+//     icon: () => <MdTimeline size={DEFAULT_ICON_SIZE} />,
+//   },
   {
     name: "Sports",
     icon: () => <MdSportsSoccer size={DEFAULT_ICON_SIZE} />,
