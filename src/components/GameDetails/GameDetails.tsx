@@ -130,7 +130,7 @@ const GameDetails = () => {
           <span className="session-type-1">{gameDetails?.difficultyLevel}</span>
         </div>
         <div className="players-grid">
-          {gameDetails?.scheduledPlayersDetails?.map((player, i) => (
+          {gameDetails?.scheduledPlayers?.map((player, i) => (
             <div key={i} className="player-card">
               {images[player.userId] ? (
                 <img src={images[player.userId]} alt="Player" />

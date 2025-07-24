@@ -36,11 +36,11 @@ function LoginV2(props: LoginProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(formData)
+    // console.log(formData)
 
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
-        console.log(response.data)
+        // console.log(response.data)
         localStorage.setItem("token" , JSON.stringify(response.data));
         enqueueSnackbar({
           message: "Success , Redirectiong.............",

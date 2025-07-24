@@ -51,7 +51,9 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
   }
 
   const handleBooking = (gameId: string) => {
-    console.log("Booking clicked");
+    console.log("Booking clicked", gameId,
+       localStorage.getItem("userId")?.slice(1,-1) || "",
+       "scheduledPlayers");
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
         setModal(true);
@@ -62,13 +64,15 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
         });
         sessionStorage.setItem("shouldRefetchGames", "true");
         navigate("/viewPlan") 
-      } else {
-        enqueueSnackbar({
-          message: "Failed to join the game!",
-          autoHideDuration: 3000,
-          variant: "error",
-        });
-      }
+      } 
+      
+      // else {
+      //   enqueueSnackbar({
+      //     message: "Failed to join the game!",
+      //     autoHideDuration: 3000,
+      //     variant: "error",
+      //   });
+      // }
     };
 
     const onReject = (e: unknown) => {
