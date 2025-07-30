@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { categories, DEFAULT_ICON_SIZE, SNACK_AUTO_HIDE } from "../../default";
 import "./styles.css";
+import { Checkbox } from '@mui/material';
 import type { t_plan } from "../../types/plan";
 import {
   formatDate,
@@ -21,8 +22,9 @@ import { enqueueSnackbar } from "notistack";
 import { data, useNavigate } from "react-router-dom";
 import E_Routes from "../../types/routes";
 import Button from "../../components/Button/Button.tsx";
-import { getUserById } from "../../api/user";
+import { getUserById, updateNutritionStatus } from "../../api/user";
 import type { t_session } from "../../types/session.ts";
+import { markActivityComplete } from "../../api/activity.ts";
 const ViewPlan = () => {
   //current week plan
   const [showModal, setShowModal] = useState(false);
@@ -71,7 +73,9 @@ const ViewPlan = () => {
   const getUser = (id: string) => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
-        console.log(response.data);
+        console.log(response.data.userId,"ihiugufytduy");
+        const res= updateNutritionStatus(response.data.userId)
+        console.log(res)
         if (response.data.type === "admin") {
           setCreateGame(true);
         }
@@ -152,32 +156,32 @@ const ViewPlan = () => {
     console.log(activeIndex, weekNumber, "this is right")
 
     if (activeIndex >= 6)
-    // return;
+    return;
 
-    {
-      setActiveIndex(0);
-      setWeekNumber(weekNumber + 1);
-      setgetDate(new Date(getDate.setDate(getDate.getDate() + 7)));
-      return;
-    }
-    // setActiveIndex(activeIndex + 1);
+   
+    setActiveIndex(activeIndex + 1);
   };
   const arrowLeftHandler = () => {
     console.log(activeIndex, weekNumber, "this is left")
     if (activeIndex <= 0)
-    // return;
+    return;
 
-    {
-      if (weekNumber > 0) {
-        setActiveIndex(6);
-        setWeekNumber(weekNumber - 1);
-        setgetDate(new Date(getDate.setDate(getDate.getDate() - 7)));
-      } else {
-        return;
-      }
-      return;
-    }
-    // setActiveIndex(activeIndex - 1);
+    // {
+    //   if (weekNumbe // {
+    //   setActiveIndex(0);
+    //   setWeekNumber(weekNumber + 1);
+    //   setgetDate(new Date(getDate.setDate(getDate.getDate() + 7)));
+    //   return;
+    // }r > 0) {
+    //     setActiveIndex(6);
+    //     setWeekNumber(weekNumber - 1);
+    //     setgetDate(new Date(getDate.setDate(getDate.getDate() - 7)));
+    //   } else {
+    //     return;
+    //   }
+    //   return;
+    // }
+    setActiveIndex(activeIndex - 1);
   };
 
   console.log(new Date(getDate.setDate(getDate.getDate())));
@@ -355,25 +359,81 @@ const ViewPlan = () => {
           },
         });
       }
-    }else{
-      if (data1?.status === "SCHEDULED") {
-        navigate(E_Routes.viewCards, {
-          state: {
-            selectedDate: selectedDateISO,
-            category: "SPORTS",
-            session: data1,
-          },
+    }
+    // else{
+    //   if (data1?.status === "SCHEDULED") {
+    //     navigate(E_Routes.viewCards, {
+    //       state: {
+    //         selectedDate: selectedDateISO,
+    //         category: "SPORTS",
+    //         session: data1,
+    //       },
+    //     });
+    //   } else {
+    //     navigate(E_Routes.gameDetails, {
+    //       state: {
+    //         gameId: data1?.gameId,
+    //       },
+    //     });
+    //   }
+    // }
+  };
+   const handleCheckboxChange=async(activityInstanceId:string,sessionInstanceId:string)=>{
+   let matchingPlan = null;
+
+newWeekPlan?.forEach((planGroup, index) => {
+  planGroup?.forEach((plan, planIndex) => {
+    const match = plan.sessionInstances?.some(
+      s => s.sessionInstanceId === sessionInstanceId
+    );
+
+    if (match) {
+      matchingPlan = plan;
+      console.log(
+        `✅ Match found at newWeekPlan[${index}].plans[${planIndex}] → planInstanceId:`,
+        plan.planInstanceId
+      );
+    }
+  });
+});
+
+console.log('Final matching plan:', matchingPlan.planInstanceId);
+// newWeekPlan?.forEach((plan, index) => {
+
+
+      try{
+        const onAccept = (response: AxiosResponse) => {
+      if (response.status === HttpStatusCode.Ok) {
+        getUserPlan();
+        enqueueSnackbar({
+          message: "Meal marked complete",
+          autoHideDuration: SNACK_AUTO_HIDE,
+          variant: "success",
         });
       } else {
-        navigate(E_Routes.gameDetails, {
-          state: {
-            gameId: data1?.gameId,
-          },
+        enqueueSnackbar({
+          message: "Failed to fetch the user data!",
+          autoHideDuration: SNACK_AUTO_HIDE,
+          variant: "error",
         });
       }
-    }
-  };
+    };
+    const onReject = (e: unknown) => {
+      console.log(e);
+      enqueueSnackbar({
+        message: "Failed to fetch the user data!",
+        autoHideDuration: SNACK_AUTO_HIDE,
+        variant: "error",
+      });
+    };
 
+    
+
+        const res=await markActivityComplete(onAccept,onReject,activityInstanceId,sessionInstanceId,matchingPlan.planInstanceId)
+      }catch(err){
+        console.error('Failed to update');
+      }
+   }
   // console.log("sessionForCurrentDate kkkk", sessionForCurrentDate);
   if (pageState === E_PageState.Loading) {
     return <FullScreenLoader />;
@@ -461,7 +521,7 @@ const ViewPlan = () => {
                             <div>
                               <span className="--schedule-template-title"> {data1?.sessionTemplateTitle==="DUMMY"?"ACTIVITIES":data1?.sessionTemplateTitle}</span>
                             </div>
-                            { data1?.category !== "NUTRITION" && (<div
+                            { data1?.category !== "NUTRITION" && data1?.sessionTemplateId!=="SEST_YFVI33" &&(<div
                               className={`--book-slot ${data1 ? "" : "--inActive"
                                 }`}
                               onClick={() => {
@@ -479,7 +539,7 @@ const ViewPlan = () => {
                                 }
                                 if (data1?.category === 'NUTRITION') {
                                   return
-                                }
+                                }                          
 
                                 slotBookingHandler(data1?.category, data1);
                               }}
@@ -494,7 +554,8 @@ const ViewPlan = () => {
                           </div>
                           {
                             data1 ? (
-                              <div className="--bottom">
+                              <>
+                              {data1.category!="NUTRITION" &&(<div className="--bottom">
                                 {data1.activities
                                   .filter(activity => activity.status !== 'REMOVED')
                                   .map((activity, i) => (
@@ -592,7 +653,112 @@ const ViewPlan = () => {
 
                                     </div>
                                   ))}
-                              </div>
+                              </div>)}
+                              {data1.category=="NUTRITION" &&(<div className="--bottom">
+                                {data1.activities
+                                  .filter(activity => activity.status !== 'REMOVED')
+                                  .map((activity, i) => (
+                                    <div key={i} className="session-information-container">
+                                      <div className="--session-info">
+                                        <div className="--start">
+                                          <div
+                                            className="dot"
+                                            style={
+                                              i === 0
+                                                ? {
+                                                  outline: "1px solid black",
+                                                  outlineOffset: "10px",
+                                                }
+                                                : {}
+                                            }
+                                          />
+                                          <div className="--session">
+                                            <div>
+                                              <span className="--name">
+                                                {activity.name || "No name"}
+                                              </span>
+                                            </div>
+                                            <div className="--desc">{activity.target}{activity?.unit == "weight"
+                                                        ? "Kg"
+                                                        : activity?.unit == "distance"
+                                                            ? "Km"
+                                                            : activity?.unit == "time"
+                                                                ? "Min"
+                                                                : activity?.unit == "repetitions"
+                                                                    ? "Reps"
+                                                                    : activity?.unit == "grams"
+                                                                        ? "g"
+                                                                        : activity?.unit == "meter"
+                                                                            ? "m"
+                                                                            : activity?.unit == "litre"
+                                                                                ? "L"
+                                                                                : activity?.unit == "millilitre"
+                                                                                    ? "ml"
+                                                                                    : ""
+                                                    }</div>
+                                            <div>
+                                              {/* <span className="--desc">{activity.customReps?activity.customReps:'-'}</span> */}
+                                              {/* {} */}
+                                              <Checkbox 
+                                              checked={activity.status === 'COMPLETE'}
+                                              disabled={activity.status=='COMPLETE'}
+                                              onChange={()=>handleCheckboxChange(activity.activityInstanceId,data1.sessionInstanceId)} />
+                                            </div>
+                                          </div>
+                                        </div>
+                                        {/* {i === 0 && (
+                                  <div className="--end">
+                                    <span>Start</span>
+                                    <FaPlay />
+                                  </div>
+                                )} */}
+                                      </div>
+                                      {i < validActivities.length - 1 && (
+                                        <div  id="line-nutrition" ></div>
+                                      )}
+                                      {/* {modalMap[data1.sessionInstanceId] && (
+                                        <div className="modal-overlay">
+                                          <div className="modal-box">
+                                            <button
+                                              className="modal-close"
+                                              onClick={() =>
+                                                setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: false }))
+                                              }
+                                            >
+                                              &times;
+                                            </button>
+
+                                            <div className="modal-title">Choose Type</div>
+                                            <button
+                                              className={`modal-button group ${type === "group" ? "active" : ""}`}
+                                              onClick={() => setType("group")}
+                                            >
+                                              Group Session
+                                            </button>
+                                            <button
+                                              className={`modal-button group ${type === "personal" ? "active" : ""}`}
+                                              onClick={() => setType("personal")}
+                                            >
+                                              1-on-1 Session
+                                            </button>
+
+                                            <button
+                                              className="modal-confirm"
+                                              disabled={type === ""}
+                                              onClick={() =>
+                                                slotBookingHandler(data1.category, data1)
+                                              }
+                                            >
+                                              Confirm
+                                            </button>
+                                          </div>
+                                        </div>
+                                      )} */}
+
+                                    </div>
+                                  ))}
+                              </div>)}
+                              </>
                             ) : (
                               <div className="--noSession">
                                 <span>No session for this date.</span>

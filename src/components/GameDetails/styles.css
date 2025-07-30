@@ -79,13 +79,24 @@
 }
 
 .session-type-1 {
-  background-color: #ef4444;
+  /* background-color: #ef4444; */
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 12px;
 }
-
+.game-bg-beginner {
+  background-color: rgba(99, 191, 119, 1);
+  color: white;
+}
+.game-bg-intermediate {
+  background-color: rgb(240, 240, 37);
+  color: black;
+}
+.game-bg-difficult {
+  background-color: rgb(226, 91, 91);
+  color: white;
+}
 .players-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

@@ -7,10 +7,13 @@ import type { AxiosResponse } from "axios";
 import { getGamesById } from "../../api/games";
 import { enqueueSnackbar } from "notistack";
 import { getAllImages } from "../../api/images";
+import { getBookingById } from "../../api/booking";
+import { convertUnixToLocalTime } from "../../utils/date";
 
 const GameDetails = () => {
   const location = useLocation();
   const [gameDetails, setGameDetails] = useState();
+  const [bookDetails,setBookDetails]=useState();
   const [images, setImages] = useState({});
   console.log(images);
 
@@ -63,6 +66,26 @@ const GameDetails = () => {
   useEffect(() => {
     getGameById();
   }, []);
+  const getBookById=(bookId)=>{
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === 200) {
+        console.log(response.data);
+        setBookDetails(response.data);
+      } else {
+        console.error("Failed to fetch game data");
+      }
+    };
+
+    const onReject = (error: unknown) => {
+      console.error("Error fetching game data:", error);
+    };
+    getBookingById(onAccept,onReject,bookId)
+  }
+  useEffect(()=>{
+    
+    getBookById(gameDetails?.bookingId)
+  },[gameDetails])
+  console.log(bookDetails,"kpojjojoi")
 
   const backClickHandler = () => {
     window.history.back();
@@ -88,22 +111,22 @@ const GameDetails = () => {
       <div className="datee-box">
         <div className="date-box">
           <p className="date">
-            {new Date(gameDetails?.startTime).toLocaleString("en-IN", {
+            {new Date(bookDetails?.startTime).toLocaleString("en-IN", {
               day: "numeric",
               month: "long",
               year: "numeric",
             })}
           </p>
           <p className="time">
-            {new Date(gameDetails?.startTime).toLocaleString("en-IN", {
+            {new Date(bookDetails?.startTime).toLocaleString("en-IN", {
               weekday: "long",
             })}
           </p>
         </div>
         <div className="time-box">
           <p className="time">
-            {new Date(
-              new Date(gameDetails?.startTime).getTime() + 5.5 * 60 * 60 * 1000
+            {/* {new Date(
+              new Date(bookDetails?.startTime).getTime() + 60 * 60 * 1000
             ).toLocaleTimeString("en-IN", {
               hour: "2-digit",
               minute: "2-digit",
@@ -113,12 +136,13 @@ const GameDetails = () => {
           <div>-</div>
           <p className="time">
             {new Date(
-              new Date(gameDetails?.endTime).getTime() + 5.5 * 60 * 60 * 1000
+              new Date(bookDetails?.endTime).getTime() + 60 * 60 * 1000
             ).toLocaleTimeString("en-IN", {
               hour: "2-digit",
               minute: "2-digit",
               hour12: true,
-            })}
+            })} */}
+            {convertUnixToLocalTime(bookDetails?.startTime)}-{convertUnixToLocalTime(bookDetails?.endTime)}
           </p>
         </div>
       </div>
@@ -127,10 +151,13 @@ const GameDetails = () => {
       <div className="players-section">
         <div className="players-header">
           <h3>Players</h3>
-          <span className="session-type-1">{gameDetails?.difficultyLevel}</span>
+          <span className={`session-type-1 ${gameDetails?.difficultyLevel === 'Beginner' ? 'game-bg-beginner' :
+                                                gameDetails?.difficultyLevel === 'Intermediate' ? 'game-bg-intermediate' :
+                                                    gameDetails?.difficultyLevel === 'Advanced' ? 'game-bg-difficult' : ''
+                                            }`}>{gameDetails?.difficultyLevel}</span>
         </div>
         <div className="players-grid">
-          {gameDetails?.scheduledPlayers?.map((player, i) => (
+          {gameDetails?.scheduledPlayersDetails?.map((player, i) => (
             <div key={i} className="player-card">
               {images[player.userId] ? (
                 <img src={images[player.userId]} alt="Player" />

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { TextField, Button } from '@mui/material';
 import './styles.css';
 import { E_PageState } from '../../types/state';
-import { login } from '../../api/user';
+import { login, updateNutritionStatus } from '../../api/user';
 import { HttpStatusCode, type AxiosResponse } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { SNACK_AUTO_HIDE } from '../../default';
@@ -21,6 +21,8 @@ const Login = () => {
 		const onAccept = (response: AxiosResponse) => {
 			if (response.status === HttpStatusCode.Ok) {
 				setPageState(E_PageState.Accepted);
+				
+				// res=updateNutritionStatus(response.data.userId)
 			} else {
 				setPageState(E_PageState.Rejected);
 				enqueueSnackbar({

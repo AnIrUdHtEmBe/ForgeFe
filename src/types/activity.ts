@@ -8,4 +8,5 @@ export type t_activity = {
   description?:string;
   target?:number;
   unit?:string
+  activityInstanceId:string;
 }

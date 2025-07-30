@@ -3,6 +3,7 @@ import type { RegisterFormData } from "../components/Register/Register";
 import axios from "axios";
 import { LOGIN_HUMANS, PATH_V2, REGISTER_HUMANS } from "./urlConfig";
 import type { LoginFormData } from "../components/Login/LoginV2";
+import { enqueueSnackbar } from "notistack";
 
 export const RegiterUser = async (
   onAccept: (response: AxiosResponse) => void,
@@ -24,8 +25,16 @@ export const LoginUser = async (
   formData: LoginFormData
 ) => {
   try {
-    const response = await axios.post(PATH_V2 + LOGIN_HUMANS(), formData);
-    onAccept(response)
+    
+    if (formData.loginId!=''){
+    const response = await axios.post(PATH_V2 + LOGIN_HUMANS(), {
+      loginId:formData.loginId,
+      password:formData.password
+    });
+  onAccept(response)
+  }
+  
+    
   } catch (e) {
     onReject(e);
   }

@@ -202,6 +202,83 @@
 	top: 100%;
 	border-left: 1px dashed black;
 }
+.nutrition-session-information-container{
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+.nutrition-session-information-container.--session-info {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.nutrition-session-information-container.--start {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.nutrition-session-information-container.dot {
+	width: 10px;
+	height: 10px;
+	background-color: black;
+	border-radius: 50%;
+}
+.nutrition-session-information-container.--session {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between; 
+	align-items: center;
+	/* errrr */
+	width: 30vh;
+	/* border: 2px solid red; */
+	/* gap: 50px; */
+}
+.nutrition-session-information-container.--session .--name {
+	font-size: 16px;
+	font-weight: 400;
+	width: 15vh;
+	display: flex;
+	/* border: 2px solid yellow; */
+}
+.nutrition-session-information-container.--session .--desc {
+	color: #0a0a0a78;
+	font-size: 14px;
+	text-align: left;
+	display: flex;
+	align-items:flex-start;
+	font-weight: 400;
+	/* margin-left:120px ; */
+}
+
+.nutrition-session-information-container.--end {
+	font-size: 12px;
+	font-weight: 600;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	padding: 10px 25px;
+	border-radius: 15px;
+	border: 1px solid black;
+}
+
+.nutrition-session-information-container.--line {
+	position: absolute;
+	height: 200%;
+	width: 100%;
+	left: 1.2%;
+	top: 100%;
+	border-left: 1px dashed black;
+}
+#line-nutrition{
+	position: absolute;
+	height: 200%;
+	width: 100%;
+	left: 1.2%;
+	top: 30%;
+	border-left: 1px dashed black;
+}
 
 .view-plan-top-container .view-plan-category-container {
 	border-right: 1px solid rgba(0, 0, 0, 0.4);

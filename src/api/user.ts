@@ -15,6 +15,17 @@ export const login = async (
 	}
 };
 
+export const updateNutritionStatus=async(
+	userId:string
+)=>{
+	try{
+		 const today = new Date().toISOString().split("T")[0];
+		const response=await axios.patch(`${PATH}/updateNutritionStatusEverday/${today}/${userId}`)
+		return response.status
+	}catch(e){
+		console.log(e)
+	}
+}
 
 export const getAllUsers  = async (
 	onAccept: (response: AxiosResponse) => void,

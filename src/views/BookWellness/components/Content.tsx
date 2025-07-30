@@ -14,6 +14,7 @@ import { useLocation } from "react-router-dom";
 import type { doctor } from "../../../types/doctor";
 import type { t_game } from "../../../types/games";
 import type { AxiosResponse } from "axios";
+import './style.css';
 export default function Content({
   court,
   slots,
@@ -269,8 +270,10 @@ export default function Content({
                   {slots.map(({ slotId, startTime, endTime, status }) =>
                     status === "available" ? (
                       <DropdownItemCheckbox
+                      // style={{ height: "48px", display: "flex", alignItems: "center" }}
                         key={slotId}
                         id={slotId}
+                        // className="slot-item"
                         isSelected={selectedSlotIds.includes(slotId)}
                         onClick={() => handleSlotToggle(slotId)}
                       >

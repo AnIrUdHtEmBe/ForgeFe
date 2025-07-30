@@ -342,7 +342,7 @@ function BookingDetails() {
                               minute: "2-digit",
                               hour12: true,
                             })}{" "}
-                            -{" AQDSFGHJ "}
+                            -{"  "}
                             {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
                               hour: "numeric",
                               minute: "2-digit",

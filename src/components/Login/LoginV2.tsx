@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import E_Routes from "../../types/routes";
 
 export interface  LoginFormData {
-  email: string;
+  loginId?: string;
   password: string;
 }
 
@@ -19,13 +19,14 @@ interface LoginProps {
 function LoginV2(props: LoginProps) {
   const navigate = useNavigate()
   const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
+     loginId: "",
+  password: ""
   });
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
 
     setFormData((prev) => ({
       ...prev,
@@ -35,7 +36,16 @@ function LoginV2(props: LoginProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // const { email, mobile } = formData;
 
+    // if (!email && !mobile) {
+    //   enqueueSnackbar({
+    //       message: "Please enter either a mobile number or an email address.",
+    //       autoHideDuration: 3000,
+    //       variant: "warning",
+    //     });
+    //   return;
+    // }
     // console.log(formData)
 
     const onAccept = (response: AxiosResponse) => {
@@ -43,7 +53,7 @@ function LoginV2(props: LoginProps) {
         // console.log(response.data)
         localStorage.setItem("token" , JSON.stringify(response.data));
         enqueueSnackbar({
-          message: "Success , Redirectiong.............",
+          message: "Success , Redirectiong...",
           autoHideDuration: 3000,
           variant: "success",
         });
@@ -88,14 +98,15 @@ function LoginV2(props: LoginProps) {
         <h2 className="modal-heading">Login</h2>
 
         <form className="register-form" onSubmit={handleSubmit}>
+          
           <div className="form-group">
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="email">Email or Mobile:</label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              value={formData.email}
+              type="text"
+              id="loginId"
+              name="loginId"
+              
+              value={formData.loginId}
               onChange={handleChange}
             />
           </div>
