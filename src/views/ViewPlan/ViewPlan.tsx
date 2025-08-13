@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { categories, DEFAULT_ICON_SIZE, SNACK_AUTO_HIDE } from "../../default";
 import "./styles.css";
-import { Checkbox } from '@mui/material';
+import { Checkbox } from "@mui/material";
 import type { t_plan } from "../../types/plan";
 import {
   formatDate,
@@ -73,9 +73,9 @@ const ViewPlan = () => {
   const getUser = (id: string) => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
-        console.log(response.data.userId,"ihiugufytduy");
-        const res= updateNutritionStatus(response.data.userId)
-        console.log(res)
+        console.log(response.data.userId, "ihiugufytduy");
+        const res = updateNutritionStatus(response.data.userId);
+        console.log(res);
         if (response.data.type === "admin") {
           setCreateGame(true);
         }
@@ -111,7 +111,7 @@ const ViewPlan = () => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data[response.data.length - 1], "wwwwsetweekplan");
         setWeekPlan(response.data[response.data.length - 1]);
-        setnewWeekPlan([response.data])
+        setnewWeekPlan([response.data]);
         if (weekNumber != 0) {
           setActiveIndex(0);
         } else {
@@ -153,18 +153,15 @@ const ViewPlan = () => {
   }, [weekNumber]);
 
   const arrowRightHandler = () => {
-    console.log(activeIndex, weekNumber, "this is right")
+    console.log(activeIndex, weekNumber, "this is right");
 
-    if (activeIndex >= 6)
-    return;
+    if (activeIndex >= 6) return;
 
-   
     setActiveIndex(activeIndex + 1);
   };
   const arrowLeftHandler = () => {
-    console.log(activeIndex, weekNumber, "this is left")
-    if (activeIndex <= 0)
-    return;
+    console.log(activeIndex, weekNumber, "this is left");
+    if (activeIndex <= 0) return;
 
     // {
     //   if (weekNumbe // {
@@ -189,17 +186,18 @@ const ViewPlan = () => {
     const weekDates = getArrayOfDatesFromSundayToSaturday(
       new Date(getDate.setDate(getDate.getDate()))
     );
-    console.log(weekDates, "these are ween")
+    console.log(weekDates, "these are ween");
     setWeekStartToEndDates(weekDates);
   }, [weekNumber]);
 
   const currentDate = weekStartToEndDates[activeIndex];
 
-  console.log(newWeekPlan, "weekplan")
+  console.log(newWeekPlan, "weekplan");
   // t_session
-  const [newsessionForCurrentDate, setnewsessionForCurrentDate] = useState<t_session[]>([])
-  const [filterSession,setFilterSession]=useState('ALL');
-
+  const [newsessionForCurrentDate, setnewsessionForCurrentDate] = useState<
+    t_session[]
+  >([]);
+  const [filterSession, setFilterSession] = useState("ALL");
 
   // useEffect(()=>{
   //   if(!newWeekPlan) return;
@@ -208,7 +206,7 @@ const ViewPlan = () => {
   //     for (const [key,value] of Object.entries(data)){
   //       console.log(value.sessionInstances,"valueeeeeeeeeeeeee")
   //       const response=value?.sessionInstances.filter(
-  //       (session:t_session) => formatDate(session.scheduledDate) === formatDate(currentDate) 
+  //       (session:t_session) => formatDate(session.scheduledDate) === formatDate(currentDate)
   //       )
   //       // const response2=value?.sessionInstances.find(
   //       // (session:t_session) => {
@@ -227,7 +225,6 @@ const ViewPlan = () => {
 
   //   })
   //   setnewsessionForCurrentDate(temp_session)
-
 
   // },[newWeekPlan,currentDate])
 
@@ -253,18 +250,14 @@ const ViewPlan = () => {
     setnewsessionForCurrentDate(temp_session);
   }, [newWeekPlan, currentDate]);
 
-
-
   useEffect(() => {
     if (newsessionForCurrentDate) {
-      console.log("session found", newsessionForCurrentDate, currentDate)
-    }
-    else {
-      console.log("no session", currentDate, newsessionForCurrentDate)
+      console.log("session found", newsessionForCurrentDate, currentDate);
+    } else {
+      console.log("no session", currentDate, newsessionForCurrentDate);
     }
     // console.log(newsessionForCurrentDate,"lk[qpkdqow")
-  }, [newsessionForCurrentDate])
-
+  }, [newsessionForCurrentDate]);
 
   // const sessionForCurrentDate = weekPlan?.sessionInstances.find(
   //   (session) => formatDate(session.scheduledDate) === formatDate(currentDate)
@@ -274,7 +267,7 @@ const ViewPlan = () => {
     const selectedDateISO = new Date(
       weekStartToEndDates[activeIndex]
     ).toISOString();
-    console.log(data1, "qkpwj;eoihg")
+    console.log(data1, "qkpwj;eoihg");
 
     // console.log(sessionCategory,sessionForCurrentDate,"sessionForCurrentDateddddddddddd",selectedDateISO);
 
@@ -378,62 +371,68 @@ const ViewPlan = () => {
     //   }
     // }
   };
-   const handleCheckboxChange=async(activityInstanceId:string,sessionInstanceId:string)=>{
-   let matchingPlan = null;
+  const handleCheckboxChange = async (
+    activityInstanceId: string,
+    sessionInstanceId: string
+  ) => {
+    let matchingPlan = null;
 
-newWeekPlan?.forEach((planGroup, index) => {
-  planGroup?.forEach((plan, planIndex) => {
-    const match = plan.sessionInstances?.some(
-      s => s.sessionInstanceId === sessionInstanceId
-    );
+    newWeekPlan?.forEach((planGroup, index) => {
+      planGroup?.forEach((plan, planIndex) => {
+        const match = plan.sessionInstances?.some(
+          (s) => s.sessionInstanceId === sessionInstanceId
+        );
 
-    if (match) {
-      matchingPlan = plan;
-      console.log(
-        `✅ Match found at newWeekPlan[${index}].plans[${planIndex}] → planInstanceId:`,
-        plan.planInstanceId
-      );
-    }
-  });
-});
+        if (match) {
+          matchingPlan = plan;
+          console.log(
+            `✅ Match found at newWeekPlan[${index}].plans[${planIndex}] → planInstanceId:`,
+            plan.planInstanceId
+          );
+        }
+      });
+    });
 
-console.log('Final matching plan:', matchingPlan.planInstanceId);
-// newWeekPlan?.forEach((plan, index) => {
+    console.log("Final matching plan:", matchingPlan.planInstanceId);
+    // newWeekPlan?.forEach((plan, index) => {
 
-
-      try{
-        const onAccept = (response: AxiosResponse) => {
-      if (response.status === HttpStatusCode.Ok) {
-        getUserPlan();
-        enqueueSnackbar({
-          message: "Meal marked complete",
-          autoHideDuration: SNACK_AUTO_HIDE,
-          variant: "success",
-        });
-      } else {
+    try {
+      const onAccept = (response: AxiosResponse) => {
+        if (response.status === HttpStatusCode.Ok) {
+          getUserPlan();
+          enqueueSnackbar({
+            message: "Meal marked complete",
+            autoHideDuration: SNACK_AUTO_HIDE,
+            variant: "success",
+          });
+        } else {
+          enqueueSnackbar({
+            message: "Failed to fetch the user data!",
+            autoHideDuration: SNACK_AUTO_HIDE,
+            variant: "error",
+          });
+        }
+      };
+      const onReject = (e: unknown) => {
+        console.log(e);
         enqueueSnackbar({
           message: "Failed to fetch the user data!",
           autoHideDuration: SNACK_AUTO_HIDE,
           variant: "error",
         });
-      }
-    };
-    const onReject = (e: unknown) => {
-      console.log(e);
-      enqueueSnackbar({
-        message: "Failed to fetch the user data!",
-        autoHideDuration: SNACK_AUTO_HIDE,
-        variant: "error",
-      });
-    };
+      };
 
-    
-
-        const res=await markActivityComplete(onAccept,onReject,activityInstanceId,sessionInstanceId,matchingPlan.planInstanceId)
-      }catch(err){
-        console.error('Failed to update');
-      }
-   }
+      const res = await markActivityComplete(
+        onAccept,
+        onReject,
+        activityInstanceId,
+        sessionInstanceId,
+        matchingPlan.planInstanceId
+      );
+    } catch (err) {
+      console.error("Failed to update");
+    }
+  };
   // console.log("sessionForCurrentDate kkkk", sessionForCurrentDate);
   if (pageState === E_PageState.Loading) {
     return <FullScreenLoader />;
@@ -443,12 +442,16 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
     <div className="view-plan-container">
       <div className="view-plan-top-container">
         {categories.map((category, i) => {
-           const isActive = filterSession === category.name.toUpperCase();
+          const isActive = filterSession === category.name.toUpperCase();
           return (
-            <div key={i} className={`view-plan-category-container ${isActive ? "--active" : ""}`}
-            onClick={()=>{
-              
-              setFilterSession(category.name.toUpperCase())}}
+            <div
+              key={i}
+              className={`view-plan-category-container ${
+                isActive ? "--active" : ""
+              }`}
+              onClick={() => {
+                setFilterSession(category.name.toUpperCase());
+              }}
             >
               <div className="--icon"> {category.icon()}</div>
               <div className="--name"> {category.name}</div>
@@ -471,7 +474,6 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
             {formatDate(weekStartToEndDates[activeIndex])}
           </div>
           <div className="--arrows">
-
             <div className="--arrow-right">
               <FaChevronRight
                 onClick={arrowRightHandler}
@@ -499,67 +501,100 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
           </div>
         </div>
         <div>
-          {
-            newsessionForCurrentDate.length > 0 ? (
-              <div>
-                {
-                  newsessionForCurrentDate
-                  ?.filter(data1=>filterSession === 'ALL' || data1.category===filterSession)
-                  ?.map((data1: t_session, index: number) => {
-                    // for (const [key,value] of Object.entries(data1) as [string,any]){
-                    //   if(key==='category')
-                    //     console.log(key,value,"value")
+          {newsessionForCurrentDate.length > 0 ? (
+            <div>
+              {newsessionForCurrentDate
+                ?.filter(
+                  (data1) =>
+                    filterSession === "ALL" || data1.category === filterSession
+                )
+                ?.map((data1: t_session, index: number) => {
+                  // for (const [key,value] of Object.entries(data1) as [string,any]){
+                  //   if(key==='category')
+                  //     console.log(key,value,"value")
 
-                    // }
-                    console.log(data1.category, data1.name, "cjbqkhvc")
-                    const validActivities = data1.activities.filter(activity => activity.status !== 'REMOVED');
+                  // }
+                  console.log(data1.category, data1.name, "cjbqkhvc");
+                  const validActivities = data1.activities.filter(
+                    (activity) => activity.status !== "REMOVED"
+                  );
 
-                    return (
-                      <>
-                        <div className="--schedule-container">
-                          <div className="--schedule-templat-container">
-                            <div>
-                              <span className="--schedule-template-title"> {data1?.sessionTemplateTitle==="DUMMY"?"ACTIVITIES":data1?.sessionTemplateTitle}</span>
-                            </div>
-                            { data1?.category !== "NUTRITION" && data1?.sessionTemplateId!=="SEST_YFVI33" &&(<div
-                              className={`--book-slot ${data1 ? "" : "--inActive"
+                  return (
+<>
+                      <div className="--schedule-container">
+                        <div className="--schedule-templat-container">
+                          <div>
+                            <span className="--schedule-template-title">
+                              {" "}
+                              {data1?.sessionTemplateTitle === "DUMMY"
+                                ? "ACTIVITIES"
+                                : data1?.sessionTemplateTitle}
+                            </span>
+                          </div>
+                          {data1?.category !== "NUTRITION" &&
+                            data1?.sessionTemplateId !== "SEST_YFVI33" && (
+                              <div
+                                className={`--book-slot ${
+                                  data1 ? "" : "--inActive"
                                 }`}
-                              onClick={() => {
-                                if (!data1) return;
+                                onClick={() => {
+                                  if (!data1) return;
 
-                                if (
-                                  data1?.category === "FITNESS" ||
-                                  data1?.category === "WELLNESS"
-                                ) {
-                                  if (data1?.status == "SCHEDULED") {
-                                    // setShowModal(true);
-                                    setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: true }));
+                                  if (
+                                    data1?.category === "FITNESS" ||
+                                    data1?.category === "WELLNESS"
+                                  ) {
+                                    if (data1?.status == "SCHEDULED") {
+                                      // setShowModal(true);
+                                      setModalMap((prev) => ({
+                                        ...prev,
+                                        [data1.sessionInstanceId]: true,
+                                      }));
+                                      return;
+                                    }
+                                  }
+                                  if (data1?.category === "NUTRITION") {
                                     return;
                                   }
-                                }
-                                if (data1?.category === 'NUTRITION') {
-                                  return
-                                }                          
 
-                                slotBookingHandler(data1?.category, data1);
-                              }}
-                            >
-                              <span>
-                                {data1?.status === "BOOKED"
-                                  ? "View Booking" : "Book Slot"
-                                }
-                              </span>
-
-                            </div>)}
-                          </div>
-                          {
-                            data1 ? (
-                              <>
-                              {data1.category!="NUTRITION" &&(<div className="--bottom">
+                                  slotBookingHandler(data1?.category, data1);
+                                }}
+                              >
+                                <span>
+                                  {data1?.status === "BOOKED"
+                                    ? "View Booking"
+                                    : "Book Slot"}
+                                </span>
+                              </div>
+                            )}
+                        </div>
+                        {data1 ? (
+                          <>
+                            {data1.category != "NUTRITION" && (
+                              <div className="--bottom">
+                                <div
+                                  style={{
+                                    color: "red",
+                                    marginLeft: "28px",
+                                    marginBottom: "-20px",
+                                    display: "flex",
+                                    gap: "2px",
+                                    fontSize: "12px",
+                                  }}
+                                >
+                                  <span style={{ width: "140px" }}>TASK</span>
+                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 1</span>
+                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 2</span>
+                                </div>
                                 {data1.activities
-                                  .filter(activity => activity.status !== 'REMOVED')
+                                  .filter(
+                                    (activity) => activity.status !== "REMOVED"
+                                  )
                                   .map((activity, i) => (
-                                    <div key={i} className="session-information-container">
+                                    <div
+                                      key={i}
+                                      className="session-information-container"
+                                    >
                                       <div className="--session-info">
                                         <div className="--start">
                                           <div
@@ -567,50 +602,66 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                             style={
                                               i === 0
                                                 ? {
-                                                  outline: "1px solid black",
-                                                  outlineOffset: "10px",
-                                                }
+                                                    outline: "1px solid black",
+                                                    outlineOffset: "10px",
+                                                  }
                                                 : {}
                                             }
                                           />
                                           <div className="--session">
                                             <div>
-                                              <span className="--name">
+                                              <div className="--name" style={{ 
+                                                wordWrap: "break-word", 
+                                                wordBreak: "break-word",
+                                                whiteSpace: "normal",
+                                                lineHeight: "1.4"
+                                              }}>
                                                 {activity.name || "No name"}
-                                              </span>
+                                              </div>
+                                              <div style={{ 
+                                                wordWrap: "break-word", 
+                                                wordBreak: "break-word",
+                                                whiteSpace: "normal",
+                                                lineHeight: "1.4",
+                                                marginTop: "4px",
+                                                fontSize: "12px",
+                                                color: '#0a0a0a78'
+                                              }}>
+                                                {activity.description || "No description"}
+                                              </div>
                                             </div>
-                                            <div className="--desc">{activity.target}{activity?.unit == "weight"
-                                                        ? "Kg"
-                                                        : activity?.unit == "distance"
-                                                            ? "Km"
-                                                            : activity?.unit == "time"
-                                                                ? "Min"
-                                                                : activity?.unit == "repetitions"
-                                                                    ? "Reps"
-                                                                    : activity?.unit == "grams"
-                                                                        ? "g"
-                                                                        : activity?.unit == "meter"
-                                                                            ? "m"
-                                                                            : activity?.unit == "litre"
-                                                                                ? "L"
-                                                                                : activity?.unit == "millilitre"
-                                                                                    ? "ml"
-                                                                                    : ""
-                                                    }</div>
-                                            <div>
-                                              <span className="--desc">{activity.customReps?activity.customReps:'-'}</span>
+                                            <div style={{ flex: "0 0 80px", minWidth: "82px"}}>
+                                              <div className="--desc">
+                                                {activity.target || "-"}
+                                                {activity.target ? (activity?.unit == "weight"
+                                                  ? "Kg"
+                                                  : activity?.unit == "distance"
+                                                  ? "Km"
+                                                  : activity?.unit == "time"
+                                                  ? "Min"
+                                                  : activity?.unit == "repetitions"
+                                                  ? "Reps"
+                                                  : activity?.unit == "grams"
+                                                  ? "g"
+                                                  : activity?.unit == "meter"
+                                                  ? "m"
+                                                  : activity?.unit == "litre"
+                                                  ? "L"
+                                                  : activity?.unit == "millilitre"
+                                                  ? "ml"
+                                                  : "") : ""}
+                                              </div>
+                                            </div>
+                                            <div style={{ flex: "0 0 80px", minWidth: "80px", textAlign: "center" }}>
+                                              <span className="--desc">
+                                                {activity.customReps || "-"}
+                                              </span>
                                             </div>
                                           </div>
                                         </div>
-                                        {/* {i === 0 && (
-                                  <div className="--end">
-                                    <span>Start</span>
-                                    <FaPlay />
-                                  </div>
-                                )} */}
                                       </div>
                                       {i < validActivities.length - 1 && (
-                                        <div className="--line" ></div>
+                                        <div className="--line"></div>
                                       )}
                                       {modalMap[data1.sessionInstanceId] && (
                                         <div className="modal-overlay">
@@ -618,22 +669,36 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                             <button
                                               className="modal-close"
                                               onClick={() =>
-                                                setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: false }))
+                                                setModalMap((prev) => ({
+                                                  ...prev,
+                                                  [data1.sessionInstanceId]:
+                                                    false,
+                                                }))
                                               }
                                             >
                                               &times;
                                             </button>
 
-                                            <div className="modal-title">Choose Type</div>
+                                            <div className="modal-title">
+                                              Choose Type
+                                            </div>
                                             <button
-                                              className={`modal-button group ${type === "group" ? "active" : ""}`}
+                                              className={`modal-button group ${
+                                                type === "group" ? "active" : ""
+                                              }`}
                                               onClick={() => setType("group")}
                                             >
                                               Group Session
                                             </button>
                                             <button
-                                              className={`modal-button group ${type === "personal" ? "active" : ""}`}
-                                              onClick={() => setType("personal")}
+                                              className={`modal-button group ${
+                                                type === "personal"
+                                                  ? "active"
+                                                  : ""
+                                              }`}
+                                              onClick={() =>
+                                                setType("personal")
+                                              }
                                             >
                                               1-on-1 Session
                                             </button>
@@ -642,7 +707,10 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                               className="modal-confirm"
                                               disabled={type === ""}
                                               onClick={() =>
-                                                slotBookingHandler(data1.category, data1)
+                                                slotBookingHandler(
+                                                  data1.category,
+                                                  data1
+                                                )
                                               }
                                             >
                                               Confirm
@@ -650,15 +718,35 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                           </div>
                                         </div>
                                       )}
-
                                     </div>
                                   ))}
-                              </div>)}
-                              {data1.category=="NUTRITION" &&(<div className="--bottom">
+                              </div>
+                            )}
+                            {data1.category == "NUTRITION" && (
+                              <div className="--bottom">
+                                <div
+                                  style={{
+                                   color: "red",
+                                    marginLeft: "28px",
+                                    marginBottom: "-20px",
+                                    display: "flex",
+                                    gap: "2px",
+                                    fontSize: "12px",
+                                  }}
+                                >
+                                   <span style={{ width: "140px" }}>TASK</span>
+                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 1</span>
+                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 2</span>
+                                </div>
                                 {data1.activities
-                                  .filter(activity => activity.status !== 'REMOVED')
+                                  .filter(
+                                    (activity) => activity.status !== "REMOVED"
+                                  )
                                   .map((activity, i) => (
-                                    <div key={i} className="session-information-container">
+                                    <div
+                                      key={i}
+                                      className="session-information-container"
+                                    >
                                       <div className="--session-info">
                                         <div className="--start">
                                           <div
@@ -666,121 +754,104 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                             style={
                                               i === 0
                                                 ? {
-                                                  outline: "1px solid black",
-                                                  outlineOffset: "10px",
-                                                }
+                                                    outline: "1px solid black",
+                                                    outlineOffset: "10px",
+                                                  }
                                                 : {}
                                             }
                                           />
-                                          <div className="--session">
+                                          <div className="--session" >
                                             <div>
-                                              <span className="--name">
+                                              <div className="--name" style={{ 
+                                                wordWrap: "break-word", 
+                                                wordBreak: "break-word",
+                                                whiteSpace: "normal",
+                                                lineHeight: "1.4"
+                                              }}>
                                                 {activity.name || "No name"}
+                                              </div>
+                                              <div style={{ 
+                                                wordWrap: "break-word", 
+                                                wordBreak: "break-word",
+                                                whiteSpace: "normal",
+                                                lineHeight: "1.4",
+                                                marginTop: "4px",
+                                                fontSize: "12px",
+                                                color: '#0a0a0a78'
+                                              }}>
+                                                {activity.description || "No description"}
+                                              </div>
+                                            </div>
+                                            <div style={{ flex: "0 0 80px", minWidth: "80px", textAlign: "center" }}>
+                                              <div className="--desc">
+                                                {activity.target || "-"}
+                                                {activity.target ? (activity?.unit == "weight"
+                                                  ? "Kg"
+                                                  : activity?.unit == "distance"
+                                                  ? "Km"
+                                                  : activity?.unit == "time"
+                                                  ? "Min"
+                                                  : activity?.unit == "repetitions"
+                                                  ? "Reps"
+                                                  : activity?.unit == "grams"
+                                                  ? "g"
+                                                  : activity?.unit == "meter"
+                                                  ? "m"
+                                                  : activity?.unit == "litre"
+                                                  ? "L"
+                                                  : activity?.unit == "millilitre"
+                                                  ? "ml"
+                                                  : "") : ""}
+                                              </div>
+                                            </div>
+                                            <div style={{ flex: "0 0 80px", minWidth: "80px", textAlign: "center" }}>
+                                              <span className="--desc">
+                                                {activity.customReps || "-"}
                                               </span>
                                             </div>
-                                            <div className="--desc">{activity.target}{activity?.unit == "weight"
-                                                        ? "Kg"
-                                                        : activity?.unit == "distance"
-                                                            ? "Km"
-                                                            : activity?.unit == "time"
-                                                                ? "Min"
-                                                                : activity?.unit == "repetitions"
-                                                                    ? "Reps"
-                                                                    : activity?.unit == "grams"
-                                                                        ? "g"
-                                                                        : activity?.unit == "meter"
-                                                                            ? "m"
-                                                                            : activity?.unit == "litre"
-                                                                                ? "L"
-                                                                                : activity?.unit == "millilitre"
-                                                                                    ? "ml"
-                                                                                    : ""
-                                                    }</div>
                                             <div>
-                                              {/* <span className="--desc">{activity.customReps?activity.customReps:'-'}</span> */}
-                                              {/* {} */}
-                                              <Checkbox 
-                                              checked={activity.status === 'COMPLETE'}
-                                              disabled={activity.status=='COMPLETE'}
-                                              onChange={()=>handleCheckboxChange(activity.activityInstanceId,data1.sessionInstanceId)} />
+                                              <Checkbox
+                                                checked={
+                                                  activity.status === "COMPLETE"
+                                                }
+                                                disabled={
+                                                  activity.status == "COMPLETE"
+                                                }
+                                                onChange={() =>
+                                                  handleCheckboxChange(
+                                                    activity.activityInstanceId,
+                                                    data1.sessionInstanceId
+                                                  )
+                                                }
+                                              />
                                             </div>
                                           </div>
                                         </div>
-                                        {/* {i === 0 && (
-                                  <div className="--end">
-                                    <span>Start</span>
-                                    <FaPlay />
-                                  </div>
-                                )} */}
                                       </div>
                                       {i < validActivities.length - 1 && (
-                                        <div  id="line-nutrition" ></div>
+                                        <div id="line-nutrition"></div>
                                       )}
-                                      {/* {modalMap[data1.sessionInstanceId] && (
-                                        <div className="modal-overlay">
-                                          <div className="modal-box">
-                                            <button
-                                              className="modal-close"
-                                              onClick={() =>
-                                                setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: false }))
-                                              }
-                                            >
-                                              &times;
-                                            </button>
-
-                                            <div className="modal-title">Choose Type</div>
-                                            <button
-                                              className={`modal-button group ${type === "group" ? "active" : ""}`}
-                                              onClick={() => setType("group")}
-                                            >
-                                              Group Session
-                                            </button>
-                                            <button
-                                              className={`modal-button group ${type === "personal" ? "active" : ""}`}
-                                              onClick={() => setType("personal")}
-                                            >
-                                              1-on-1 Session
-                                            </button>
-
-                                            <button
-                                              className="modal-confirm"
-                                              disabled={type === ""}
-                                              onClick={() =>
-                                                slotBookingHandler(data1.category, data1)
-                                              }
-                                            >
-                                              Confirm
-                                            </button>
-                                          </div>
-                                        </div>
-                                      )} */}
-
                                     </div>
                                   ))}
-                              </div>)}
-                              </>
-                            ) : (
-                              <div className="--noSession">
-                                <span>No session for this date.</span>
                               </div>
-                            )
-                          }
-                        </div>
-
-                      </>
-                    )
-                  })
-                }
-
-              </div>
-            ) : (
-              <div className="--noSession">
-                <span>No session for this date.</span>
-              </div>
-            )
-          }
+                            )}
+                          </>
+                        ) : (
+                          <div className="--noSession">
+                            <span>No session for this date.</span>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  );
+                })}
+            </div>
+          ) : (
+            <div className="--noSession">
+              <span>No session for this date.</span>
+            </div>
+          )}
         </div>
-
       </div>
       {
         // sessionForCurrentDate ? (
