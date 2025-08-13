@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { categories, DEFAULT_ICON_SIZE, SNACK_AUTO_HIDE } from "../../default";
 import "./styles.css";
-import { Checkbox } from '@mui/material';
+import { Checkbox } from "@mui/material";
 import type { t_plan } from "../../types/plan";
 import {
   formatDate,
@@ -15,7 +15,7 @@ import { FaChevronRight } from "react-icons/fa";
 import WeekPlanView from "./components/WeekPlanView";
 import { FaPlay } from "react-icons/fa";
 import { getPlans } from "../../api/plan";
-import { HttpStatusCode, type AxiosResponse } from "axios";
+import axios, { HttpStatusCode, type AxiosResponse } from "axios";
 import { E_PageState } from "../../types/state";
 import { FullScreenLoader } from "../../components/Loader/CustomLoader";
 import { enqueueSnackbar } from "notistack";
@@ -25,6 +25,26 @@ import Button from "../../components/Button/Button.tsx";
 import { getUserById, updateNutritionStatus } from "../../api/user";
 import type { t_session } from "../../types/session.ts";
 import { markActivityComplete } from "../../api/activity.ts";
+import { TbMessage } from "react-icons/tb";
+import * as Ably from "ably";
+import { ChatClientProvider, ChatRoomProvider, useMessages } from "@ably/chat/react";
+import { ChatClient, ChatMessageEventType, LogLevel } from "@ably/chat";
+
+interface ChatModalData {
+  roomName: string;
+  isLoading: boolean;
+  sessionData: t_session | null;
+  roomDetails: any;
+}
+
+interface ChatModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  roomName: string;
+  sessionData: t_session | null;
+  roomDetails: any;
+}
+
 const ViewPlan = () => {
   //current week plan
   const [showModal, setShowModal] = useState(false);
@@ -40,6 +60,25 @@ const ViewPlan = () => {
   const [getDate, setgetDate] = useState<Date>(startOfWeek);
   const [type, setType] = useState<string>("");
   const [createGame, setCreateGame] = useState<boolean>(false);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [chatModalData, setChatModalData] = useState<ChatModalData>({
+    roomName: "",
+    isLoading: true,
+    sessionData: null,
+    roomDetails: null,
+  });
+
+ 
+const clientId = localStorage.getItem("userId")?.slice(1, -1) || "";
+  const CHAT_API_KEY ="0DwkUw.pjfyJw:CwXcw14bOIyzWPRLjX1W7MAoYQYEVgzk8ko3tn0dYUI";
+     
+
+    const realtimeClient = new Ably.Realtime({ key: CHAT_API_KEY, clientId });
+
+    const chatClient = new ChatClient(realtimeClient, {
+    logLevel: LogLevel.Info,
+  });
+
   const navigate = useNavigate();
 
   const clickHandler = (
@@ -73,9 +112,9 @@ const ViewPlan = () => {
   const getUser = (id: string) => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === HttpStatusCode.Ok) {
-        console.log(response.data.userId,"ihiugufytduy");
-        const res= updateNutritionStatus(response.data.userId)
-        console.log(res)
+        console.log(response.data.userId, "ihiugufytduy");
+        const res = updateNutritionStatus(response.data.userId);
+        console.log(res);
         if (response.data.type === "admin") {
           setCreateGame(true);
         }
@@ -111,7 +150,7 @@ const ViewPlan = () => {
       if (response.status === HttpStatusCode.Ok) {
         console.log(response.data[response.data.length - 1], "wwwwsetweekplan");
         setWeekPlan(response.data[response.data.length - 1]);
-        setnewWeekPlan([response.data])
+        setnewWeekPlan([response.data]);
         if (weekNumber != 0) {
           setActiveIndex(0);
         } else {
@@ -153,18 +192,15 @@ const ViewPlan = () => {
   }, [weekNumber]);
 
   const arrowRightHandler = () => {
-    console.log(activeIndex, weekNumber, "this is right")
+    console.log(activeIndex, weekNumber, "this is right");
 
-    if (activeIndex >= 6)
-    return;
+    if (activeIndex >= 6) return;
 
-   
     setActiveIndex(activeIndex + 1);
   };
   const arrowLeftHandler = () => {
-    console.log(activeIndex, weekNumber, "this is left")
-    if (activeIndex <= 0)
-    return;
+    console.log(activeIndex, weekNumber, "this is left");
+    if (activeIndex <= 0) return;
 
     // {
     //   if (weekNumbe // {
@@ -189,17 +225,18 @@ const ViewPlan = () => {
     const weekDates = getArrayOfDatesFromSundayToSaturday(
       new Date(getDate.setDate(getDate.getDate()))
     );
-    console.log(weekDates, "these are ween")
+    console.log(weekDates, "these are ween");
     setWeekStartToEndDates(weekDates);
   }, [weekNumber]);
 
   const currentDate = weekStartToEndDates[activeIndex];
 
-  console.log(newWeekPlan, "weekplan")
+  console.log(newWeekPlan, "weekplan");
   // t_session
-  const [newsessionForCurrentDate, setnewsessionForCurrentDate] = useState<t_session[]>([])
-  const [filterSession,setFilterSession]=useState('ALL');
-
+  const [newsessionForCurrentDate, setnewsessionForCurrentDate] = useState<
+    t_session[]
+  >([]);
+  const [filterSession, setFilterSession] = useState("ALL");
 
   // useEffect(()=>{
   //   if(!newWeekPlan) return;
@@ -208,7 +245,7 @@ const ViewPlan = () => {
   //     for (const [key,value] of Object.entries(data)){
   //       console.log(value.sessionInstances,"valueeeeeeeeeeeeee")
   //       const response=value?.sessionInstances.filter(
-  //       (session:t_session) => formatDate(session.scheduledDate) === formatDate(currentDate) 
+  //       (session:t_session) => formatDate(session.scheduledDate) === formatDate(currentDate)
   //       )
   //       // const response2=value?.sessionInstances.find(
   //       // (session:t_session) => {
@@ -228,13 +265,13 @@ const ViewPlan = () => {
   //   })
   //   setnewsessionForCurrentDate(temp_session)
 
-
   // },[newWeekPlan,currentDate])
 
   useEffect(() => {
     if (!newWeekPlan) return;
 
     const temp_session: t_session[] = [];
+    // console.log("newWeekPlan", newWeekPlan);
 
     newWeekPlan.forEach((data: t_plan) => {
       for (const [key, value] of Object.entries(data)) {
@@ -253,18 +290,14 @@ const ViewPlan = () => {
     setnewsessionForCurrentDate(temp_session);
   }, [newWeekPlan, currentDate]);
 
-
-
   useEffect(() => {
     if (newsessionForCurrentDate) {
-      console.log("session found", newsessionForCurrentDate, currentDate)
-    }
-    else {
-      console.log("no session", currentDate, newsessionForCurrentDate)
+      console.log("session found", newsessionForCurrentDate, currentDate);
+    } else {
+      console.log("no session", currentDate, newsessionForCurrentDate);
     }
     // console.log(newsessionForCurrentDate,"lk[qpkdqow")
-  }, [newsessionForCurrentDate])
-
+  }, [newsessionForCurrentDate]);
 
   // const sessionForCurrentDate = weekPlan?.sessionInstances.find(
   //   (session) => formatDate(session.scheduledDate) === formatDate(currentDate)
@@ -274,7 +307,7 @@ const ViewPlan = () => {
     const selectedDateISO = new Date(
       weekStartToEndDates[activeIndex]
     ).toISOString();
-    console.log(data1, "qkpwj;eoihg")
+    console.log(data1, "qkpwj;eoihg");
 
     // console.log(sessionCategory,sessionForCurrentDate,"sessionForCurrentDateddddddddddd",selectedDateISO);
 
@@ -378,62 +411,357 @@ const ViewPlan = () => {
     //   }
     // }
   };
-   const handleCheckboxChange=async(activityInstanceId:string,sessionInstanceId:string)=>{
-   let matchingPlan = null;
+  const handleCheckboxChange = async (
+    activityInstanceId: string,
+    sessionInstanceId: string
+  ) => {
+    let matchingPlan = null;
 
-newWeekPlan?.forEach((planGroup, index) => {
-  planGroup?.forEach((plan, planIndex) => {
-    const match = plan.sessionInstances?.some(
-      s => s.sessionInstanceId === sessionInstanceId
-    );
+    newWeekPlan?.forEach((planGroup, index) => {
+      planGroup?.forEach(
+        (
+          plan: { sessionInstances: any[]; planInstanceId: any },
+          planIndex: any
+        ) => {
+          const match = plan.sessionInstances?.some(
+            (s: { sessionInstanceId: string }) =>
+              s.sessionInstanceId === sessionInstanceId
+          );
 
-    if (match) {
-      matchingPlan = plan;
-      console.log(
-        `✅ Match found at newWeekPlan[${index}].plans[${planIndex}] → planInstanceId:`,
-        plan.planInstanceId
+          if (match) {
+            matchingPlan = plan;
+            console.log(
+              `✅ Match found at newWeekPlan[${index}].plans[${planIndex}] → planInstanceId:`,
+              plan.planInstanceId
+            );
+          }
+        }
       );
-    }
-  });
-});
+    });
 
-console.log('Final matching plan:', matchingPlan.planInstanceId);
-// newWeekPlan?.forEach((plan, index) => {
+    console.log("Final matching plan:", matchingPlan.planInstanceId);
+    // newWeekPlan?.forEach((plan, index) => {
 
-
-      try{
-        const onAccept = (response: AxiosResponse) => {
-      if (response.status === HttpStatusCode.Ok) {
-        getUserPlan();
-        enqueueSnackbar({
-          message: "Meal marked complete",
-          autoHideDuration: SNACK_AUTO_HIDE,
-          variant: "success",
-        });
-      } else {
+    try {
+      const onAccept = (response: AxiosResponse) => {
+        if (response.status === HttpStatusCode.Ok) {
+          getUserPlan();
+          enqueueSnackbar({
+            message: "Meal marked complete",
+            autoHideDuration: SNACK_AUTO_HIDE,
+            variant: "success",
+          });
+        } else {
+          enqueueSnackbar({
+            message: "Failed to fetch the user data!",
+            autoHideDuration: SNACK_AUTO_HIDE,
+            variant: "error",
+          });
+        }
+      };
+      const onReject = (e: unknown) => {
+        console.log(e);
         enqueueSnackbar({
           message: "Failed to fetch the user data!",
           autoHideDuration: SNACK_AUTO_HIDE,
           variant: "error",
         });
+      };
+
+      const res = await markActivityComplete(
+        onAccept,
+        onReject,
+        activityInstanceId,
+        sessionInstanceId,
+        matchingPlan.planInstanceId
+      );
+    } catch (err) {
+      console.error("Failed to update");
+    }
+  };
+
+  const ChatModal: React.FC<ChatModalProps> = ({
+    isOpen,
+    onClose,
+    roomName,
+    sessionData,
+    roomDetails,
+  }) => {
+    const [message, setMessage] = useState("");
+    const [isSending, setIsSending] = useState(false);
+
+    // Add useMessages hook
+    const { sendMessage } = useMessages({
+      listener: (event) => {
+        if (event.type === ChatMessageEventType.Created) {
+          console.log("Message received:", event.message);
+        }
+      },
+      onDiscontinuity: (error) => {
+        console.warn("Discontinuity detected:", error);
+      },
+    });
+
+const handleSend = async () => {
+  if (!message.trim() || isSending) return;
+
+  setIsSending(true);
+  try {
+    const currentUserId =
+      localStorage.getItem("userId")?.slice(1, -1) || "";
+
+// Build context object directly (no stringify)
+const context = {
+  sessionTemplateTitle: sessionData?.sessionTemplateTitle || "",
+  openDate: currentDate || "",
+};
+
+// Create message payload with context as an object
+const messagePayload: any = {
+  text: message.trim(),
+  metadata: {
+    context: context
+  },
+};
+
+console.log("Sending payload", messagePayload);
+
+await sendMessage(messagePayload);
+
+
+
+    console.log("✅ Message sent successfully");
+
+    // Close modal and navigate to chat
+    onClose();
+
+    // Create context for URL only
+    const contextEncoded = encodeURIComponent(
+      JSON.stringify({
+        sessionTemplateTitle: sessionData?.sessionTemplateTitle || "",
+        openDate: currentDate || "",
+      })
+    );
+
+    const seenByUser =  await axios.patch(`https://play-os-backend.forgehub.in/human/human/mark-seen`,{
+      userId: clientId,
+      roomType: roomDetails.roomType,
+      userType: "user",
+      handled: `${message.trim()}` 
+    })
+
+    console.log("seen by user at", seenByUser.data);
+
+    const url = `https://chatapp.forgehub.in/?clientId=${currentUserId}&roomChatId=${
+      roomDetails.chatId
+    }&roomnames=${encodeURIComponent(roomDetails.roomName)}&roomType=${
+      roomDetails.roomType
+    }`;
+//&context=${contextEncoded}
+    window.location.href = url;
+  } catch (error) {
+    console.error("Error sending message:", error);
+    enqueueSnackbar({
+      message: "Failed to send message",
+      autoHideDuration: SNACK_AUTO_HIDE,
+      variant: "error",
+    });
+  } finally {
+    setIsSending(false);
+  }
+};
+
+    if (!isOpen) return null;
+
+    return (
+      <div className="chat-modal-overlay" onClick={onClose}>
+        <div
+          className="chat-modal-container"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="chat-modal-header">
+            <div className="chat-modal-header-flex">
+              <div className="chat-modal-header-left">
+                <div className="chat-modal-pulse-dot"></div>
+                <div>
+                  <h3 className="chat-modal-title">Quick Message</h3>
+                  <p className="chat-modal-subtitle">{roomName}</p>
+                </div>
+              </div>
+              <button onClick={onClose} className="chat-modal-close-btn">
+                <svg
+                  className="chat-modal-close-icon"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Session Info */}
+          <div className="chat-modal-session-info">
+            <div className="chat-modal-session-flex">
+              <div className="chat-modal-status-dot"></div>
+              <div>
+                <p className="chat-modal-session-title">
+                  {sessionData?.sessionTemplateTitle || "Session"}
+                </p>
+                <p className="chat-modal-session-date">
+                  {formatDate(currentDate)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="chat-modal-content">
+            <div className="chat-modal-input-wrapper">
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Type your message here..."
+                className="chat-modal-textarea"
+                rows={3}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+                disabled={isSending}
+                autoFocus
+              />
+              <div className="chat-modal-char-count">{message.length}/500</div>
+            </div>
+
+            <div className="chat-modal-buttons">
+              <button
+                onClick={onClose}
+                className="chat-modal-btn chat-modal-btn-cancel"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={isSending || !message.trim()}
+                className="chat-modal-btn chat-modal-btn-send"
+              >
+                {isSending ? (
+                  <>
+                    <div className="chat-modal-spinner"></div>
+                    <span>Sending...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      className="chat-modal-icon"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                      />
+                    </svg>
+                    <span>Send Message</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="chat-modal-footer">
+            <p className="chat-modal-hint">
+              Press Enter to send • Shift+Enter for new line
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const handleChatModalOpen = async (
+    userId: string,
+    sessionCategory: string,
+    sessionData: t_session
+  ) => {
+    console.log("💬 TB Message icon clicked for category:", sessionCategory);
+
+    setShowChatModal(true);
+    setChatModalData({
+      roomName: "Loading...",
+      isLoading: true,
+      sessionData,
+      roomDetails: null,
+    });
+
+    try {
+      const response = await axios.get(
+        `https://play-os-backend.forgehub.in/human/human/${userId}`
+      );
+
+      if (!response.data || !Array.isArray(response.data)) {
+        throw new Error("Invalid response format");
       }
-    };
-    const onReject = (e: unknown) => {
-      console.log(e);
+
+      const roomData = response.data.find(
+        (room: { roomType: string }) => room.roomType === sessionCategory
+      );
+
+      if (roomData) {
+        const ablyRoomName = `${roomData.roomType}-${roomData.roomName}-${roomData.chatId}-${userId}`;
+        console.log("🏠 Room found for Ably:", ablyRoomName);
+
+        setChatModalData({
+          roomName: roomData.roomName || `${sessionCategory} Room`,
+          isLoading: false,
+          sessionData,
+          roomDetails: roomData,
+        });
+      } else {
+        setChatModalData({
+          roomName: "Room not found",
+          isLoading: false,
+          sessionData,
+          roomDetails: null,
+        });
+
+        enqueueSnackbar({
+          message: `No ${sessionCategory} room found for this user`,
+          autoHideDuration: SNACK_AUTO_HIDE,
+          variant: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching room data:", error);
+      setChatModalData({
+        roomName: "Error loading room",
+        isLoading: false,
+        sessionData,
+        roomDetails: null,
+      });
+
       enqueueSnackbar({
-        message: "Failed to fetch the user data!",
+        message: "Failed to load chat room",
         autoHideDuration: SNACK_AUTO_HIDE,
         variant: "error",
       });
-    };
+    }
+  };
 
-    
-
-        const res=await markActivityComplete(onAccept,onReject,activityInstanceId,sessionInstanceId,matchingPlan.planInstanceId)
-      }catch(err){
-        console.error('Failed to update');
-      }
-   }
   // console.log("sessionForCurrentDate kkkk", sessionForCurrentDate);
   if (pageState === E_PageState.Loading) {
     return <FullScreenLoader />;
@@ -443,12 +771,16 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
     <div className="view-plan-container">
       <div className="view-plan-top-container">
         {categories.map((category, i) => {
-           const isActive = filterSession === category.name.toUpperCase();
+          const isActive = filterSession === category.name.toUpperCase();
           return (
-            <div key={i} className={`view-plan-category-container ${isActive ? "--active" : ""}`}
-            onClick={()=>{
-              
-              setFilterSession(category.name.toUpperCase())}}
+            <div
+              key={i}
+              className={`view-plan-category-container ${
+                isActive ? "--active" : ""
+              }`}
+              onClick={() => {
+                setFilterSession(category.name.toUpperCase());
+              }}
             >
               <div className="--icon"> {category.icon()}</div>
               <div className="--name"> {category.name}</div>
@@ -471,7 +803,6 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
             {formatDate(weekStartToEndDates[activeIndex])}
           </div>
           <div className="--arrows">
-
             <div className="--arrow-right">
               <FaChevronRight
                 onClick={arrowRightHandler}
@@ -499,67 +830,97 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
           </div>
         </div>
         <div>
-          {
-            newsessionForCurrentDate.length > 0 ? (
-              <div>
-                {
-                  newsessionForCurrentDate
-                  ?.filter(data1=>filterSession === 'ALL' || data1.category===filterSession)
-                  ?.map((data1: t_session, index: number) => {
-                    // for (const [key,value] of Object.entries(data1) as [string,any]){
-                    //   if(key==='category')
-                    //     console.log(key,value,"value")
+          {newsessionForCurrentDate.length > 0 ? (
+            <div>
+              {newsessionForCurrentDate
+                ?.filter(
+                  (data1) =>
+                    filterSession === "ALL" || data1.category === filterSession
+                )
+                ?.map((data1: t_session, index: number) => {
+                  // for (const [key,value] of Object.entries(data1) as [string,any]){
+                  //   if(key==='category')
+                  //     console.log(key,value,"value")
 
-                    // }
-                    console.log(data1.category, data1.name, "cjbqkhvc")
-                    const validActivities = data1.activities.filter(activity => activity.status !== 'REMOVED');
+                  // }
+                  console.log(data1.category, data1.name, "cjbqkhvc");
+                  const validActivities = data1.activities.filter(
+                    (activity) => activity.status !== "REMOVED"
+                  );
 
-                    return (
-                      <>
-                        <div className="--schedule-container">
-                          <div className="--schedule-templat-container">
-                            <div>
-                              <span className="--schedule-template-title"> {data1?.sessionTemplateTitle==="DUMMY"?"ACTIVITIES":data1?.sessionTemplateTitle}</span>
-                            </div>
-                            { data1?.category !== "NUTRITION" && data1?.sessionTemplateId!=="SEST_YFVI33" &&(<div
-                              className={`--book-slot ${data1 ? "" : "--inActive"
+                  return (
+                    <>
+                      <div className="--schedule-container">
+                        <div className="--schedule-templat-container">
+                          <div>
+                            <span className="--schedule-template-title">
+                              {" "}
+                              {data1?.sessionTemplateTitle === "DUMMY"
+                                ? "ACTIVITIES"
+                                : data1?.sessionTemplateTitle}
+                            </span>
+                          </div>
+                          <TbMessage
+                            size={30}
+                            style={{ color: "black", cursor: "pointer" }}
+                            onClick={() =>
+                              handleChatModalOpen(
+                                data1.userId,
+                                data1.category,
+                                data1
+                              )
+                            }
+                          />
+                          {data1?.category !== "NUTRITION" &&
+                            data1?.sessionTemplateId !== "SEST_YFVI33" && (
+                              <div
+                                className={`--book-slot ${
+                                  data1 ? "" : "--inActive"
                                 }`}
-                              onClick={() => {
-                                if (!data1) return;
+                                onClick={() => {
+                                  if (!data1) return;
 
-                                if (
-                                  data1?.category === "FITNESS" ||
-                                  data1?.category === "WELLNESS"
-                                ) {
-                                  if (data1?.status == "SCHEDULED") {
-                                    // setShowModal(true);
-                                    setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: true }));
+                                  if (
+                                    data1?.category === "FITNESS" ||
+                                    data1?.category === "WELLNESS"
+                                  ) {
+                                    if (data1?.status == "SCHEDULED") {
+                                      // setShowModal(true);
+                                      setModalMap((prev) => ({
+                                        ...prev,
+                                        [data1.sessionInstanceId]: true,
+                                      }));
+                                      return;
+                                    }
+                                  }
+                                  if (data1?.category === "NUTRITION") {
                                     return;
                                   }
-                                }
-                                if (data1?.category === 'NUTRITION') {
-                                  return
-                                }                          
 
-                                slotBookingHandler(data1?.category, data1);
-                              }}
-                            >
-                              <span>
-                                {data1?.status === "BOOKED"
-                                  ? "View Booking" : "Book Slot"
-                                }
-                              </span>
-
-                            </div>)}
-                          </div>
-                          {
-                            data1 ? (
-                              <>
-                              {data1.category!="NUTRITION" &&(<div className="--bottom">
+                                  slotBookingHandler(data1?.category, data1);
+                                }}
+                              >
+                                <span>
+                                  {data1?.status === "BOOKED"
+                                    ? "View Booking"
+                                    : "Book Slot"}
+                                </span>
+                              </div>
+                            )}
+                        </div>
+                        {data1 ? (
+                          <>
+                            {data1.category != "NUTRITION" && (
+                              <div className="--bottom">
                                 {data1.activities
-                                  .filter(activity => activity.status !== 'REMOVED')
+                                  .filter(
+                                    (activity) => activity.status !== "REMOVED"
+                                  )
                                   .map((activity, i) => (
-                                    <div key={i} className="session-information-container">
+                                    <div
+                                      key={i}
+                                      className="session-information-container"
+                                    >
                                       <div className="--session-info">
                                         <div className="--start">
                                           <div
@@ -567,9 +928,9 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                             style={
                                               i === 0
                                                 ? {
-                                                  outline: "1px solid black",
-                                                  outlineOffset: "10px",
-                                                }
+                                                    outline: "1px solid black",
+                                                    outlineOffset: "10px",
+                                                  }
                                                 : {}
                                             }
                                           />
@@ -579,26 +940,33 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                                 {activity.name || "No name"}
                                               </span>
                                             </div>
-                                            <div className="--desc">{activity.target}{activity?.unit == "weight"
-                                                        ? "Kg"
-                                                        : activity?.unit == "distance"
-                                                            ? "Km"
-                                                            : activity?.unit == "time"
-                                                                ? "Min"
-                                                                : activity?.unit == "repetitions"
-                                                                    ? "Reps"
-                                                                    : activity?.unit == "grams"
-                                                                        ? "g"
-                                                                        : activity?.unit == "meter"
-                                                                            ? "m"
-                                                                            : activity?.unit == "litre"
-                                                                                ? "L"
-                                                                                : activity?.unit == "millilitre"
-                                                                                    ? "ml"
-                                                                                    : ""
-                                                    }</div>
+                                            <div className="--desc">
+                                              {activity.target}
+                                              {activity?.unit == "weight"
+                                                ? "Kg"
+                                                : activity?.unit == "distance"
+                                                ? "Km"
+                                                : activity?.unit == "time"
+                                                ? "Min"
+                                                : activity?.unit ==
+                                                  "repetitions"
+                                                ? "Reps"
+                                                : activity?.unit == "grams"
+                                                ? "g"
+                                                : activity?.unit == "meter"
+                                                ? "m"
+                                                : activity?.unit == "litre"
+                                                ? "L"
+                                                : activity?.unit == "millilitre"
+                                                ? "ml"
+                                                : ""}
+                                            </div>
                                             <div>
-                                              <span className="--desc">{activity.customReps?activity.customReps:'-'}</span>
+                                              <span className="--desc">
+                                                {activity.customReps
+                                                  ? activity.customReps
+                                                  : "-"}
+                                              </span>
                                             </div>
                                           </div>
                                         </div>
@@ -610,7 +978,7 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                 )} */}
                                       </div>
                                       {i < validActivities.length - 1 && (
-                                        <div className="--line" ></div>
+                                        <div className="--line"></div>
                                       )}
                                       {modalMap[data1.sessionInstanceId] && (
                                         <div className="modal-overlay">
@@ -618,22 +986,36 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                             <button
                                               className="modal-close"
                                               onClick={() =>
-                                                setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: false }))
+                                                setModalMap((prev) => ({
+                                                  ...prev,
+                                                  [data1.sessionInstanceId]:
+                                                    false,
+                                                }))
                                               }
                                             >
                                               &times;
                                             </button>
 
-                                            <div className="modal-title">Choose Type</div>
+                                            <div className="modal-title">
+                                              Choose Type
+                                            </div>
                                             <button
-                                              className={`modal-button group ${type === "group" ? "active" : ""}`}
+                                              className={`modal-button group ${
+                                                type === "group" ? "active" : ""
+                                              }`}
                                               onClick={() => setType("group")}
                                             >
                                               Group Session
                                             </button>
                                             <button
-                                              className={`modal-button group ${type === "personal" ? "active" : ""}`}
-                                              onClick={() => setType("personal")}
+                                              className={`modal-button group ${
+                                                type === "personal"
+                                                  ? "active"
+                                                  : ""
+                                              }`}
+                                              onClick={() =>
+                                                setType("personal")
+                                              }
                                             >
                                               1-on-1 Session
                                             </button>
@@ -642,7 +1024,10 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                               className="modal-confirm"
                                               disabled={type === ""}
                                               onClick={() =>
-                                                slotBookingHandler(data1.category, data1)
+                                                slotBookingHandler(
+                                                  data1.category,
+                                                  data1
+                                                )
                                               }
                                             >
                                               Confirm
@@ -650,15 +1035,21 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                           </div>
                                         </div>
                                       )}
-
                                     </div>
                                   ))}
-                              </div>)}
-                              {data1.category=="NUTRITION" &&(<div className="--bottom">
+                              </div>
+                            )}
+                            {data1.category == "NUTRITION" && (
+                              <div className="--bottom">
                                 {data1.activities
-                                  .filter(activity => activity.status !== 'REMOVED')
+                                  .filter(
+                                    (activity) => activity.status !== "REMOVED"
+                                  )
                                   .map((activity, i) => (
-                                    <div key={i} className="session-information-container">
+                                    <div
+                                      key={i}
+                                      className="session-information-container"
+                                    >
                                       <div className="--session-info">
                                         <div className="--start">
                                           <div
@@ -666,9 +1057,9 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                             style={
                                               i === 0
                                                 ? {
-                                                  outline: "1px solid black",
-                                                  outlineOffset: "10px",
-                                                }
+                                                    outline: "1px solid black",
+                                                    outlineOffset: "10px",
+                                                  }
                                                 : {}
                                             }
                                           />
@@ -678,31 +1069,44 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                                 {activity.name || "No name"}
                                               </span>
                                             </div>
-                                            <div className="--desc">{activity.target}{activity?.unit == "weight"
-                                                        ? "Kg"
-                                                        : activity?.unit == "distance"
-                                                            ? "Km"
-                                                            : activity?.unit == "time"
-                                                                ? "Min"
-                                                                : activity?.unit == "repetitions"
-                                                                    ? "Reps"
-                                                                    : activity?.unit == "grams"
-                                                                        ? "g"
-                                                                        : activity?.unit == "meter"
-                                                                            ? "m"
-                                                                            : activity?.unit == "litre"
-                                                                                ? "L"
-                                                                                : activity?.unit == "millilitre"
-                                                                                    ? "ml"
-                                                                                    : ""
-                                                    }</div>
+                                            <div className="--desc">
+                                              {activity.target}
+                                              {activity?.unit == "weight"
+                                                ? "Kg"
+                                                : activity?.unit == "distance"
+                                                ? "Km"
+                                                : activity?.unit == "time"
+                                                ? "Min"
+                                                : activity?.unit ==
+                                                  "repetitions"
+                                                ? "Reps"
+                                                : activity?.unit == "grams"
+                                                ? "g"
+                                                : activity?.unit == "meter"
+                                                ? "m"
+                                                : activity?.unit == "litre"
+                                                ? "L"
+                                                : activity?.unit == "millilitre"
+                                                ? "ml"
+                                                : ""}
+                                            </div>
                                             <div>
                                               {/* <span className="--desc">{activity.customReps?activity.customReps:'-'}</span> */}
                                               {/* {} */}
-                                              <Checkbox 
-                                              checked={activity.status === 'COMPLETE'}
-                                              disabled={activity.status=='COMPLETE'}
-                                              onChange={()=>handleCheckboxChange(activity.activityInstanceId,data1.sessionInstanceId)} />
+                                              <Checkbox
+                                                checked={
+                                                  activity.status === "COMPLETE"
+                                                }
+                                                disabled={
+                                                  activity.status == "COMPLETE"
+                                                }
+                                                onChange={() =>
+                                                  handleCheckboxChange(
+                                                    activity.activityInstanceId,
+                                                    data1.sessionInstanceId
+                                                  )
+                                                }
+                                              />
                                             </div>
                                           </div>
                                         </div>
@@ -714,7 +1118,7 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                 )} */}
                                       </div>
                                       {i < validActivities.length - 1 && (
-                                        <div  id="line-nutrition" ></div>
+                                        <div id="line-nutrition"></div>
                                       )}
                                       {/* {modalMap[data1.sessionInstanceId] && (
                                         <div className="modal-overlay">
@@ -754,33 +1158,27 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
                                           </div>
                                         </div>
                                       )} */}
-
                                     </div>
                                   ))}
-                              </div>)}
-                              </>
-                            ) : (
-                              <div className="--noSession">
-                                <span>No session for this date.</span>
                               </div>
-                            )
-                          }
-                        </div>
-
-                      </>
-                    )
-                  })
-                }
-
-              </div>
-            ) : (
-              <div className="--noSession">
-                <span>No session for this date.</span>
-              </div>
-            )
-          }
+                            )}
+                          </>
+                        ) : (
+                          <div className="--noSession">
+                            <span>No session for this date.</span>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  );
+                })}
+            </div>
+          ) : (
+            <div className="--noSession">
+              <span>No session for this date.</span>
+            </div>
+          )}
         </div>
-
       </div>
       {
         // sessionForCurrentDate ? (
@@ -875,6 +1273,70 @@ console.log('Final matching plan:', matchingPlan.planInstanceId);
             text="➕Create Game"
           ></Button>
         </div>
+      )}
+
+      {showChatModal && (
+        <>
+          {chatModalData.isLoading ? (
+            <div className="chat-modal-overlay">
+              <div className="chat-modal-container">
+                <div className="chat-modal-loading">
+                  <div className="chat-modal-loading-spinner"></div>
+                  <h3 className="chat-modal-loading-title">
+                    Loading Chat Room
+                  </h3>
+                  <p className="chat-modal-loading-text">
+                    Please wait while we connect you...
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : chatModalData.roomDetails ? (
+            <ChatClientProvider client={chatClient}>
+        <ChatRoomProvider name={`${chatModalData.roomDetails.roomType}-${chatModalData.roomDetails.roomName}-${chatModalData.roomDetails.chatId}-${clientId}`}>
+          <ChatModal
+            isOpen={showChatModal}
+            onClose={() => setShowChatModal(false)}
+            roomName={chatModalData.roomName}
+            sessionData={chatModalData.sessionData}
+            roomDetails={chatModalData.roomDetails}
+          />
+        </ChatRoomProvider>
+      </ChatClientProvider>
+          ) : (
+            <div className="chat-modal-overlay">
+              <div className="chat-modal-container">
+                <div className="chat-modal-error">
+                  <div className="chat-modal-error-icon-wrapper">
+                    <svg
+                      className="chat-modal-error-icon"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="chat-modal-error-title">Room Not Found</h3>
+                  <p className="chat-modal-error-text">
+                    {chatModalData.roomName}
+                  </p>
+                  <button
+                    onClick={() => setShowChatModal(false)}
+                    className="chat-modal-error-btn"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

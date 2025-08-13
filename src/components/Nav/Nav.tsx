@@ -7,6 +7,7 @@ import UserModal from "../UserModal/UserModal";
 import type { AxiosResponse } from "axios";
 import { getImagesById } from "../../api/images";
 import { enqueueSnackbar } from "notistack";
+import { TbMessage } from "react-icons/tb";
 
 const Nav = () => {
   const location = useLocation();
@@ -77,6 +78,20 @@ const Nav = () => {
         ""
       ) : (
         <div className="nav-right">
+          <TbMessage
+            size={DEFAULT_ICON_SIZE}
+            // onClick={() => {
+            // 	navigate(E_Routes.Communications, {
+            // 		state: { notifications: notifications },
+            // 	});
+            // }}
+            onClick={() => {
+  const userId = localStorage.getItem("userId")?.replace(/^"|"$/g, "");
+  window.location.href = `https://chatapp.forgehub.in/?clientId=${userId}`;
+}}
+
+            style={{ fontSize: "30px", color: "black" }}
+          />
           <span className="--username">
             {localStorage?.getItem("userName")?.slice(1).slice(0, -1)}
           </span>

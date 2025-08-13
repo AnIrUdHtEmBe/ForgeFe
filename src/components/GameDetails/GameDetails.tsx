@@ -91,7 +91,7 @@ const GameDetails = () => {
     window.history.back();
   };
 
-  console.log(gameDetails);
+  console.log(gameDetails,"gameDetails general?");
 
   useEffect(() => {
     if (gameDetails !== null && gameDetails !== undefined) {

@@ -18,7 +18,7 @@ function BookingDetails() {
     
     const location = useLocation();
     const { bookingId } = location.state;
-    console.log(bookingId);
+    console.log(bookingId,"of global booking?");
     
     const [bookingDetails, setBookingDetails] = useState<any>(null);
     const [sport , setSport] = useState<any>(null);
