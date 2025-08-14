@@ -912,6 +912,20 @@ await sendMessage(messagePayload);
                           <>
                             {data1.category != "NUTRITION" && (
                               <div className="--bottom">
+                                <div
+                                  style={{
+                                    color: "red",
+                                    marginLeft: "28px",
+                                    marginBottom: "-20px",
+                                    display: "flex",
+                                    gap: "2px",
+                                    fontSize: "12px",
+                                  }}
+                                >
+                                  <span style={{ width: "140px" }}>TASK</span>
+                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 1</span>
+                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 2</span>
+                                </div>
                                 {data1.activities
                                   .filter(
                                     (activity) => activity.status !== "REMOVED"
@@ -936,46 +950,55 @@ await sendMessage(messagePayload);
                                           />
                                           <div className="--session">
                                             <div>
-                                              <span className="--name">
+                                              <div className="--name" style={{ 
+                                                wordWrap: "break-word", 
+                                                wordBreak: "break-word",
+                                                whiteSpace: "normal",
+                                                lineHeight: "1.4"
+                                              }}>
                                                 {activity.name || "No name"}
-                                              </span>
+                                              </div>
+                                              <div style={{ 
+                                                wordWrap: "break-word", 
+                                                wordBreak: "break-word",
+                                                whiteSpace: "normal",
+                                                lineHeight: "1.4",
+                                                marginTop: "4px",
+                                                fontSize: "12px",
+                                                color: '#0a0a0a78'
+                                              }}>
+                                                {activity.description || "No description"}
+                                              </div>
                                             </div>
-                                            <div className="--desc">
-                                              {activity.target}
-                                              {activity?.unit == "weight"
-                                                ? "Kg"
-                                                : activity?.unit == "distance"
-                                                ? "Km"
-                                                : activity?.unit == "time"
-                                                ? "Min"
-                                                : activity?.unit ==
-                                                  "repetitions"
-                                                ? "Reps"
-                                                : activity?.unit == "grams"
-                                                ? "g"
-                                                : activity?.unit == "meter"
-                                                ? "m"
-                                                : activity?.unit == "litre"
-                                                ? "L"
-                                                : activity?.unit == "millilitre"
-                                                ? "ml"
-                                                : ""}
+                                            <div style={{ flex: "0 0 80px", minWidth: "82px"}}>
+                                              <div className="--desc">
+                                                {activity.target || "-"}
+                                                {activity.target ? (activity?.unit == "weight"
+                                                  ? "Kg"
+                                                  : activity?.unit == "distance"
+                                                  ? "Km"
+                                                  : activity?.unit == "time"
+                                                  ? "Min"
+                                                  : activity?.unit == "repetitions"
+                                                  ? "Reps"
+                                                  : activity?.unit == "grams"
+                                                  ? "g"
+                                                  : activity?.unit == "meter"
+                                                  ? "m"
+                                                  : activity?.unit == "litre"
+                                                  ? "L"
+                                                  : activity?.unit == "millilitre"
+                                                  ? "ml"
+                                                  : "") : ""}
+                                              </div>
                                             </div>
-                                            <div>
+                                            <div style={{ flex: "0 0 80px", minWidth: "80px", textAlign: "center" }}>
                                               <span className="--desc">
-                                                {activity.customReps
-                                                  ? activity.customReps
-                                                  : "-"}
+                                                {activity.customReps || "-"}
                                               </span>
                                             </div>
                                           </div>
                                         </div>
-                                        {/* {i === 0 && (
-                                  <div className="--end">
-                                    <span>Start</span>
-                                    <FaPlay />
-                                  </div>
-                                )} */}
                                       </div>
                                       {i < validActivities.length - 1 && (
                                         <div className="--line"></div>
@@ -1041,6 +1064,20 @@ await sendMessage(messagePayload);
                             )}
                             {data1.category == "NUTRITION" && (
                               <div className="--bottom">
+                                <div
+                                  style={{
+                                   color: "red",
+                                    marginLeft: "28px",
+                                    marginBottom: "-20px",
+                                    display: "flex",
+                                    gap: "2px",
+                                    fontSize: "12px",
+                                  }}
+                                >
+                                   <span style={{ width: "140px" }}>TASK</span>
+                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 1</span>
+                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 2</span>
+                                </div>
                                 {data1.activities
                                   .filter(
                                     (activity) => activity.status !== "REMOVED"
@@ -1063,36 +1100,56 @@ await sendMessage(messagePayload);
                                                 : {}
                                             }
                                           />
-                                          <div className="--session">
+                                          <div className="--session" >
                                             <div>
-                                              <span className="--name">
+                                              <div className="--name" style={{ 
+                                                wordWrap: "break-word", 
+                                                wordBreak: "break-word",
+                                                whiteSpace: "normal",
+                                                lineHeight: "1.4"
+                                              }}>
                                                 {activity.name || "No name"}
+                                              </div>
+                                              <div style={{ 
+                                                wordWrap: "break-word", 
+                                                wordBreak: "break-word",
+                                                whiteSpace: "normal",
+                                                lineHeight: "1.4",
+                                                marginTop: "4px",
+                                                fontSize: "12px",
+                                                color: '#0a0a0a78'
+                                              }}>
+                                                {activity.description || "No description"}
+                                              </div>
+                                            </div>
+                                            <div style={{ flex: "0 0 80px", minWidth: "80px", textAlign: "center" }}>
+                                              <div className="--desc">
+                                                {activity.target || "-"}
+                                                {activity.target ? (activity?.unit == "weight"
+                                                  ? "Kg"
+                                                  : activity?.unit == "distance"
+                                                  ? "Km"
+                                                  : activity?.unit == "time"
+                                                  ? "Min"
+                                                  : activity?.unit == "repetitions"
+                                                  ? "Reps"
+                                                  : activity?.unit == "grams"
+                                                  ? "g"
+                                                  : activity?.unit == "meter"
+                                                  ? "m"
+                                                  : activity?.unit == "litre"
+                                                  ? "L"
+                                                  : activity?.unit == "millilitre"
+                                                  ? "ml"
+                                                  : "") : ""}
+                                              </div>
+                                            </div>
+                                            <div style={{ flex: "0 0 80px", minWidth: "80px", textAlign: "center" }}>
+                                              <span className="--desc">
+                                                {activity.customReps || "-"}
                                               </span>
                                             </div>
-                                            <div className="--desc">
-                                              {activity.target}
-                                              {activity?.unit == "weight"
-                                                ? "Kg"
-                                                : activity?.unit == "distance"
-                                                ? "Km"
-                                                : activity?.unit == "time"
-                                                ? "Min"
-                                                : activity?.unit ==
-                                                  "repetitions"
-                                                ? "Reps"
-                                                : activity?.unit == "grams"
-                                                ? "g"
-                                                : activity?.unit == "meter"
-                                                ? "m"
-                                                : activity?.unit == "litre"
-                                                ? "L"
-                                                : activity?.unit == "millilitre"
-                                                ? "ml"
-                                                : ""}
-                                            </div>
                                             <div>
-                                              {/* <span className="--desc">{activity.customReps?activity.customReps:'-'}</span> */}
-                                              {/* {} */}
                                               <Checkbox
                                                 checked={
                                                   activity.status === "COMPLETE"
@@ -1110,54 +1167,10 @@ await sendMessage(messagePayload);
                                             </div>
                                           </div>
                                         </div>
-                                        {/* {i === 0 && (
-                                  <div className="--end">
-                                    <span>Start</span>
-                                    <FaPlay />
-                                  </div>
-                                )} */}
                                       </div>
                                       {i < validActivities.length - 1 && (
                                         <div id="line-nutrition"></div>
                                       )}
-                                      {/* {modalMap[data1.sessionInstanceId] && (
-                                        <div className="modal-overlay">
-                                          <div className="modal-box">
-                                            <button
-                                              className="modal-close"
-                                              onClick={() =>
-                                                setModalMap(prev => ({ ...prev, [data1.sessionInstanceId]: false }))
-                                              }
-                                            >
-                                              &times;
-                                            </button>
-
-                                            <div className="modal-title">Choose Type</div>
-                                            <button
-                                              className={`modal-button group ${type === "group" ? "active" : ""}`}
-                                              onClick={() => setType("group")}
-                                            >
-                                              Group Session
-                                            </button>
-                                            <button
-                                              className={`modal-button group ${type === "personal" ? "active" : ""}`}
-                                              onClick={() => setType("personal")}
-                                            >
-                                              1-on-1 Session
-                                            </button>
-
-                                            <button
-                                              className="modal-confirm"
-                                              disabled={type === ""}
-                                              onClick={() =>
-                                                slotBookingHandler(data1.category, data1)
-                                              }
-                                            >
-                                              Confirm
-                                            </button>
-                                          </div>
-                                        </div>
-                                      )} */}
                                     </div>
                                   ))}
                               </div>

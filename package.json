@@ -11,10 +11,14 @@
   },
   "dependencies": {
     "@ably/chat": "^0.11.0",
+    "@atlaskit/analytics-next": "^11.1.0",
     "@atlaskit/dropdown-menu": "^16.0.0",
+    "@atlaskit/popper": "^7.1.0",
+    "@atlaskit/tooltip": "^20.4.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.1.1",
+    "ably": "^2.11.0",
     "axios": "^1.9.0",
     "jwt-decode": "^4.0.0",
     "notistack": "^3.0.2",
@@ -22,6 +26,7 @@
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-loader-spinner": "^6.1.6",
+    "react-popper": "^2.3.0",
     "react-router-dom": "^7.6.0"
   },
   "devDependencies": {
