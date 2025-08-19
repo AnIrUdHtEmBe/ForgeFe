@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ResetPassword } from "../../api/auth";
+//import { ResetPassword } from "../../api/auth";
 // import { AxiosResponse } from 'axios';
 import { enqueueSnackbar } from "notistack";
 import "./styles.css";
@@ -37,7 +37,7 @@ function PasswordReset() {
       setLoading(false);
     };
 
-    await ResetPassword(onAccept, onReject, email, oldPassword, newPassword);
+    //await ResetPassword(onAccept, onReject, email, oldPassword, newPassword);
   };
 
   return (

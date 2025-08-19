@@ -6,6 +6,9 @@
   padding: 0 24px;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 /* LEFT SECTION */
@@ -42,7 +45,7 @@
 .--username {
   font-size: 16px;
   font-weight: 700;
-	font-family: 'roboto', sans-serif;
+  font-family: "roboto", sans-serif;
   color: #333;
 }
 
@@ -50,7 +53,6 @@
   display: flex;
   align-items: center;
 }
-
 
 .profile-icon {
   height: 40px !important;

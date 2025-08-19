@@ -32,10 +32,7 @@ function App() {
 						element={<Login />}
 						/> */}
 
-          <Route
-            path={E_Routes.passwordReset}
-            element={<Outlay children={<PasswordReset />} />}
-          />
+          <Route path={E_Routes.passwordReset} element={<PasswordReset />} />
 
           <Route
             path={E_Routes.viewPlan}
@@ -89,7 +86,7 @@ function App() {
             path={E_Routes.bookingDetails}
             element={
               <PrivateRoute>
-                <Outlay children={<BookingDetails/>} />
+                <Outlay children={<BookingDetails />} />
               </PrivateRoute>
             }
           />

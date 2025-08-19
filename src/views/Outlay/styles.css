@@ -1,13 +1,16 @@
 .outlay-container {
-	display: flex;
-	height: 100vh;
-	flex-direction: column;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  overflow: hidden; /* prevent all scrolling */
 }
 
 .outlay-top-container {
-	height: 60px;
+  height: 60px;
+  flex-shrink: 0;
 }
 
 .outlay-children-container {
-	height: calc(100vh - 60px);
+  height: calc(100vh - 60px);
+  overflow: hidden; /* prevent scroll inside children */
 }
