@@ -27,8 +27,13 @@ import type { t_session } from "../../types/session.ts";
 import { markActivityComplete } from "../../api/activity.ts";
 import { TbMessage } from "react-icons/tb";
 import * as Ably from "ably";
-import { ChatClientProvider, ChatRoomProvider, useMessages } from "@ably/chat/react";
+import {
+  ChatClientProvider,
+  ChatRoomProvider,
+  useMessages,
+} from "@ably/chat/react";
 import { ChatClient, ChatMessageEventType, LogLevel } from "@ably/chat";
+import { IoPlayCircle } from "react-icons/io5";
 
 interface ChatModalData {
   roomName: string;
@@ -67,15 +72,21 @@ const ViewPlan = () => {
     sessionData: null,
     roomDetails: null,
   });
+  const [currentVideoUrl, setCurrentVideoUrl] = useState("");
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const extractVideoId = (url: string): string | null => {
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
+  const clientId = localStorage.getItem("userId")?.slice(1, -1) || "";
+  const CHAT_API_KEY =
+    "0DwkUw.pjfyJw:CwXcw14bOIyzWPRLjX1W7MAoYQYEVgzk8ko3tn0dYUI";
 
- 
-const clientId = localStorage.getItem("userId")?.slice(1, -1) || "";
-  const CHAT_API_KEY ="0DwkUw.pjfyJw:CwXcw14bOIyzWPRLjX1W7MAoYQYEVgzk8ko3tn0dYUI";
-     
+  const realtimeClient = new Ably.Realtime({ key: CHAT_API_KEY, clientId });
 
-    const realtimeClient = new Ably.Realtime({ key: CHAT_API_KEY, clientId });
-
-    const chatClient = new ChatClient(realtimeClient, {
+  const chatClient = new ChatClient(realtimeClient, {
     logLevel: LogLevel.Info,
   });
 
@@ -431,7 +442,7 @@ const clientId = localStorage.getItem("userId")?.slice(1, -1) || "";
           if (match) {
             matchingPlan = plan;
             console.log(
-              `✅ Match found at newWeekPlan[${index}].plans[${planIndex}] → planInstanceId:`,
+              ` Match found at newWeekPlan[${index}].plans[${planIndex}] → planInstanceId:`,
               plan.planInstanceId
             );
           }
@@ -502,74 +513,75 @@ const clientId = localStorage.getItem("userId")?.slice(1, -1) || "";
       },
     });
 
-const handleSend = async () => {
-  if (!message.trim() || isSending) return;
+    const handleSend = async () => {
+      if (!message.trim() || isSending) return;
 
-  setIsSending(true);
-  try {
-    const currentUserId =
-      localStorage.getItem("userId")?.slice(1, -1) || "";
+      setIsSending(true);
+      try {
+        const currentUserId =
+          localStorage.getItem("userId")?.slice(1, -1) || "";
 
-// Build context object directly (no stringify)
-const context = {
-  sessionTemplateTitle: sessionData?.sessionTemplateTitle || "",
-  openDate: currentDate || "",
-};
+        // Build context object directly (no stringify)
+        const context = {
+          sessionTemplateTitle: sessionData?.sessionTemplateTitle || "",
+          openDate: currentDate || "",
+        };
 
-// Create message payload with context as an object
-const messagePayload: any = {
-  text: message.trim(),
-  metadata: {
-    context: context
-  },
-};
+        // Create message payload with context as an object
+        const messagePayload: any = {
+          text: message.trim(),
+          metadata: {
+            context: context,
+          },
+        };
 
-console.log("Sending payload", messagePayload);
+        console.log("Sending payload", messagePayload);
 
-await sendMessage(messagePayload);
+        await sendMessage(messagePayload);
 
+        console.log("✅ Message sent successfully");
 
+        // Close modal and navigate to chat
+        onClose();
 
-    console.log("✅ Message sent successfully");
+        // Create context for URL only
+        const contextEncoded = encodeURIComponent(
+          JSON.stringify({
+            sessionTemplateTitle: sessionData?.sessionTemplateTitle || "",
+            openDate: currentDate || "",
+          })
+        );
 
-    // Close modal and navigate to chat
-    onClose();
+        const seenByUser = await axios.patch(
+          `https://play-os-backend.forgehub.in/human/human/mark-seen`,
+          {
+            userId: clientId,
+            roomType: roomDetails.roomType,
+            userType: "user",
+            handled: `${message.trim()}`,
+          }
+        );
 
-    // Create context for URL only
-    const contextEncoded = encodeURIComponent(
-      JSON.stringify({
-        sessionTemplateTitle: sessionData?.sessionTemplateTitle || "",
-        openDate: currentDate || "",
-      })
-    );
+        console.log("seen by user at", seenByUser.data);
 
-    const seenByUser =  await axios.patch(`https://play-os-backend.forgehub.in/human/human/mark-seen`,{
-      userId: clientId,
-      roomType: roomDetails.roomType,
-      userType: "user",
-      handled: `${message.trim()}` 
-    })
-
-    console.log("seen by user at", seenByUser.data);
-
-    const url = `https://chatapp.forgehub.in/?clientId=${currentUserId}&roomChatId=${
-      roomDetails.chatId
-    }&roomnames=${encodeURIComponent(roomDetails.roomName)}&roomType=${
-      roomDetails.roomType
-    }`;
-//&context=${contextEncoded}
-    window.location.href = url;
-  } catch (error) {
-    console.error("Error sending message:", error);
-    enqueueSnackbar({
-      message: "Failed to send message",
-      autoHideDuration: SNACK_AUTO_HIDE,
-      variant: "error",
-    });
-  } finally {
-    setIsSending(false);
-  }
-};
+        const url = `https://chatapp.forgehub.in/?clientId=${currentUserId}&roomChatId=${
+          roomDetails.chatId
+        }&roomnames=${encodeURIComponent(roomDetails.roomName)}&roomType=${
+          roomDetails.roomType
+        }`;
+        //&context=${contextEncoded}
+        window.location.href = url;
+      } catch (error) {
+        console.error("Error sending message:", error);
+        enqueueSnackbar({
+          message: "Failed to send message",
+          autoHideDuration: SNACK_AUTO_HIDE,
+          variant: "error",
+        });
+      } finally {
+        setIsSending(false);
+      }
+    };
 
     if (!isOpen) return null;
 
@@ -829,7 +841,7 @@ await sendMessage(messagePayload);
             <span>Your Schedule</span>
           </div>
         </div>
-        <div>
+        <div className="schedule-scrollable-content">
           {newsessionForCurrentDate.length > 0 ? (
             <div>
               {newsessionForCurrentDate
@@ -915,7 +927,7 @@ await sendMessage(messagePayload);
                                 <div
                                   style={{
                                     color: "red",
-                                    marginLeft: "28px",
+                                    marginLeft: "40px",
                                     marginBottom: "-20px",
                                     display: "flex",
                                     gap: "2px",
@@ -923,8 +935,22 @@ await sendMessage(messagePayload);
                                   }}
                                 >
                                   <span style={{ width: "140px" }}>TASK</span>
-                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 1</span>
-                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 2</span>
+                                  <span
+                                    style={{
+                                      width: "80px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    TARGET 1
+                                  </span>
+                                  <span
+                                    style={{
+                                      width: "80px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    TARGET 2
+                                  </span>
                                 </div>
                                 {data1.activities
                                   .filter(
@@ -937,62 +963,120 @@ await sendMessage(messagePayload);
                                     >
                                       <div className="--session-info">
                                         <div className="--start">
-                                          <div
-                                            className="dot"
-                                            style={
-                                              i === 0
-                                                ? {
-                                                    outline: "1px solid black",
-                                                    outlineOffset: "10px",
-                                                  }
-                                                : {}
-                                            }
-                                          />
+                                          {activity.videoLink ? (
+                                            <IoPlayCircle
+                                              size={22}
+                                              style={{
+                                                zIndex: 2,
+                                                position: "relative",
+                                                verticalAlign: "middle",
+                                                cursor: "pointer",
+                                                color: "#007bff",
+                                                ...(i === 0
+                                                  ? {
+                                                      outline:
+                                                        "1px solid black",
+                                                      outlineOffset: "8px",
+                                                      borderRadius: "50%",
+                                                      background: "white",
+                                                    }
+                                                  : {}),
+                                              }}
+                                              onClick={() => {
+                                                setCurrentVideoUrl(
+                                                  activity.videoLink
+                                                );
+                                                setShowVideoModal(true);
+                                              }}
+                                            />
+                                          ) : (
+                                            <IoPlayCircle
+                                              size={22}
+                                              style={{
+                                                zIndex: 2,
+                                                position: "relative",
+                                                verticalAlign: "middle",
+                                                color: "#ccc",
+                                                ...(i === 0
+                                                  ? {
+                                                      outline:
+                                                        "1px solid black",
+                                                      outlineOffset: "8px",
+                                                      borderRadius: "50%",
+                                                      background: "white",
+                                                    }
+                                                  : {}),
+                                              }}
+                                            />
+                                          )}
+
                                           <div className="--session">
                                             <div>
-                                              <div className="--name" style={{ 
-                                                wordWrap: "break-word", 
-                                                wordBreak: "break-word",
-                                                whiteSpace: "normal",
-                                                lineHeight: "1.4"
-                                              }}>
+                                              <div
+                                                className="--name"
+                                                style={{
+                                                  wordWrap: "break-word",
+                                                  wordBreak: "break-word",
+                                                  whiteSpace: "normal",
+                                                  lineHeight: "1.4",
+                                                }}
+                                              >
                                                 {activity.name || "No name"}
                                               </div>
-                                              <div style={{ 
-                                                wordWrap: "break-word", 
-                                                wordBreak: "break-word",
-                                                whiteSpace: "normal",
-                                                lineHeight: "1.4",
-                                                marginTop: "4px",
-                                                fontSize: "12px",
-                                                color: '#0a0a0a78'
-                                              }}>
-                                                {activity.description || "No description"}
+                                              <div
+                                                style={{
+                                                  wordWrap: "break-word",
+                                                  wordBreak: "break-word",
+                                                  whiteSpace: "normal",
+                                                  lineHeight: "1.4",
+                                                  marginTop: "4px",
+                                                  fontSize: "12px",
+                                                  color: "#0a0a0a78",
+                                                }}
+                                              >
+                                                {activity.description ||
+                                                  "No description"}
                                               </div>
                                             </div>
-                                            <div style={{ flex: "0 0 80px", minWidth: "82px"}}>
+                                            <div
+                                              style={{
+                                                flex: "0 0 80px",
+                                                minWidth: "82px",
+                                              }}
+                                            >
                                               <div className="--desc">
                                                 {activity.target || "-"}
-                                                {activity.target ? (activity?.unit == "weight"
-                                                  ? "Kg"
-                                                  : activity?.unit == "distance"
-                                                  ? "Km"
-                                                  : activity?.unit == "time"
-                                                  ? "Min"
-                                                  : activity?.unit == "repetitions"
-                                                  ? "Reps"
-                                                  : activity?.unit == "grams"
-                                                  ? "g"
-                                                  : activity?.unit == "meter"
-                                                  ? "m"
-                                                  : activity?.unit == "litre"
-                                                  ? "L"
-                                                  : activity?.unit == "millilitre"
-                                                  ? "ml"
-                                                  : "") : ""}
+                                                {activity.target
+                                                  ? activity?.unit == "weight"
+                                                    ? "Kg"
+                                                    : activity?.unit ==
+                                                      "distance"
+                                                    ? "Km"
+                                                    : activity?.unit == "time"
+                                                    ? "Min"
+                                                    : activity?.unit ==
+                                                      "repetitions"
+                                                    ? "Reps"
+                                                    : activity?.unit == "grams"
+                                                    ? "g"
+                                                    : activity?.unit == "meter"
+                                                    ? "m"
+                                                    : activity?.unit == "litre"
+                                                    ? "L"
+                                                    : activity?.unit ==
+                                                      "millilitre"
+                                                    ? "ml"
+                                                    : ""
+                                                  : ""}
                                               </div>
                                             </div>
-                                            <div style={{ flex: "0 0 80px", minWidth: "80px", textAlign: "center" }}>
+                                            <div
+                                              style={{
+                                                flex: "0 0 80px",
+                                                minWidth: "80px",
+                                                textAlign: "center",
+                                              }}
+                                            >
                                               <span className="--desc">
                                                 {activity.customReps || "-"}
                                               </span>
@@ -1000,9 +1084,9 @@ await sendMessage(messagePayload);
                                           </div>
                                         </div>
                                       </div>
-                                      {i < validActivities.length - 1 && (
+                                      {/* {i < validActivities.length - 1 && (
                                         <div className="--line"></div>
-                                      )}
+                                      )} */}
                                       {modalMap[data1.sessionInstanceId] && (
                                         <div className="modal-overlay">
                                           <div className="modal-box">
@@ -1066,17 +1150,31 @@ await sendMessage(messagePayload);
                               <div className="--bottom">
                                 <div
                                   style={{
-                                   color: "red",
-                                    marginLeft: "28px",
+                                    color: "red",
+                                    marginLeft: "40px",
                                     marginBottom: "-20px",
                                     display: "flex",
                                     gap: "2px",
                                     fontSize: "12px",
                                   }}
                                 >
-                                   <span style={{ width: "140px" }}>TASK</span>
-                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 1</span>
-                                  <span style={{ width: "80px", textAlign: "center" }}>TARGET 2</span>
+                                  <span style={{ width: "140px" }}>TASK</span>
+                                  <span
+                                    style={{
+                                      width: "80px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    TARGET 1
+                                  </span>
+                                  <span
+                                    style={{
+                                      width: "80px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    TARGET 2
+                                  </span>
                                 </div>
                                 {data1.activities
                                   .filter(
@@ -1100,51 +1198,74 @@ await sendMessage(messagePayload);
                                                 : {}
                                             }
                                           />
-                                          <div className="--session" >
+                                          <div className="--session">
                                             <div>
-                                              <div className="--name" style={{ 
-                                                wordWrap: "break-word", 
-                                                wordBreak: "break-word",
-                                                whiteSpace: "normal",
-                                                lineHeight: "1.4"
-                                              }}>
+                                              <div
+                                                className="--name"
+                                                style={{
+                                                  wordWrap: "break-word",
+                                                  wordBreak: "break-word",
+                                                  whiteSpace: "normal",
+                                                  lineHeight: "1.4",
+                                                }}
+                                              >
                                                 {activity.name || "No name"}
                                               </div>
-                                              <div style={{ 
-                                                wordWrap: "break-word", 
-                                                wordBreak: "break-word",
-                                                whiteSpace: "normal",
-                                                lineHeight: "1.4",
-                                                marginTop: "4px",
-                                                fontSize: "12px",
-                                                color: '#0a0a0a78'
-                                              }}>
-                                                {activity.description || "No description"}
+                                              <div
+                                                style={{
+                                                  wordWrap: "break-word",
+                                                  wordBreak: "break-word",
+                                                  whiteSpace: "normal",
+                                                  lineHeight: "1.4",
+                                                  marginTop: "4px",
+                                                  fontSize: "12px",
+                                                  color: "#0a0a0a78",
+                                                }}
+                                              >
+                                                {activity.description ||
+                                                  "No description"}
                                               </div>
                                             </div>
-                                            <div style={{ flex: "0 0 80px", minWidth: "80px", textAlign: "center" }}>
+                                            <div
+                                              style={{
+                                                flex: "0 0 80px",
+                                                minWidth: "80px",
+                                                textAlign: "center",
+                                              }}
+                                            >
                                               <div className="--desc">
                                                 {activity.target || "-"}
-                                                {activity.target ? (activity?.unit == "weight"
-                                                  ? "Kg"
-                                                  : activity?.unit == "distance"
-                                                  ? "Km"
-                                                  : activity?.unit == "time"
-                                                  ? "Min"
-                                                  : activity?.unit == "repetitions"
-                                                  ? "Reps"
-                                                  : activity?.unit == "grams"
-                                                  ? "g"
-                                                  : activity?.unit == "meter"
-                                                  ? "m"
-                                                  : activity?.unit == "litre"
-                                                  ? "L"
-                                                  : activity?.unit == "millilitre"
-                                                  ? "ml"
-                                                  : "") : ""}
+                                                {activity.target
+                                                  ? activity?.unit == "weight"
+                                                    ? "Kg"
+                                                    : activity?.unit ==
+                                                      "distance"
+                                                    ? "Km"
+                                                    : activity?.unit == "time"
+                                                    ? "Min"
+                                                    : activity?.unit ==
+                                                      "repetitions"
+                                                    ? "Reps"
+                                                    : activity?.unit == "grams"
+                                                    ? "g"
+                                                    : activity?.unit == "meter"
+                                                    ? "m"
+                                                    : activity?.unit == "litre"
+                                                    ? "L"
+                                                    : activity?.unit ==
+                                                      "millilitre"
+                                                    ? "ml"
+                                                    : ""
+                                                  : ""}
                                               </div>
                                             </div>
-                                            <div style={{ flex: "0 0 80px", minWidth: "80px", textAlign: "center" }}>
+                                            <div
+                                              style={{
+                                                flex: "0 0 80px",
+                                                minWidth: "80px",
+                                                textAlign: "center",
+                                              }}
+                                            >
                                               <span className="--desc">
                                                 {activity.customReps || "-"}
                                               </span>
@@ -1287,7 +1408,43 @@ await sendMessage(messagePayload);
           ></Button>
         </div>
       )}
-
+      {showVideoModal && currentVideoUrl && (
+        <div
+          className="video-modal-overlay"
+          onClick={() => {
+            setShowVideoModal(false);
+            setCurrentVideoUrl("");
+          }}
+        >
+          <div
+            className="video-modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="video-modal-close"
+              onClick={() => {
+                setShowVideoModal(false);
+                setCurrentVideoUrl("");
+              }}
+            >
+              &times;
+            </button>
+            <div className="video-player">
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube.com/embed/${extractVideoId(
+                  currentVideoUrl
+                )}?autoplay=1`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
       {showChatModal && (
         <>
           {chatModalData.isLoading ? (
@@ -1306,16 +1463,18 @@ await sendMessage(messagePayload);
             </div>
           ) : chatModalData.roomDetails ? (
             <ChatClientProvider client={chatClient}>
-        <ChatRoomProvider name={`${chatModalData.roomDetails.roomType}-${chatModalData.roomDetails.roomName}-${chatModalData.roomDetails.chatId}-${clientId}`}>
-          <ChatModal
-            isOpen={showChatModal}
-            onClose={() => setShowChatModal(false)}
-            roomName={chatModalData.roomName}
-            sessionData={chatModalData.sessionData}
-            roomDetails={chatModalData.roomDetails}
-          />
-        </ChatRoomProvider>
-      </ChatClientProvider>
+              <ChatRoomProvider
+                name={`${chatModalData.roomDetails.roomType}-${chatModalData.roomDetails.roomName}-${chatModalData.roomDetails.chatId}-${clientId}`}
+              >
+                <ChatModal
+                  isOpen={showChatModal}
+                  onClose={() => setShowChatModal(false)}
+                  roomName={chatModalData.roomName}
+                  sessionData={chatModalData.sessionData}
+                  roomDetails={chatModalData.roomDetails}
+                />
+              </ChatRoomProvider>
+            </ChatClientProvider>
           ) : (
             <div className="chat-modal-overlay">
               <div className="chat-modal-container">

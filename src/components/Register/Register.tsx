@@ -6,7 +6,7 @@ import { RegiterUser } from "../../api/auth";
 
 export interface RegisterFormData {
   name: string;
-  age: number |  undefined;
+  dob: string; // Changed from age to dob
   gender: string;
   mobile: string;
   emailId: string;
@@ -21,14 +21,31 @@ interface RegisterProps {
 
 function Register(props: RegisterProps) {
   const [formData, setFormData] = useState<RegisterFormData>({
-    type: "play",
+    type: "forge",
     name: "",
-    age: undefined,
+    dob: "", // Changed from age to dob
     gender: "",
     mobile: "",
     emailId: "",
     password: "",
   });
+
+  // Function to calculate age from DOB
+  const calculateAge = (dob: string): number | undefined => {
+    if (!dob) return undefined;
+    
+    const birthDate = new Date(dob);
+    const today = new Date();
+    
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age;
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -37,14 +54,20 @@ function Register(props: RegisterProps) {
 
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "age" ? Number(value) : value,
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(formData);
+    // Include calculated age in the form data for submission
+    const submitData = {
+      ...formData,
+      age: calculateAge(formData.dob),
+    };
+
+    console.log(submitData);
 
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
@@ -65,7 +88,7 @@ function Register(props: RegisterProps) {
       });
     };
 
-    RegiterUser(onAccept, onReject, formData);
+    RegiterUser(onAccept, onReject, submitData);
   };
 
   const handleClick = () => {
@@ -94,14 +117,26 @@ function Register(props: RegisterProps) {
             />
           </div>
           <div className="form-group">
+            <label htmlFor="dob">Date of Birth:</label>
+            <input
+              type="date"
+              id="dob"
+              name="dob"
+              required
+              value={formData.dob}
+              onChange={handleChange}
+              max={new Date().toISOString().split("T")[0]} // Prevent future dates
+            />
+          </div>
+          <div className="form-group">
             <label htmlFor="age">Age:</label>
             <input
               type="number"
               id="age"
               name="age"
-              required
-              value={formData.age}
-              onChange={handleChange}
+              disabled
+              value={calculateAge(formData.dob) || ""}
+              className="bg-gray-100 cursor-not-allowed"
             />
           </div>
           <div className="form-group">
@@ -162,7 +197,6 @@ function Register(props: RegisterProps) {
               value={formData.type}
               onChange={handleChange}
             >
-              <option value="play">Play User</option>
               <option value="forge">Forge User</option>
             </select>
           </div>

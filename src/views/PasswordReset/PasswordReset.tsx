@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ResetPassword } from "../../api/auth";
+//import { ResetPassword } from "../../api/auth";
 // import { AxiosResponse } from 'axios';
 import { enqueueSnackbar } from "notistack";
 import "./styles.css";
@@ -21,7 +21,6 @@ function PasswordReset() {
         enqueueSnackbar("Password reset successful!", { variant: "success" });
         setLoading(false);
         navigate("/"); // Redirect to login page after successful reset
-
       } else {
         enqueueSnackbar("Failed to reset password. Check credentials.", {
           variant: "error",
@@ -37,7 +36,7 @@ function PasswordReset() {
       setLoading(false);
     };
 
-    await ResetPassword(onAccept, onReject, email, oldPassword, newPassword);
+    //await ResetPassword(onAccept, onReject, email, oldPassword, newPassword);
   };
 
   return (

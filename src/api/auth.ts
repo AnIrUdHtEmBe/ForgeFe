@@ -25,33 +25,48 @@ export const LoginUser = async (
   formData: LoginFormData
 ) => {
   try {
-    
-    if (formData.loginId!=''){
-    const response = await axios.post(PATH_V2 + LOGIN_HUMANS(), {
-      loginId:formData.loginId,
-      password:formData.password
-    });
-  onAccept(response)
-  }
-  
-    
+    if (formData.loginId != "") {
+      const response = await axios.post(PATH_V2 + LOGIN_HUMANS(), {
+        loginId: formData.loginId,
+        password: formData.password,
+      });
+      onAccept(response);
+    }
   } catch (e) {
     onReject(e);
   }
 };
 
-
-export const ResetPassword = async (
+export const SendForgotPasswordOtp = async (
   onAccept: (response: AxiosResponse) => void,
   onReject: (error: unknown) => void,
-  email: string,
-  oldPassword: string,
-  newPassword: string
+  email: string
 ) => {
   try {
-    const response = await axios.post(PATH_V2 + '/auth/reset-password', { email , oldPassword, newPassword });
+    const response = await axios.post(
+      `${PATH_V2}/auth/forgot-password?email=${encodeURIComponent(email)}`
+    );
     onAccept(response);
   } catch (e) {
     onReject(e);
   }
-} 
+};
+
+export const ResetPasswordWithOtp = async (
+  onAccept: (response: AxiosResponse) => void,
+  onReject: (error: unknown) => void,
+  email: string,
+  otp: string,
+  newPassword: string
+) => {
+  try {
+    const response = await axios.post(`${PATH_V2}/auth/reset-password`, {
+      email,
+      otp,
+      newPassword,
+    });
+    onAccept(response);
+  } catch (e) {
+    onReject(e);
+  }
+};
