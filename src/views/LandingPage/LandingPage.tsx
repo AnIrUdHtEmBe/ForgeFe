@@ -33,9 +33,9 @@ function LandingPage() {
           <button className="login-btn" onClick={handleLoginClick}>
             Login
           </button>
-          <button className="register-btn" onClick={handleRegisterClick}>
+          {/* <button className="register-btn" onClick={handleRegisterClick}>
             Register
-          </button>
+          </button> */}
         </div>
       </header>
 

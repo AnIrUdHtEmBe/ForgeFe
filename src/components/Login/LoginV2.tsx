@@ -303,12 +303,12 @@ function LoginV2(props: LoginProps) {
               <button type="submit" className="register-btn">
                 Login
               </button>
-              <p className="register-link">
+              {/* <p className="register-link">
                 Don't have an account?{" "}
                 <span className="link" onClick={handleClick}>
                   Register
                 </span>
-              </p>
+              </p> */}
               <p
                 style={{
                   textAlign: "center",

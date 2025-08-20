@@ -734,7 +734,7 @@ const ViewPlan = () => {
       );
 
       if (roomData) {
-        const ablyRoomName = `${roomData.roomType}-${roomData.roomName}-${roomData.chatId}-${userId}`;
+        const ablyRoomName = `${roomData.chatId}`;
         console.log("🏠 Room found for Ably:", ablyRoomName);
 
         setChatModalData({
@@ -1464,7 +1464,7 @@ const ViewPlan = () => {
           ) : chatModalData.roomDetails ? (
             <ChatClientProvider client={chatClient}>
               <ChatRoomProvider
-                name={`${chatModalData.roomDetails.roomType}-${chatModalData.roomDetails.roomName}-${chatModalData.roomDetails.chatId}-${clientId}`}
+                name={`${chatModalData.roomDetails.chatId}`}
               >
                 <ChatModal
                   isOpen={showChatModal}
