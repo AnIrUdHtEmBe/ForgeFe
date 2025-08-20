@@ -21,7 +21,6 @@ function PasswordReset() {
         enqueueSnackbar("Password reset successful!", { variant: "success" });
         setLoading(false);
         navigate("/"); // Redirect to login page after successful reset
-
       } else {
         enqueueSnackbar("Failed to reset password. Check credentials.", {
           variant: "error",
