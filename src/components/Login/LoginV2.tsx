@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import "./stylesV2.css";
 import type { AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
-import {
-  LoginUser,
-  SendForgotPasswordOtp,
-  ResetPasswordWithOtp,
-} from "../../api/auth";
+import { LoginUser, SendForgotPasswordOtp, ResetPasswordWithOtp } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
 import E_Routes from "../../types/routes";
 
@@ -103,10 +99,7 @@ function LoginV2(props: LoginProps) {
 
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
-        enqueueSnackbar(
-          response.data.message || "If this email exists, an OTP was sent",
-          { variant: "success" }
-        );
+        enqueueSnackbar(response.data.message || "If this email exists, an OTP was sent", { variant: "success" });
         setResetData((prev) => ({ ...prev, email: formData.loginId || "" }));
         setShowReset(true);
         setIsOtpSent(true); // Switch to OTP verification view
@@ -135,9 +128,7 @@ function LoginV2(props: LoginProps) {
     }
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
-        enqueueSnackbar("Password changed successfully!", {
-          variant: "success",
-        });
+        enqueueSnackbar("Password changed successfully!", { variant: "success" });
         setLoading(false);
         setShowReset(false); // Go back to login view
         setIsOtpSent(false); // Reset OTP state
@@ -160,13 +151,7 @@ function LoginV2(props: LoginProps) {
       });
       setLoading(false);
     };
-    await ResetPasswordWithOtp(
-      onAccept,
-      onReject,
-      resetData.email,
-      resetData.otp,
-      resetData.newPassword
-    );
+    await ResetPasswordWithOtp(onAccept, onReject, resetData.email, resetData.otp, resetData.newPassword);
   };
 
   // Register link click - do NOT touch this
@@ -253,7 +238,11 @@ function LoginV2(props: LoginProps) {
                   onChange={handleChange}
                 />
               </div>
-              <button type="submit" className="register-btn" disabled={loading}>
+              <button
+                type="submit"
+                className="register-btn"
+                disabled={loading}
+              >
                 {loading ? "Processing..." : "Save"}
               </button>
             </form>
@@ -314,12 +303,12 @@ function LoginV2(props: LoginProps) {
               <button type="submit" className="register-btn">
                 Login
               </button>
-              {/* <p className="register-link">
+              <p className="register-link">
                 Don't have an account?{" "}
                 <span className="link" onClick={handleClick}>
                   Register
                 </span>
-              </p> */}
+              </p>
               <p
                 style={{
                   textAlign: "center",
