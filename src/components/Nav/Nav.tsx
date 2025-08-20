@@ -1,5 +1,6 @@
 import { FaRegUserCircle } from "react-icons/fa";
 import "./styles.css";
+// git stash
 import { DEFAULT_ICON_SIZE } from "../../default";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
