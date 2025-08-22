@@ -1,70 +1,84 @@
 .book-fitness-container {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  background-color: var(--primary-white);
+  color: var(--grey-900);
 }
 
 .book-fitness-container .book-fitness-top-container {
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .book-fitness-container .book-fitness-content-container {
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
-	justify-content: center;
-	align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  color: var(--grey-900);
 }
 
 .book-fitness-container .top-color-section {
-	display: flex;
-	align-items: center;
-	gap: 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
 
 .book-fitness-container .--color-box {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	color: #494949;
-	font-size: 12px;
-	font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--grey-700);
+  font-size: 12px;
+  font-weight: 400;
 }
+
 .book-fitness-container .--color-box-container {
-	height: 11px;
-	width: 11px;
-	border-radius: 2px;
-	border: 1px solid rgba(0, 0, 0, 0.4);
+  height: 11px;
+  width: 11px;
+  border-radius: 2px;
+  border: 1px solid rgba(18, 18, 18, 0.4); /* Use brand charcoal dark with opacity */
 }
 
-.book-fitness-container .--court-drop-down {
-	width: 250px;
+.book-fitness-container .book-fitness-top-container .--color-box ._available {
+  background-color: var(--primary-white);
 }
 
+.book-fitness-container .book-fitness-top-container .--color-box ._booked {
+  background-color: var(--grey-400);
+}
+
+.book-fitness-container .book-fitness-top-container .--color-box ._blocked {
+  background-color: var(--rust-700);
+}
+
+.book-fitness-container .--court-drop-down,
 .book-fitness-container .--time-slot-drop-down {
-	width: 250px;
+  width: 250px;
 }
 
 .book-fitness-container .--drop-down {
-	display: flex;
-	gap: 18px;
-	padding-left: 5px;
-	align-items: center;
+  display: flex;
+  gap: 18px;
+  padding-left: 5px;
+  align-items: center;
 }
 
 .book-fitness-container .--drop-down .--color-box-container {
-	height: 13px;
-	width: 13px;
+  height: 13px;
+  width: 13px;
 }
 
+/* The specific class, might be from an external component, override cautiously */
 .book-fitness-container ._1iohnqa1 {
-	width: 100%;
-	background-color: white;
-	height: 40px;
-	display: flex;
-	align-items: center;
-	border: 1px solid rgba(0, 0, 0, 0.2);
+  width: 100%;
+  background-color: var(--primary-white);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(18, 18, 18, 0.2);
 }

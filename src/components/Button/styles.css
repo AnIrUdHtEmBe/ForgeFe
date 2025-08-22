@@ -1,32 +1,32 @@
 .button-container {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	background-color: #b2effe;
-	color: black;
-	cursor: pointer;
-	width: 140px;
-	height: 40px;
-	border-radius: 5px;
-	border: 1px solid black;
-	box-shadow: 0px 0px 10px 0px #00000040;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: var(--rust-500);
+color: var(--primary-white);
+  width: 140px;
+  height: 40px;
+  border-radius: 5px;
+  border: 1px solid var(--grey-900);
+  box-shadow: 0px 0px 10px 0px rgba(18, 18, 18, 0.25);
 }
 
 .button-link {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 .button-text {
-	font-size: 12px;
-	font-weight: 700;
-	letter-spacing: 0.02em;
-	line-height: 11px;
-	text-transform: capitalize;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 11px;
+  text-transform: capitalize;
 }
 
 @media screen and (max-width: 450px) {
-	.button-container {
-		width: 100px;
-		height: 35px;
-	}
+  .button-container {
+    width: 100px;
+    height: 35px;
+  }
 }

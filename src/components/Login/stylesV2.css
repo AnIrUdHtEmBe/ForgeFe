@@ -1,11 +1,11 @@
 .register-link {
   font-size: 14px;
   text-align: center;
-  color: #444;
+  color: var(--grey-700); /* Replacing #444 with strong text color */
 }
 
 .register-link .link {
-  color: #007bff;
+  color: var(--rust-500); /* Replacing #007bff with primary rust */
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
@@ -14,6 +14,6 @@
 }
 
 .register-link .link:hover {
-  color: #0056b3;
+  color: var(--rust-700); /* Darker rust for hover */
   text-decoration: underline;
 }

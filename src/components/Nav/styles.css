@@ -4,8 +4,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: var(--grey-50); /* Changed from white */
+  box-shadow: 0 2px 4px rgba(18, 18, 18, 0.05); /* Using grey-900 for subtle shadow */
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -19,8 +19,8 @@
 }
 
 .top-nav-container .--logo {
-  height: 40px;
-  width: 40px;
+  height: 48px;
+  width: 48px;
 }
 
 .top-nav-container img {
@@ -30,9 +30,9 @@
 }
 
 .top-nav-container .--center {
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 500;
-  color: #333;
+  color: var(--grey-700); /* Using grey-700 as text color */
 }
 
 /* RIGHT SECTION */
@@ -46,7 +46,7 @@
   font-size: 16px;
   font-weight: 700;
   font-family: "roboto", sans-serif;
-  color: #333;
+  color: var(--grey-700); /* Using grey-700 as text color */
 }
 
 .--icon {

@@ -1,9 +1,10 @@
 .game-container {
   padding: 16px;
-  font-family: sans-serif;
-  background-color: #ffffff;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--primary-white);
   min-height: 100vh;
   box-sizing: border-box;
+  color: var(--grey-900);
 }
 
 .header {
@@ -12,24 +13,29 @@
   gap: 10px;
   font-size: 18px;
   font-weight: bold;
+  color: var(--grey-900);
+  cursor: pointer;
 }
 
 .drill-tag {
   font-size: 12px;
-  background-color: #e0e0e0;
+  background-color: var(--grey-200);
   padding: 2px 8px;
   border-radius: 12px;
   margin-left: 8px;
+  color: var(--grey-900);
 }
 
-.datee-box{
-  background-color: #dbeafe;
+.datee-box {
+  background-color: var(--rust-50); /* You may choose var(--rust-50) if preferred */
   border-radius: 10px;
-  /* padding: 6px; */
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
+  padding: 12px;
+  text-align: center;
+  margin-top: 0.5rem;
 }
 
 .date-box {
@@ -37,18 +43,17 @@
   align-items: center;
   justify-content: center;
   gap: 15px;
-  /* margin-top: 16px; */
-  /* background-color: #dbeafe; */
-  padding: 12px;
   border-radius: 10px;
   text-align: center;
+  width: 100%;
 }
 
 .date-box .date {
   font-weight: 600;
+  color: var(--grey-900);
 }
 
-.time-box{
+.time-box {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,44 +64,51 @@
 .date-box .time {
   font-size: 14px;
   font-weight: 700;
-  font-family: 'roboto', sans-serif;
-  color: #333;
+  color: var(--grey-700);
 }
 
 .players-section {
   margin-top: 20px;
+  max-height: calc(100vh - 200px); /* Set your desired height */
+  overflow-y: auto;
 }
 
 .players-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--grey-900);
 }
 
 .players-header h3 {
   margin: 0;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .session-type-1 {
-  /* background-color: #ef4444; */
-  color: white;
+  color: var(--primary-white);
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  user-select: none;
 }
+
 .game-bg-beginner {
-  background-color: rgba(99, 191, 119, 1);
-  color: white;
+  background-color: var(--rust-400);
 }
+
 .game-bg-intermediate {
-  background-color: rgb(240, 240, 37);
-  color: black;
+  background-color: var(--rust-300);
+  color: var(--grey-900);
 }
+
 .game-bg-difficult {
-  background-color: rgb(226, 91, 91);
-  color: white;
+  background-color: var(--rust-700);
 }
+
 .players-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -105,11 +117,12 @@
 }
 
 .player-card {
-  background-color: #f9f9f9;
+  background-color: var(--grey-50);
   padding: 10px;
   text-align: center;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(18, 18, 18, 0.1);
+  color: var(--grey-900);
 }
 
 .player-card img {
@@ -117,12 +130,14 @@
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid var(--rust-500);
 }
 
 .player-name {
   font-weight: 600;
   font-size: 14px;
   margin-top: 6px;
+  color: var(--grey-900);
 }
 
 .badges {
@@ -137,23 +152,27 @@
   font-size: 10px;
   padding: 2px 6px;
   border-radius: 10px;
-  color: white;
+  color: var(--primary-white);
+  font-weight: 600;
+  text-transform: capitalize;
+  user-select: none;
 }
 
 .badge.host {
-  background-color: #3b82f6;
+  background-color: var(--rust-500);
 }
 
 .badge.professional {
-  background-color: #dc2626;
+  background-color: var(--rust-700);
 }
 
 .badge.beginner {
-  background-color: #16a34a;
+  background-color: var(--rust-300);
+  color: var(--grey-900);
 }
 
 .rating {
   font-size: 12px;
-  color: #555;
+  color: var(--grey-700);
   margin-top: 4px;
 }

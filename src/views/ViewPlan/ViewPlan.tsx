@@ -874,7 +874,7 @@ const ViewPlan = () => {
                           </div>
                           <TbMessage
                             size={30}
-                            style={{ color: "black", cursor: "pointer" }}
+                            style={{ color: 'var(--grey-900)', cursor: "pointer" }}
                             onClick={() =>
                               handleChatModalOpen(
                                 data1.userId,
@@ -926,7 +926,7 @@ const ViewPlan = () => {
                               <div className="--bottom">
                                 <div
                                   style={{
-                                    color: "red",
+                                    color: "var(--rust-700)",
                                     marginLeft: "40px",
                                     marginBottom: "-20px",
                                     display: "flex",
@@ -971,7 +971,7 @@ const ViewPlan = () => {
                                                 position: "relative",
                                                 verticalAlign: "middle",
                                                 cursor: "pointer",
-                                                color: "#007bff",
+                                                color: "var(--rust-500)",
                                                 ...(i === 0
                                                   ? {
                                                       outline:
@@ -996,7 +996,7 @@ const ViewPlan = () => {
                                                 zIndex: 2,
                                                 position: "relative",
                                                 verticalAlign: "middle",
-                                                color: "#ccc",
+                                                color: "var(--grey-400)",
                                                 ...(i === 0
                                                   ? {
                                                       outline:
@@ -1031,7 +1031,7 @@ const ViewPlan = () => {
                                                   lineHeight: "1.4",
                                                   marginTop: "4px",
                                                   fontSize: "12px",
-                                                  color: "#0a0a0a78",
+                                                  color: "var(--grey-400)",
                                                 }}
                                               >
                                                 {activity.description ||
@@ -1150,7 +1150,7 @@ const ViewPlan = () => {
                               <div className="--bottom">
                                 <div
                                   style={{
-                                    color: "red",
+                                    color: "var(--rust-700)",
                                     marginLeft: "40px",
                                     marginBottom: "-20px",
                                     display: "flex",
@@ -1219,7 +1219,7 @@ const ViewPlan = () => {
                                                   lineHeight: "1.4",
                                                   marginTop: "4px",
                                                   fontSize: "12px",
-                                                  color: "#0a0a0a78",
+                                                  color: "var(--grey-400)",
                                                 }}
                                               >
                                                 {activity.description ||

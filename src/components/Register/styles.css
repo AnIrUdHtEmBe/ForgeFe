@@ -2,7 +2,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(18, 18, 18, 0.5); /* Using grey-900 with opacity */
   width: 100%;
   height: 100%;
   z-index: 1000;
@@ -12,13 +12,13 @@
 }
 
 .modal-content {
-  background-color: #fff;
+  background-color: var(--primary-white); /* White background */
   border-radius: 12px;
   padding: 30px 25px;
   width: 90%;
   max-width: 500px;
   position: relative;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 18px rgba(18, 18, 18, 0.25); /* Shadow using grey-900 */
 }
 
 .close-btn {
@@ -27,16 +27,16 @@
   right: -15px;
   width: 32px;
   height: 32px;
-  background-color: #e74c3c;
+  background-color: var(--rust-600); /* Replace red with rust-600 */
   border: none;
   border-radius: 50%;
-  color: white;
+  color: var(--primary-white);
   font-size: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(18, 18, 18, 0.3);
 }
 
 .modal-heading {
@@ -44,7 +44,7 @@
   font-size: 28px;
   margin-bottom: 25px;
   font-weight: bold;
-  color: #333;
+  color: var(--grey-700); /* Strong text color */
 }
 
 .register-form {
@@ -62,29 +62,31 @@
   margin-bottom: 6px;
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: var(--grey-700); /* Strong text color */
 }
 
 .form-group input,
 .form-group select {
   padding: 10px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--grey-300); /* Soft border */
   border-radius: 8px;
   font-size: 14px;
   transition: border-color 0.2s;
+  background-color: var(--grey-50);
+  color: var(--grey-900);
 }
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #007bff;
+  border-color: var(--rust-500); /* Rust for focus */
   outline: none;
 }
 
 .register-btn {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
-  color: white;
+  background-color: var(--rust-500); /* Brand primary rust */
+  color: var(--primary-white);
   border: none;
   border-radius: 8px;
   font-size: 16px;
@@ -94,5 +96,5 @@
 }
 
 .register-btn:hover {
-  background-color: #0056b3;
+  background-color: var(--rust-700); /* Darker rust for hover */
 }

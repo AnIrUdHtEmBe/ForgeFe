@@ -1,11 +1,43 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+:root {
+  /* Grey Scale */
+  --grey-50:  #E9EBEC;
+  --grey-100: #D1D5D8;
+  --grey-200: #B9BEC2;
+  --grey-300: #A1A8AD;
+  --grey-400: #899095;
+  --grey-500: #71797E; /* Steel grey - Secondary color */
+  --grey-600: #5E6368;
+  --grey-700: #45494D;
+  --grey-800: #2B2E31;
+  --grey-900: #121212; /* Charcoal black - Brand Neutral / Base color */
 
+  /* Rust Scale */
+  --rust-50:  #FBEDE6;
+  --rust-100: #F6D2BF;
+  --rust-200: #F0B292;
+  --rust-300: #E98F61;
+  --rust-400: #E1723F;
+  --rust-500: #B7410E; /* Brand Colour - Primary Rust */
+  --rust-600: #99360B;
+  --rust-700: #7C2B09;
+  --rust-800: #5E1C05;
+  --rust-900: #3D1003;
+
+  /* Additional Brand Colors */
+  --primary-white: #FFFFFF; /* Primary color - White */
+  --primary-ash-grey: #B6B8B1; /* Tertiary color - Ash grey */
+  --accent-teal: #00796B; /* Accent color - Teal */
+}
 * {
 	box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 body { 
-  font-family: "Inter", sans-serif;
+  font-family: "Oswald", sans-serif;
   line-height: 1.1;
+  background-color: var(--grey-lightest-bg);
+  color: var(--grey-hero-sections);
 }

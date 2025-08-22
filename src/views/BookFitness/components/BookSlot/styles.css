@@ -1,63 +1,88 @@
 .book-slot-overlay-container {
-	display: flex;
-	position: absolute;
-	top: 0;
-	left: 0;
-	height: 100%;
-	justify-content: center;
-	align-items: center;
-	z-index: 100;
-	width: 100%;
-	background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  width: 100%;
+  background-color: rgba(18, 18, 18, 0.4); /* Brand charcoal with opacity */
 }
 
+.book-slot-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: var(--primary-white);
+  border-radius: 10px;
+  width: 350px;
+}
 
-.book-slot-container .--cross { 
+.book-slot-container .--cross {
   position: absolute;
   left: calc(100% - 15px);
   top: -5px;
+  cursor: pointer;
 }
 
-.book-slot-container .--cross-overlay { 
+.book-slot-container .--cross .--cross-overlay {
   width: 20px;
   height: 20px;
-  background-color: white;
+  background-color: var(--primary-white);
   border-radius: 50%;
-  color: black;
+  color: var(--grey-900);
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.book-slot-overlay-container .book-slot-container {
-  position: relative;
-  display: flex;
-	flex-direction: column;
-	gap: 20px;
-	background-color: white;
-	border-radius: 10px;
-	width: 350px;
+.book-slot-container .--cross .--cross-overlay:hover {
+  background-color: var(--rust-500);
+  color: var(--primary-white);
 }
 
-.book-slot-overlay-container .book-slot-top-heading-container {
-	padding: 10px;
-	background-color: black;
-	color: 'white';
-	text-align: center;
+.book-slot-container .book-slot-overlay {
+  /* Add if any overlay needed inside container */
+}
+
+.book-slot-container .book-slot-top-heading-container {
+  padding: 10px;
+  background-color: var(--grey-900); /* Brand dark header */
+  color: var(--primary-white);
+  text-align: center;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-	font-size: 20px;
-	color: white;
-	font-weight: 600;
+  font-size: 20px;
+  font-weight: 600;
 }
 
-.book-slot-player-card-container {
-	padding-left: 10px;
-	padding-right: 10px;
+.book-slot-container .book-slot-overlay {
+  /* Additional overlay styles if any */
+}
+
+.book-slot-container .book-slot-player-card-container {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .book-slot-container .bottom-btn-container {
-	padding-bottom: 10px;
-	margin-left: auto;
-	padding-right: 10px;
+  padding: 10px 10px 10px 0;
+  margin-left: auto;
+}
+
+/* Button Component Overrides if needed */
+.book-slot-container Button .button-container {
+  background-color: var(--rust-500);
+  color: var(--primary-white);
+  border: none;
+  width: 140px;
+}
+
+.book-slot-container Button .button-container:hover {
+  background-color: var(--rust-700);
 }

@@ -155,10 +155,10 @@ function LoginV2(props: LoginProps) {
   };
 
   // Register link click - do NOT touch this
-  const handleClick = () => {
-    props.handleModal();
-    props.registermodal();
-  };
+  // const handleClick = () => {
+  //   props.handleModal();
+  //   props.registermodal();
+  // };
 
   // Switch to password reset
   const handleRoute = () => {
@@ -250,7 +250,7 @@ function LoginV2(props: LoginProps) {
               style={{
                 textAlign: "center",
                 marginTop: "20px",
-                color: "#0055ff",
+                color: "var(--grey-600)",
                 cursor: "pointer",
               }}
               onClick={handleBackLogin}
@@ -281,7 +281,7 @@ function LoginV2(props: LoginProps) {
                     style={{
                       position: "absolute",
                       right: 0,
-                      color: "#0055ff",
+                      color: "var(--grey-400)",
                       fontSize: "14px",
                       cursor: "pointer",
                     }}
@@ -313,10 +313,10 @@ function LoginV2(props: LoginProps) {
                 style={{
                   textAlign: "center",
                   marginTop: "10px",
-                  color: "#0055ff",
+                  color: "var(--grey-600)",
                   cursor: "pointer",
                   fontSize: "16px",
-                  textDecoration: "underline",
+                 // textDecoration: "underline",
                 }}
                 onClick={handleRoute}
               >

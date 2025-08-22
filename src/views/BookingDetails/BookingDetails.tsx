@@ -331,8 +331,8 @@ function BookingDetails() {
                             className="--color-box-container"
                             style={{
                               background: {
-                                booked: "grey",
-                                blocked: "red",
+                                booked: "var(--grey-400)",
+                                blocked: "var(--rust-700)",
                               }[status],
                             }}
                           />

@@ -1,36 +1,44 @@
 .view-cards-container {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	padding-left: 24px;
-	padding-right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 24px;
+  padding-right: 24px;
   position: relative;
+  background: var(--primary-white); /* Brand background */
+  color: var(--grey-900); /* Default text color */
+  overflow-y: auto;
+max-height: calc(100vh - 64px);  
 }
 
 .view-cards-container .--back { 
   position: absolute;
   left: 6%;
   top: 1%;
+  color: var(--grey-900); /* Brand strong grey for icon */
+  cursor: pointer;
 }
 
 .view-cards-container .view-cards-top-heading {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	justify-content: center;
-	align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  color: var(--grey-900); /* Headings use brand primary text */
 }
 
 .view-cards-container .--date {
-	font-size: 20px;
-	font-weight: 600;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--grey-900); /* Strong text/date */
 }
 
 .view-cards-container .--day {
-	font-size: 16px;
-	font-weight: 600;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--grey-700); /* Slightly lighter for day */
 }
-
 
 .view-card-content-container {
   display: flex;
@@ -39,12 +47,13 @@
 }
 
 .no-games-found {
-	display: flex;
-	font-family: 'roboto', sans-serif;
-	font-size: 18px;
-	font-weight: 600;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	height: 500px;
+  display: flex;
+  font-family: 'roboto', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 500px;
+  color: var(--grey-400); /* Muted brand text for empty state */
 }

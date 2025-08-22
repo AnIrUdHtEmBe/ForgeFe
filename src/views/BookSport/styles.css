@@ -2,7 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  /* padding: 16px; */
+  background: var(--primary-white);
+  color: var(--grey-900);
 }
 
 .book-sport-top-calendar {
@@ -25,10 +26,10 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--grey-400); /* Brand muted grey border */
   border-radius: 8px;
   padding: 12px 16px;
-  background-color: #f9f9f9;
+  background-color: var(--grey-50);
 }
 
 .book-sport-slot-header {
@@ -41,7 +42,7 @@
 .book-sport-slot-header h3 {
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: var(--grey-900);
 }
 
 /* Game Slot Card */
@@ -49,17 +50,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid #ccc;
+  border: 1px solid var(--grey-300);
   border-radius: 10px;
   padding: 10px 16px;
   transition: 0.2s ease-in-out;
   cursor: pointer;
-  background-color: #fff;
+  background-color: var(--primary-white);
 }
 
 .--game-slot:hover {
-  background-color: #f0f0f0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background-color: var(--grey-100);
+  box-shadow: 0 2px 6px rgba(18, 18, 18, 0.08);
 }
 
 .--time {
@@ -67,7 +68,7 @@
   font-size: 14px;
   font-weight: 500;
   text-align: center;
-  color: #444;
+  color: var(--grey-700);
 }
 
 .--sport-name {
@@ -75,7 +76,7 @@
   text-align: center;
   font-weight: 600;
   font-size: 14px;
-  color: #222;
+  color: var(--grey-900);
 }
 
 .--slots {
@@ -87,7 +88,7 @@
 /* Slot Circle */
 .book-sport-container .--each-slot {
   position: relative;
-  background-color: #e8e8e8;
+  background-color: var(--grey-200);
   border-radius: 50%;
   height: 45px;
   width: 45px;
@@ -101,9 +102,9 @@
   left: 0%;
   width: 15px;
   height: 15px;
-  background-color: black;
+  background-color: var(--grey-900);
   border-radius: 50%;
-  color: white;
+  color: var(--primary-white);
   flex-shrink: 0;
   display: flex;
   justify-content: center;
@@ -119,8 +120,8 @@
   font-weight: 700;
   left: 65%;
   top: 0;
-  background-color: #28a745;
-  color: white;
+  background-color: var(--rust-500);
+  color: var(--primary-white);
   padding: 2px 8px;
   border-radius: 20px;
 }
@@ -132,11 +133,12 @@
   align-items: center;
   height: 50vh;
   font-size: 16px;
-  color: #888;
+  color: var(--grey-500);
   font-weight: 500;
   text-align: center;
 }
 
+/* Book Button Container */
 .book-button-container {
   position: fixed; /* Sticks to bottom right of the screen */
   bottom: 20px;
@@ -144,19 +146,20 @@
   z-index: 1000;
 }
 
+/* Book Button */
 .book-button {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--rust-500);
+  color: var(--primary-white);
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(18, 18, 18, 0.1);
   transition: background-color 0.2s ease;
 }
 
 .book-button:hover {
-  background-color: #0056b3;
+  background-color: var(--rust-700);
 }

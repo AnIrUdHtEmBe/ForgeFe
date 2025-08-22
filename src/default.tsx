@@ -135,7 +135,7 @@ export const detailsInfoWellness = {
 		},
 	},
 	BodyBuilding: {
-		path: 'fitness.jpg',
+		path: 'bodybuilding.png',
 		fullName: 'Body Building', 
 		title: '1-on-1 Session',
 		description: 'edwawdwd',
@@ -147,7 +147,7 @@ export const detailsInfoWellness = {
 		},
 	},
 	Strength: {
-		path: 'fitness.jpg',
+		path: 'fitness.png',
 		fullName: 'Strength Training', 
 		title: '1-on-1 Session',
 		description: 'edwawdwd',
