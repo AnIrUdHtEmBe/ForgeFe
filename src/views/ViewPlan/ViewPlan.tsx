@@ -956,7 +956,7 @@ const ViewPlan = () => {
                                   .filter(
                                     (activity) => activity.status !== "REMOVED"
                                   )
-                                  .map((activity, i) => (
+                                  .map((  activity, i) => (
                                     <div
                                       key={i}
                                       className="session-information-container"
