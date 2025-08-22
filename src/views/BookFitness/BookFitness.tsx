@@ -240,10 +240,9 @@ const BookFitness = () => {
                 className="--color-box-container"
                 style={{
                   background: {
-                    available: "white",
-                    selected: "blue",
-                    booked: "grey",
-                    blocked: "red",
+available: 'white',              // Use var(--primary-white) in CSS
+    booked: 'var(--grey-400)',       // Brand muted grey
+    blocked: 'var(--rust-700)',      // Brand strong rust color
                   }[state],
                 }}
               />
@@ -320,7 +319,7 @@ const BookFitness = () => {
                       <div
                         className="--color-box-container"
                         style={{
-                          background: { booked: "grey", blocked: "red" }[
+                          background: { booked: 'var(--grey-400)',blocked: 'var(--rust-700)',}[
                             status
                           ],
                         }}

@@ -13,7 +13,7 @@ import * as Ably from "ably";
 import { ChatClient, LogLevel } from "@ably/chat";
 import { ChatClientProvider } from "@ably/chat/react";
 import axios from "axios";
-
+import forgeLogo from '../../../public/Forge-Logo1.png'
 const Nav = () => {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -303,7 +303,7 @@ const Nav = () => {
               }
             }}
           >
-            <img src="Play_Logo.svg" alt="Logo" />
+            <img src={forgeLogo} alt="Logo" />
           </div>
           <div className="--center">
             <span>Sarjapur</span>
@@ -347,7 +347,7 @@ const Nav = () => {
               }
             }}
           >
-            <img src="Play_Logo.svg" alt="Logo" />
+            <img src={forgeLogo} alt="Logo" />
           </div>
           <div className="--center">
             <span>Sarjapur</span>

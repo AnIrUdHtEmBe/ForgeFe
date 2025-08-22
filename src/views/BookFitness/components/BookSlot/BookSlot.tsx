@@ -84,7 +84,7 @@ const BookSlot = (props: BookSlotProps) => {
 					<div className="--cross-overlay">
 						<RxCross1
 							size={DEFAULT_ICON_SIZE - 18}
-							color="black"
+							color="var(--grey-900)"
 						/>
 					</div>
 				</div>

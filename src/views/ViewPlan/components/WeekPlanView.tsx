@@ -17,7 +17,7 @@ const WeekPlanView = (props: WeekPlanViewProps) => {
           <div
             key={i}
             style={{
-              backgroundColor: props.activeIndex === i ? "lightblue" : "white",
+              backgroundColor: props.activeIndex === i ? "var(--rust-300)" : "var(--primary-white)	",
             }}
             className="--plan"
             onClick={() => props.setActiveIndex(i)}

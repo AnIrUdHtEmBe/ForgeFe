@@ -294,12 +294,7 @@ export default function Content({
                         <div className="--drop-down">
                           <div
                             className="--color-box-container"
-                            style={{
-                              background: {
-                                booked: "grey",
-                                blocked: "red",
-                              }[status],
-                            }}
+                            style={{ background: status === 'booked' ? 'var(--grey-400)' : (status === 'blocked' ? 'var(--rust-700)' : 'transparent') }}
                           />
                           <span>
                             {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
