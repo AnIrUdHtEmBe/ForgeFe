@@ -10,7 +10,7 @@
   position: absolute;
   top: 8px;
   left: 2px;
-  color: var(--grey-900); /* Back icon/button */
+  color: var(--accent-teal); /* Back icon/button */
   cursor: pointer;
 }
 
@@ -33,6 +33,8 @@
   flex-direction: column;
   gap: 10px;
   color: var(--grey-900);
+  overflow-y: auto;
+  max-height: calc(100vh - 325px);
 }
 
 .detail-view-container .detail-view-top-heading {
@@ -119,4 +121,17 @@
   padding-left: 20px;
   padding-bottom: 20px;
   margin: auto;
+}
+
+.detail-view-table-content-container .--content button {
+  color: var(--grey-700);
+}
+.detail-view-table-content-container .--content button:hover {
+  color: var(--grey-700);
+  background-color: var(--rust-50);
+}
+/* Directly override with a more specific selector */
+.detail-view-table-content-container ._bfhk7btw {
+    color: var(--grey-700);
+  background-color: var(--rust-50);
 }
