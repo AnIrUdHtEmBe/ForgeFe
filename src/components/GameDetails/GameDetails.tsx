@@ -23,15 +23,15 @@ const GameDetails = () => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
         // console.log(response.data);
-        setImages(response.data);
+        setImages(response.data.photoThumbUrl);
       } else {
-        enqueueSnackbar("Failed to fetch images", { variant: "error" });
+        // enqueueSnackbar("Failed to fetch images", { variant: "error" });
         console.error("Failed to fetch images");
       }
     };
 
     const onReject = (error: unknown) => {
-      enqueueSnackbar("Error fetching images", { variant: "error" });
+      // enqueueSnackbar("Error fetching images", { variant: "error" });
       console.error("Error fetching images:", error);
     };
 
@@ -171,7 +171,7 @@ const GameDetails = () => {
                   {i === 0 ? "Host" : "Player"}
                 </span>
               </div>
-              <p className="rating">⭐ {5}</p>
+              {/* <p className="rating">⭐ {5}</p> */}
             </div>
           ))}
         </div>

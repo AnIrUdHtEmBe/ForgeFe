@@ -1,10 +1,11 @@
 import { FaRegUserCircle } from "react-icons/fa";
 import "./styles.css";
 import { DEFAULT_ICON_SIZE } from "../../default";
-import type { Axios, AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 import { enqueueSnackbar } from "notistack";
 import { useRef, useState } from "react";
 import { uploadImage } from "../../api/images";
+import { useNavigate } from "react-router-dom";
 
 interface UserModalProps {
   modal: (value: boolean) => void;
@@ -13,6 +14,7 @@ interface UserModalProps {
 function UserModal(props: UserModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const navigate = useNavigate()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -20,17 +22,20 @@ function UserModal(props: UserModalProps) {
     }
   };
 
-  const handleImageClick = () => {
-    fileInputRef.current?.click(); // open file dialog
-  };
+  const handleAddingPicture = () => {
+    if (!selectedFile) {
+      fileInputRef.current?.click();
+      return;
+    }
 
-  const handelAddingPicture = () => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
         enqueueSnackbar("Picture added successfully", {
           variant: "success",
           autoHideDuration: 3000,
         });
+        // Optionally close modal after success
+        props.modal(false);
       } else {
         console.error("Failed to add picture");
       }
@@ -42,18 +47,11 @@ function UserModal(props: UserModalProps) {
         autoHideDuration: 3000,
       });
     };
+
     const userId = localStorage.getItem("userId");
     if (!userId) {
       enqueueSnackbar("User ID not found", {
         variant: "error",
-        autoHideDuration: 3000,
-      });
-      return;
-    }
-
-    if (!selectedFile) {
-      enqueueSnackbar("No image selected", {
-        variant: "warning",
         autoHideDuration: 3000,
       });
       return;
@@ -68,7 +66,7 @@ function UserModal(props: UserModalProps) {
         <button className="profile-button" onClick={() => props.modal(false)}>
           &times;
         </button>
-        <div className="profile-content" onClick={handleImageClick}>
+        <div className="profile-content">
           {selectedFile ? (
             <img
               src={URL.createObjectURL(selectedFile)}
@@ -85,16 +83,23 @@ function UserModal(props: UserModalProps) {
           accept="image/*"
           ref={fileInputRef}
           onChange={handleFileChange}
+          style={{ display: "none" }}
         />
 
         <div className="profile-details">Add a Profile Picture</div>
 
         <button
           className="profile-btn"
-          onClick={handelAddingPicture}
-          disabled={!selectedFile}
+          onClick={handleAddingPicture}
         >
           ADD
+        </button>
+
+        <button
+          className="profile-btn"
+          onClick={() => {navigate("/")}}
+        >
+          Logout
         </button>
       </div>
     </div>

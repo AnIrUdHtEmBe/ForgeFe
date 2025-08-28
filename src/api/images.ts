@@ -10,14 +10,13 @@ import {
 export const getImagesById = async (
   onAccept: (response: AxiosResponse) => void,
   onReject: (error: unknown) => void,
-  userId: string
+  humanId: string
 ) => {
-
-  console.log("User ID received in getImagesById:", userId);
+  console.log("Human ID received in getImagesById:", humanId);
   try {
     const response = await axios.post(
       PATH_V2 + GET_IMAGE_BY_ID(),
-      `${userId}`,
+      { humanId },
       {
         headers: {
           "Content-Type": "application/json",
@@ -33,11 +32,10 @@ export const getImagesById = async (
 export const getAllImages = async (
   onAccept: (response: AxiosResponse) => void,
   onReject: (error: unknown) => void,
-  userIdArray: string[]
+  humanIds: string[]
 ) => {
   try {
-    // console.log(userIdArray);
-    const res = await axios.post(PATH_V2 + GET_ALL_IMAGES(), userIdArray);
+    const res = await axios.post(PATH_V2 + GET_ALL_IMAGES(), { humanIds });
     onAccept(res);
   } catch (e) {
     onReject(e);
@@ -47,14 +45,14 @@ export const getAllImages = async (
 export const uploadImage = async (
   onAccept: (response: AxiosResponse) => void,
   onReject: (error: unknown) => void,
-  userId: string,
+  humanId: string,
   image: File
 ) => {
   try {
-    const user = userId?.replace(/^"(.*)"$/, "$1");
-    console.log("Processed userId:", user);
+    const processedHumanId = humanId?.replace(/^"(.*)"$/, "$1");
+    console.log("Processed humanId:", processedHumanId);
     const formData = new FormData();
-    formData.append("humanId", user);
+    formData.append("humanId", processedHumanId);
     formData.append("file", image);
 
     const response = await axios.post(PATH_V2 + UPLOAD_IMAGE(), formData, {
