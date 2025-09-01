@@ -49,10 +49,10 @@ const Nav = () => {
   const getProfilePhoto = () => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
-        console.log("Response received:", response.data);
+        console.log("Response received:", response.data.photoThumbUrl);
         if (response.data !== null) {
-          setProfilePic(response.data);
-          console.log("Profile photo fetched successfully:", response.data);
+          setProfilePic(response.data.photoThumbUrl);
+          console.log("Profile photo fetched successfully:", response.data.photoThumbUrl);
         } else {
           console.error("No image found for the user");
           return null;
