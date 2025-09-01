@@ -12,7 +12,8 @@ import { PopupModal } from "../PopupModal/PopupModal";
 import { getGamesByDateAndSports } from "../../api/games";
 import { useNavigate } from "react-router-dom";
 import type { t_session } from "../../types/session";
-
+import { getImagesById } from "../../api/images";
+import { useEffect } from "react";
 // inside component:
 interface PlayerInfoCardProps {
   game?: t_game;
@@ -30,6 +31,7 @@ interface PlayerInfoCardProps {
 // inside component:
 
 const PlayerInfoCard = (props: PlayerInfoCardProps) => {
+  const [hostProfilePic, setHostProfilePic] = useState<string | null>(null);
   const navigate = useNavigate();
   const start = props.startTime;
   const end = props.endTime;
@@ -106,12 +108,52 @@ const PlayerInfoCard = (props: PlayerInfoCardProps) => {
     setModal(false);
   };
 
+  //profile photo 
+  // Fetch host profile picture
+  const getHostProfilePhoto = () => {
+    if (!game?.hostId) return;
+
+    const onAccept = (response: AxiosResponse) => {
+      if (response.status === 200) {
+        console.log("Host profile photo response:", response.data);
+        if (response.data && response.data.photoThumbUrl) {
+          setHostProfilePic(response.data.photoThumbUrl);
+          console.log("Host profile photo fetched successfully:", response.data.photoThumbUrl);
+        } else {
+          console.log("No profile photo found for host, using default");
+          setHostProfilePic(null);
+        }
+      } else {
+        console.error("Failed to fetch host profile photo");
+        setHostProfilePic(null);
+      }
+    };
+
+    const onReject = (error: unknown) => {
+      console.error("Error fetching host profile photo:", error);
+      setHostProfilePic(null);
+    };
+
+    getImagesById(onAccept, onReject, game.hostId);
+  };
+
+  // Fetch profile picture when component mounts or game changes
+  useEffect(() => {
+    if (game?.hostId) {
+      getHostProfilePhoto();
+    }
+  }, [game?.hostId]);
+
   return (
     <div className="player-info-card-container">
       <div className="player-info-start-container">
         <div className="player-info-profile">
           <div className="--img">
-            <img src={PlayerProfileImg} />
+           <img 
+              src={hostProfilePic || PlayerProfileImg} 
+              alt="Host Profile"
+              onError={() => setHostProfilePic(null)} // Fallback to default if image fails to load
+            />
           </div>
           <div className="--username">
             <span>{game?.hostName}</span>

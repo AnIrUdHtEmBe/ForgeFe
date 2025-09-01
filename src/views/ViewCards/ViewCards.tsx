@@ -66,8 +66,8 @@ const ViewCards = () => {
   const fetchGames = (sportId: string) => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
-        console.log(response.data);
-        setGames((prev) => [...prev, ...response.data]);
+      const activeGames = response.data.filter((game: any) => game.status !== "cancelled");
+      setGames((prev) => [...prev, ...activeGames]);
       } else {
         enqueueSnackbar({
           message: "Failed to fetch the data!",

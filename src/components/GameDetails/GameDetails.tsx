@@ -19,32 +19,41 @@ const GameDetails = () => {
 
   const { gameId } = location.state;
 
-  const getAllImg = () => {
-    const onAccept = (response: AxiosResponse) => {
-      if (response.status === 200) {
-        // console.log(response.data);
-        setImages(response.data.photoThumbUrl);
-      } else {
-        // enqueueSnackbar("Failed to fetch images", { variant: "error" });
-        console.error("Failed to fetch images");
-      }
-    };
-
-    const onReject = (error: unknown) => {
-      // enqueueSnackbar("Error fetching images", { variant: "error" });
-      console.error("Error fetching images:", error);
-    };
-
-    console.log("Fetching images for players:", gameDetails?.scheduledPlayers);
-
-    getAllImages(
-      onAccept,
-      onReject,
-      gameDetails?.scheduledPlayers.length > 0
-        ? gameDetails?.scheduledPlayers
-        : []
-    );
+ const getAllImg = () => {
+  const onAccept = (response: AxiosResponse) => {
+    if (response.status === 200) {
+      console.log("getAllImages response:", response.data);
+      
+      // Transform the response to extract photoThumbUrl for each user
+      const imageMap = {};
+      Object.keys(response.data).forEach(userId => {
+        if (response.data[userId]?.photoThumbUrl) {
+          imageMap[userId] = response.data[userId].photoThumbUrl;
+        }
+      });
+      
+      setImages(imageMap);
+      console.log(images, " IMAGES ?????");
+      
+    } else {
+      console.error("Failed to fetch images");
+    }
   };
+
+  const onReject = (error: unknown) => {
+    console.error("Error fetching images:", error);
+  };
+
+  console.log("Fetching images for players:", gameDetails?.scheduledPlayers);
+
+  getAllImages(
+    onAccept,
+    onReject,
+    gameDetails?.scheduledPlayers.length > 0
+      ? gameDetails?.scheduledPlayers
+      : []
+  );
+};
 
   const getGameById = () => {
     const onAccept = (response: AxiosResponse) => {
@@ -159,11 +168,11 @@ const GameDetails = () => {
         <div className="players-grid">
           {gameDetails?.scheduledPlayersDetails?.map((player, i) => (
             <div key={i} className="player-card">
-              {images[player.userId] ? (
-                <img src={images[player.userId]} alt="Player" />
-              ) : (
-                <img src={player.photo} />
-              )}
+   {images && images[player.userId] ? (
+  <img src={images[player.userId]} alt="Player" />
+) : (
+  <img src={player.photo || "/default-avatar.png"} alt="Player" />
+)}
 
               <p className="player-name">{player.name}</p>
               <div className="badges">

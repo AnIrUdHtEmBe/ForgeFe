@@ -14,12 +14,15 @@ export const getImagesById = async (
 ) => {
   console.log("Human ID received in getImagesById:", humanId);
   try {
+    // Remove quotes from humanId if they exist
+    const processedHumanId = humanId.replace(/^"|"$/g, "");
+    console.log("Processed Human ID:", processedHumanId);
     const response = await axios.post(
       PATH_V2 + GET_IMAGE_BY_ID(),
-      { humanId },
+      processedHumanId, // Send as plain string, not as JSON object
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "text/plain", // Change content type to text/plain
         },
       }
     );
@@ -35,7 +38,15 @@ export const getAllImages = async (
   humanIds: string[]
 ) => {
   try {
-    const res = await axios.post(PATH_V2 + GET_ALL_IMAGES(), { humanIds });
+    const res = await axios.post(
+      PATH_V2 + GET_ALL_IMAGES(), 
+      humanIds, // Send array directly, not wrapped in object
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     onAccept(res);
   } catch (e) {
     onReject(e);
