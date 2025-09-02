@@ -812,7 +812,9 @@ const ViewPlan = () => {
             </div>
           </div>
           <div className="--date">
-            {formatDate(weekStartToEndDates[activeIndex])}
+            {weekStartToEndDates[activeIndex]
+              ? formatDate(weekStartToEndDates[activeIndex])
+              : ""}
           </div>
           <div className="--arrows">
             <div className="--arrow-right">
@@ -874,7 +876,10 @@ const ViewPlan = () => {
                           </div>
                           <TbMessage
                             size={30}
-                            style={{ color: 'var(--grey-900)', cursor: "pointer" }}
+                            style={{
+                              color: "var(--grey-900)",
+                              cursor: "pointer",
+                            }}
                             onClick={() =>
                               handleChatModalOpen(
                                 data1.userId,
@@ -956,7 +961,7 @@ const ViewPlan = () => {
                                   .filter(
                                     (activity) => activity.status !== "REMOVED"
                                   )
-                                  .map((  activity, i) => (
+                                  .map((activity, i) => (
                                     <div
                                       key={i}
                                       className="session-information-container"
@@ -1463,9 +1468,7 @@ const ViewPlan = () => {
             </div>
           ) : chatModalData.roomDetails ? (
             <ChatClientProvider client={chatClient}>
-              <ChatRoomProvider
-                name={`${chatModalData.roomDetails.chatId}`}
-              >
+              <ChatRoomProvider name={`${chatModalData.roomDetails.chatId}`}>
                 <ChatModal
                   isOpen={showChatModal}
                   onClose={() => setShowChatModal(false)}

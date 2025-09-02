@@ -9,12 +9,17 @@ import { useNavigate } from "react-router-dom";
 
 interface UserModalProps {
   modal: (value: boolean) => void;
+  profilePic?: string | null; // Add this prop
 }
 
 function UserModal(props: UserModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const navigate = useNavigate()
+  const [currentProfilePic, setCurrentProfilePic] = useState<string | null>(
+    props.profilePic || null
+  ); // Add this state
+
+  const navigate = useNavigate();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -34,6 +39,8 @@ function UserModal(props: UserModalProps) {
           variant: "success",
           autoHideDuration: 3000,
         });
+        setCurrentProfilePic(response.data?.photoThumbUrl || null);
+
         // Optionally close modal after success
         props.modal(false);
       } else {
@@ -59,6 +66,13 @@ function UserModal(props: UserModalProps) {
 
     uploadImage(onAccept, onReject, userId, selectedFile);
   };
+  const handleCancel = () => {
+    setSelectedFile(null);
+    // Reset the file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <div className="profile-overlay" onClick={() => props.modal(false)}>
@@ -73,8 +87,14 @@ function UserModal(props: UserModalProps) {
               alt="Profile Preview"
               className="profile-preview"
             />
+          ) : currentProfilePic ? (
+            <img
+              src={currentProfilePic}
+              alt="Current Profile"
+              className="profile-preview"
+            />
           ) : (
-            <FaRegUserCircle size={100} color="#999" />
+            <FaRegUserCircle size={100} color="var(--grey-900)" />
           )}
         </div>
 
@@ -88,16 +108,34 @@ function UserModal(props: UserModalProps) {
 
         <div className="profile-details">Add a Profile Picture</div>
 
-        <button
-          className="profile-btn"
-          onClick={handleAddingPicture}
-        >
-          ADD
-        </button>
+        {selectedFile ? (
+          <div style={{ display: "flex", gap: "10px", width: "100%" }}>
+            <button
+              className="profile-btn"
+              onClick={handleAddingPicture}
+              style={{ flex: 1 }}
+            >
+              SAVE
+            </button>
+            <button
+              className="profile-btn"
+              onClick={handleCancel}
+              style={{ flex: 1, backgroundColor: "var(--grey-200)" }}
+            >
+              CANCEL
+            </button>
+          </div>
+        ) : (
+          <button className="profile-btn" onClick={handleAddingPicture}>
+            ADD
+          </button>
+        )}
 
         <button
           className="profile-btn"
-          onClick={() => {navigate("/")}}
+          onClick={() => {
+            navigate("/");
+          }}
         >
           Logout
         </button>
