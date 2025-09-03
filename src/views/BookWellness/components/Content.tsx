@@ -216,7 +216,13 @@ export default function Content({
                 setDate(selectedDate);
               }}
             /> */}
-            <span>{date ? date.toISOString().split("T")[0].split("-").reverse().join("-") : ""}</span>
+           {date && Number.isFinite(date.getTime()) ? (
+        <span>
+          {date.toISOString().split("T")[0].split("-").reverse().join("-")}
+        </span>
+      ) : (
+        <span>Loading date...</span>
+      )}
           </div>
 
           <div className="--row">
@@ -266,54 +272,30 @@ export default function Content({
                 shouldRenderToParent
                 shouldFlip  
               >
-                <DropdownItemCheckboxGroup title="Slots" id="slots">
-                  {slots.map(({ slotId, startTime, endTime, status }) =>
-                    status === "available" ? (
-                      <DropdownItemCheckbox
-                      // style={{ height: "48px", display: "flex", alignItems: "center" }}
-                        key={slotId}
-                        id={slotId}
-                        // className="slot-item"
-                        isSelected={selectedSlotIds.includes(slotId)}
-                        onClick={() => handleSlotToggle(slotId)}
-                      >
-                        {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}{" "}
-                        -{" "}
-                        {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}
-                      </DropdownItemCheckbox>
-                    ) : (
-                      <DropdownItem key={slotId}>
-                        <div className="--drop-down">
-                          <div
-                            className="--color-box-container"
-                            style={{ background: status === 'booked' ? 'var(--grey-400)' : (status === 'blocked' ? 'var(--rust-700)' : 'transparent') }}
-                          />
-                          <span>
-                            {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
-                              hour: "numeric",
-                              minute: "2-digit",
-                              hour12: true,
-                            })}{" "}
-                            -{" "}
-                            {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
-                              hour: "numeric",
-                              minute: "2-digit",
-                              hour12: true,
-                            })}
-                          </span>
-                        </div>
-                      </DropdownItem>
-                    )
-                  )}
-                </DropdownItemCheckboxGroup>
+<DropdownItemCheckboxGroup title="Slots" id="slots">
+  {slots
+    .filter(({ status }) => status === "available")
+    .map(({ slotId, startTime, endTime }) => (
+      <DropdownItemCheckbox
+        key={slotId}
+        id={slotId}
+        isSelected={selectedSlotIds.includes(slotId)}
+        onClick={() => handleSlotToggle(slotId)}
+      >
+        {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })}{" "}
+        -{" "}
+        {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })}
+      </DropdownItemCheckbox>
+    ))}
+</DropdownItemCheckboxGroup>
               </DropdownMenu>
             </div>
           </div>
