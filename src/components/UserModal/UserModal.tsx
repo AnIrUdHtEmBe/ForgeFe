@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 interface UserModalProps {
   modal: (value: boolean) => void;
-  profilePic?: string | null; // Add this prop
+  profilePic?: string | null;
 }
 
 function UserModal(props: UserModalProps) {
@@ -17,7 +17,8 @@ function UserModal(props: UserModalProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [currentProfilePic, setCurrentProfilePic] = useState<string | null>(
     props.profilePic || null
-  ); // Add this state
+  );
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState<boolean>(false); // Add this state
 
   const navigate = useNavigate();
 
@@ -40,8 +41,6 @@ function UserModal(props: UserModalProps) {
           autoHideDuration: 3000,
         });
         setCurrentProfilePic(response.data?.photoThumbUrl || null);
-
-        // Optionally close modal after success
         props.modal(false);
       } else {
         console.error("Failed to add picture");
@@ -66,12 +65,28 @@ function UserModal(props: UserModalProps) {
 
     uploadImage(onAccept, onReject, userId, selectedFile);
   };
+
   const handleCancel = () => {
     setSelectedFile(null);
-    // Reset the file input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  // Add logout confirmation handlers
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    // Clear user data if needed
+    localStorage.removeItem("userId");
+    // Add any other logout logic here
+    navigate("/");
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false);
   };
 
   return (
@@ -80,65 +95,103 @@ function UserModal(props: UserModalProps) {
         <button className="profile-button" onClick={() => props.modal(false)}>
           &times;
         </button>
-        <div className="profile-content">
-          {selectedFile ? (
-            <img
-              src={URL.createObjectURL(selectedFile)}
-              alt="Profile Preview"
-              className="profile-preview"
-            />
-          ) : currentProfilePic ? (
-            <img
-              src={currentProfilePic}
-              alt="Current Profile"
-              className="profile-preview"
-            />
-          ) : (
-            <FaRegUserCircle size={100} color="var(--grey-900)" />
-          )}
-        </div>
-
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          style={{ display: "none" }}
-        />
-
-        <div className="profile-details">Add a Profile Picture</div>
-
-        {selectedFile ? (
-          <div style={{ display: "flex", gap: "10px", width: "100%" }}>
-            <button
-              className="profile-btn"
-              onClick={handleAddingPicture}
-              style={{ flex: 1 }}
-            >
-              SAVE
-            </button>
-            <button
-              className="profile-btn"
-              onClick={handleCancel}
-              style={{ flex: 1, backgroundColor: "var(--grey-200)" }}
-            >
-              CANCEL
-            </button>
+        
+        {/* Show logout confirmation dialog */}
+        {showLogoutConfirm ? (
+          <div className="profile-content">
+            <div style={{ textAlign: "center", padding: "20px" }}>
+              <h3 style={{ marginBottom: "20px", color: "var(--grey-900)" }}>
+                Confirm Logout
+              </h3>
+              <p style={{ marginBottom: "30px", color: "var(--grey-700)" }}>
+                Are you sure you want to logout?
+              </p>
+              <div style={{ display: "flex", gap: "10px", width: "100%" }}>
+                <button
+                  className="profile-btn"
+                  onClick={handleLogoutCancel}
+                  style={{ 
+                    flex: 1, 
+                    backgroundColor: "var(--grey-200)" 
+                  }}
+                >
+                  CANCEL
+                </button>
+                    <button
+                      className="profile-btn"
+                      onClick={handleLogoutConfirm}
+                      style={{ 
+                        flex: 1, 
+                        backgroundColor: "var(--rust-500)" 
+                      }}
+                    >
+                      LOGOUT
+                    </button>
+              </div>
+            </div>
           </div>
         ) : (
-          <button className="profile-btn" onClick={handleAddingPicture}>
-            ADD
-          </button>
-        )}
+          // Show normal profile content
+          <>
+            <div className="profile-content">
+              {selectedFile ? (
+                <img
+                  src={URL.createObjectURL(selectedFile)}
+                  alt="Profile Preview"
+                  className="profile-preview"
+                />
+              ) : currentProfilePic ? (
+                <img
+                  src={currentProfilePic}
+                  alt="Current Profile"
+                  className="profile-preview"
+                />
+              ) : (
+                <FaRegUserCircle size={100} color="var(--grey-900)" />
+              )}
+            </div>
 
-        <button
-          className="profile-btn"
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          Logout
-        </button>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+            />
+
+            <div className="profile-details">Add a Profile Picture</div>
+
+            {selectedFile ? (
+              <div style={{ display: "flex", gap: "10px", width: "100%" }}>
+                <button
+                  className="profile-btn"
+                  onClick={handleCancel}
+                  style={{ flex: 1, backgroundColor: "var(--grey-200)" }}
+                >
+                  CANCEL
+                </button>
+                <button
+                  className="profile-btn"
+                  onClick={handleAddingPicture}
+                  style={{ flex: 1 }}
+                >
+                  SAVE
+                </button>
+              </div>
+            ) : (
+              <button className="profile-btn" onClick={handleAddingPicture}>
+                ADD
+              </button>
+            )}
+
+            <button
+              className="profile-btn"
+              onClick={handleLogoutClick} // Changed from direct navigation
+            >
+              Logout
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

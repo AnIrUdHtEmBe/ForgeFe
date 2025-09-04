@@ -300,6 +300,9 @@ useEffect(() => {
           variant: "success",
         });
         navigate("/viewPlan");
+              setTimeout(() => {
+        window.location.reload();
+      }, 100); // Small delay to ensure navigation completes
       } else {
         console.error("Booking failed:", response.data);
         enqueueSnackbar({
