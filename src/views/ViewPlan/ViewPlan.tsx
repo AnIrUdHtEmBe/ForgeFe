@@ -66,6 +66,8 @@ const ViewPlan = () => {
   const [type, setType] = useState<string>("");
   const [createGame, setCreateGame] = useState<boolean>(false);
   const [showChatModal, setShowChatModal] = useState(false);
+  const [availableGroupCount, setAvailableGroupCount] = useState(0);
+  const [isLoadingGroupCount, setIsLoadingGroupCount] = useState(false);
   const [chatModalData, setChatModalData] = useState<ChatModalData>({
     roomName: "",
     isLoading: true,
@@ -491,6 +493,40 @@ const ViewPlan = () => {
     }
   };
 
+const fetchAvailableGroups = async (category: string, dateISO: string) => {
+  setIsLoadingGroupCount(true);
+  setAvailableGroupCount(0);
+  try {
+    const categoryUrl = `https://play-os-backend.forgehub.in/sports/category/${category}`;
+    const categoryRes = await axios.get(categoryUrl);
+    const sports = categoryRes.data;
+
+    let totalValidGames = 0;
+    for (const sport of sports) {
+      const sportId = sport.sportId;
+      // Ensure date is start of day and add +1 to correct off-by-one
+      let date = new Date(dateISO);
+      date.setDate(date.getDate());
+      date.setHours(0, 0, 0, 0);
+      const gamesUrl = `https://play-os-backend.forgehub.in/game/games/by-sport?sportId=${sportId}&date=${date.toISOString()}&courtId=ALL`;
+      const gamesRes = await axios.get(gamesUrl);
+      const games = gamesRes.data;
+
+      const validGames = games.filter(
+        (game: any) =>
+          game.type === "game"
+      );
+      totalValidGames += validGames.length;
+    }
+    setAvailableGroupCount(totalValidGames);
+  } catch (error) {
+    console.error("Error fetching available groups:", error);
+    setAvailableGroupCount(0);
+  } finally {
+    setIsLoadingGroupCount(false);
+  }
+};
+
   const ChatModal: React.FC<ChatModalProps> = ({
     isOpen,
     onClose,
@@ -874,7 +910,10 @@ const ViewPlan = () => {
                           </div>
                           <TbMessage
                             size={30}
-                            style={{ color: 'var(--grey-900)', cursor: "pointer" }}
+                            style={{
+                              color: "var(--grey-900)",
+                              cursor: "pointer",
+                            }}
                             onClick={() =>
                               handleChatModalOpen(
                                 data1.userId,
@@ -886,38 +925,40 @@ const ViewPlan = () => {
                           {data1?.category !== "NUTRITION" &&
                             data1?.sessionTemplateId !== "SEST_YFVI33" && (
                               <div
-                                className={`--book-slot ${
-                                  data1 ? "" : "--inActive"
-                                }`}
-                                onClick={() => {
-                                  if (!data1) return;
+  className={`--book-slot ${data1 ? "" : "--inActive"}`}
+  onClick={() => {
+    if (!data1) return;
 
-                                  if (
-                                    data1?.category === "FITNESS" ||
-                                    data1?.category === "WELLNESS"
-                                  ) {
-                                    if (data1?.status == "SCHEDULED") {
-                                      // setShowModal(true);
-                                      setModalMap((prev) => ({
-                                        ...prev,
-                                        [data1.sessionInstanceId]: true,
-                                      }));
-                                      return;
-                                    }
-                                  }
-                                  if (data1?.category === "NUTRITION") {
-                                    return;
-                                  }
+    let selectedDate = new Date(data1.scheduledDate);
+    selectedDate.setDate(selectedDate.getDate() + 1);
+    const selectedDateISO = selectedDate.toISOString();
 
-                                  slotBookingHandler(data1?.category, data1);
-                                }}
-                              >
-                                <span>
-                                  {data1?.status === "BOOKED"
-                                    ? "View Booking"
-                                    : "Book Slot"}
-                                </span>
-                              </div>
+    if (
+      data1?.category === "FITNESS" ||
+      data1?.category === "WELLNESS"
+    ) {
+      if (data1?.status == "SCHEDULED") {
+        fetchAvailableGroups(data1.category, selectedDateISO);
+        setModalMap((prev) => ({
+          ...prev,
+          [data1.sessionInstanceId]: true,
+        }));
+        return;
+      }
+    }
+    if (data1?.category === "NUTRITION") {
+      return;
+    }
+
+    slotBookingHandler(data1?.category, data1);
+  }}
+>
+  <span>
+    {data1?.status === "BOOKED"
+      ? "View Booking"
+      : "Book Slot"}
+  </span>
+</div>
                             )}
                         </div>
                         {data1 ? (
@@ -956,7 +997,7 @@ const ViewPlan = () => {
                                   .filter(
                                     (activity) => activity.status !== "REMOVED"
                                   )
-                                  .map((  activity, i) => (
+                                  .map((activity, i) => (
                                     <div
                                       key={i}
                                       className="session-information-container"
@@ -1111,8 +1152,16 @@ const ViewPlan = () => {
                                                 type === "group" ? "active" : ""
                                               }`}
                                               onClick={() => setType("group")}
+                                              disabled={
+                                                isLoadingGroupCount ||
+                                                availableGroupCount === 0
+                                              }
                                             >
-                                              Group Session
+                                              {isLoadingGroupCount
+                                                ? "Loading..."
+                                                : availableGroupCount > 0
+                                                ? `${availableGroupCount} Group Sessions available`
+                                                : "No Group Sessions available"}
                                             </button>
                                             <button
                                               className={`modal-button group ${
@@ -1463,9 +1512,7 @@ const ViewPlan = () => {
             </div>
           ) : chatModalData.roomDetails ? (
             <ChatClientProvider client={chatClient}>
-              <ChatRoomProvider
-                name={`${chatModalData.roomDetails.chatId}`}
-              >
+              <ChatRoomProvider name={`${chatModalData.roomDetails.chatId}`}>
                 <ChatModal
                   isOpen={showChatModal}
                   onClose={() => setShowChatModal(false)}

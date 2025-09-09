@@ -45,7 +45,7 @@ const Nav = () => {
     () => new ChatClient(realtimeClient, { logLevel: LogLevel.Info }),
     [realtimeClient]
   );
-
+//abcd
   const getProfilePhoto = () => {
     const onAccept = (response: AxiosResponse) => {
       if (response.status === 200) {
