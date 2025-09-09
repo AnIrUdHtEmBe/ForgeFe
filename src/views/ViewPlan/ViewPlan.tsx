@@ -848,7 +848,9 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
             </div>
           </div>
           <div className="--date">
-            {formatDate(weekStartToEndDates[activeIndex])}
+            {weekStartToEndDates[activeIndex]
+              ? formatDate(weekStartToEndDates[activeIndex])
+              : ""}
           </div>
           <div className="--arrows">
             <div className="--arrow-right">

@@ -173,14 +173,28 @@ const DetailView = () => {
     }
   }, [courtId]);
 
-  useEffect(() => {
-    const { timeStr } = getFormattedDateTime(
-      new Date(court?.openingTime ?? ""),
-      new Date(court?.closingTime ?? "")
-    );
-    console.log(timeStr,court?.openingTime,court?.closingTime,"okugjyfhfgggggqqqq");
+useEffect(() => {
+  if (court?.openingTime && court?.closingTime) {
+    const convertUTCtoIST = (utcTimeString: string) => {
+      const utcDate = new Date(utcTimeString);
+      // Add 5 hours and 30 minutes (330 minutes) to convert UTC to IST
+      const istDate = new Date(utcDate.getTime() + (330 * 60 * 1000));
+      
+      return istDate.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      });
+    };
+    
+    const openingTimeIST = convertUTCtoIST(court.openingTime);
+    const closingTimeIST = convertUTCtoIST(court.closingTime);
+    const timeStr = `${openingTimeIST} - ${closingTimeIST}`;
+    
+    console.log(timeStr, court.openingTime, court.closingTime, "okugjyfhfgggggqqqq");
     setOperatingHours(timeStr);
-  }, [court]);
+  }
+}, [court]);
 
   const fetchGames = () => {
     const onAccept = (response: AxiosResponse) => {
@@ -286,6 +300,9 @@ const DetailView = () => {
           variant: "success",
         });
         navigate("/viewPlan");
+              setTimeout(() => {
+        window.location.reload();
+      }, 100); // Small delay to ensure navigation completes
       } else {
         console.error("Booking failed:", response.data);
         enqueueSnackbar({

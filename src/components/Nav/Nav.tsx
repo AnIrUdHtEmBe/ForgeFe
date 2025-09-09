@@ -400,7 +400,7 @@ const Nav = () => {
           </div>
         )}
 
-        {profileModal && <UserModal modal={setProfileModal}></UserModal>}
+        {profileModal && <UserModal modal={setProfileModal} profilePic={profilePic}></UserModal>}
       </div>
     </ChatClientProvider>
   );

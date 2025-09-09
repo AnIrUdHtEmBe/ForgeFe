@@ -153,7 +153,33 @@ function BookingDetails() {
   console.log("Final Start Time:", finalStartTime,selectedSlots);
   
 
-
+const fetchTimeSlots = () => {
+    if (!bookingDetails) return;
+    
+    getTimeSlotForCourt(
+        (res: AxiosResponse) => {
+          if (res.status === HttpStatusCode.Ok) {
+            const sorted = res.data
+              .map(({ st_unix, et_unix, status, slotId }: t_slot) => ({
+                startTime: st_unix,
+                endTime: et_unix,
+                status,
+                slotId,
+              }))
+              .sort((a: { startTime: number; }, b: { startTime: number; }) => a.startTime - b.startTime);
+            setSlots(sorted);
+          }
+        },
+        () =>
+          enqueueSnackbar({
+            message: "Failed to fetch slots.",
+            variant: "error",
+            autoHideDuration: SNACK_AUTO_HIDE,
+          }),
+        bookingDetails.courtId,
+        convertUnixToLocalDateString(bookingDetails.st_unix)
+      );
+};
     const rescheduletheBooking = async () => {
         if(selectedSlotIds.length === 0) {
             enqueueSnackbar({
@@ -205,6 +231,9 @@ function BookingDetails() {
             bookingData.courtId
         )
         await getBooking();
+          setTimeout(() => {
+            fetchTimeSlots();
+        }, 100);
         setSelectedSlotIds([]);
         
     }   
@@ -250,9 +279,16 @@ function BookingDetails() {
            <div className="--content">
           <div className="--row">
             <span className="--title">Date</span>
-            <span>
-              {convertUnixToLocalDateString(bookingDetails?.st_unix)?.split("-").reverse().join("-")}
-            </span>
+            {bookingDetails && Number.isFinite(bookingDetails?.st_unix) ? (
+      <span>
+        {convertUnixToLocalDateString(bookingDetails.st_unix)
+          ?.split("-")
+          .reverse()
+          .join("-")}
+      </span>
+    ) : (
+      <span></span>
+    )}
           </div>
           <div className="--row">
             <span className="--title">Doctor</span>
@@ -296,64 +332,39 @@ function BookingDetails() {
                       //     hour12: true,
                       //   }
                       // )}`
-                      `${convertUnixToLocalTime(bookingDetails?.startTime)}-${convertUnixToLocalTime(bookingDetails?.endTime)}`
+                      (bookingDetails?.startTime && bookingDetails?.endTime) ?
+  `${convertUnixToLocalTime(bookingDetails.startTime)}-${convertUnixToLocalTime(bookingDetails.endTime)}` :
+  ""
                      
                 }
                 shouldFitContainer
                 shouldRenderToParent
                 shouldFlip  
               >
-                <DropdownItemCheckboxGroup title="Slots" id="slots">
-                  {slots.map(({ slotId, startTime, endTime, status }) =>
-                    status === "available" ? (
-                      <DropdownItemCheckbox
-                        key={slotId}
-                        id={slotId}
-                        isSelected={selectedSlotIds.includes(slotId)}
-                        onClick={() => handleSlotToggle(slotId)}
-                      >
-                        {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}{" "}
-                        -{" "}
-                        {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}
-                      </DropdownItemCheckbox>
-                    ) : (
-                      <DropdownItem key={slotId}>
-                        <div className="--drop-down">
-                          <div
-                            className="--color-box-container"
-                            style={{
-                              background: {
-                                booked: "var(--grey-400)",
-                                blocked: "var(--rust-700)",
-                              }[status],
-                            }}
-                          />
-                          <span>
-                            {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
-                              hour: "numeric",
-                              minute: "2-digit",
-                              hour12: true,
-                            })}{" "}
-                            -{"  "}
-                            {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
-                              hour: "numeric",
-                              minute: "2-digit",
-                              hour12: true,
-                            })}
-                          </span>
-                        </div>
-                      </DropdownItem>
-                    )
-                  )}
-                </DropdownItemCheckboxGroup>
+<DropdownItemCheckboxGroup title="Slots" id="slots">
+  {slots
+    .filter(({ status }) => status === "available")
+    .map(({ slotId, startTime, endTime }) => (
+      <DropdownItemCheckbox
+        key={slotId}
+        id={slotId}
+        isSelected={selectedSlotIds.includes(slotId)}
+        onClick={() => handleSlotToggle(slotId)}
+      >
+        {new Date(Number(startTime) * 1000).toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })}{" "}
+        -{" "}
+        {new Date(Number(endTime) * 1000).toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })}
+      </DropdownItemCheckbox>
+    ))}
+</DropdownItemCheckboxGroup>
               </DropdownMenu>
             </div>
           </div>
