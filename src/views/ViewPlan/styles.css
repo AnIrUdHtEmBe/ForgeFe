@@ -737,6 +737,7 @@
   height: 16px;
   fill: none;
   stroke: currentColor;
+  transform: rotate(90deg);
 }
 
 .chat-modal-footer {

@@ -710,6 +710,7 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
                   </>
                 ) : (
                   <>
+                  <span>Send Message</span>
                     <svg
                       className="chat-modal-icon"
                       fill="none"
@@ -723,7 +724,7 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
                         d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                       />
                     </svg>
-                    <span>Send Message</span>
+                    
                   </>
                 )}
               </button>
@@ -732,9 +733,9 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
 
           {/* Footer */}
           <div className="chat-modal-footer">
-            <p className="chat-modal-hint">
+            {/* <p className="chat-modal-hint">
               Press Enter to send • Shift+Enter for new line
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
@@ -1160,7 +1161,7 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
                                               }
                                             >
                                               {isLoadingGroupCount
-                                                ? "Loading..."
+                                                ? "Group Sessions"
                                                 : availableGroupCount > 0
                                                 ? `${availableGroupCount} Group Sessions available`
                                                 : "No Group Sessions available"}
@@ -1564,3 +1565,5 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
 };
 
 export default ViewPlan;
+
+// git stash
