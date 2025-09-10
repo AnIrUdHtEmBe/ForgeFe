@@ -60,10 +60,10 @@ export const categories = [
     name: "Sports",
     icon: () => <MdSportsSoccer size={DEFAULT_ICON_SIZE} />,
   },
-  {
-    name: "Other",
-    icon: () => <MdCategory size={DEFAULT_ICON_SIZE} />,
-  },
+//   {
+//     name: "Other",
+//     icon: () => <MdCategory size={DEFAULT_ICON_SIZE} />,
+//   },
 ];
 export const SNACK_AUTO_HIDE = 3000;
 

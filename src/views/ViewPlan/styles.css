@@ -329,6 +329,20 @@
   gap: 6px;
 }
 
+.view-plan-top-container .view-plan-category-container.--active {
+  border: 2px solid var(--rust-500) !important;
+  background-color: var(--rust-50);
+  font-weight: bold;
+}
+
+.view-plan-top-container .view-plan-category-container {
+  border-right: 1px solid rgba(18, 18, 18, 0.4);
+}
+
+.view-plan-top-container .view-plan-category-container.--active {
+  border-right: 2px solid var(--rust-500) !important;
+}
+
 .--active {
   border: 2px solid var(--rust-500);
   background-color: var(--rust-50);

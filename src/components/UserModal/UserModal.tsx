@@ -95,7 +95,7 @@ function UserModal(props: UserModalProps) {
         <button className="profile-button" onClick={() => props.modal(false)}>
           &times;
         </button>
-        
+
         {/* Show logout confirmation dialog */}
         {showLogoutConfirm ? (
           <div className="profile-content">
@@ -110,23 +110,23 @@ function UserModal(props: UserModalProps) {
                 <button
                   className="profile-btn"
                   onClick={handleLogoutCancel}
-                  style={{ 
-                    flex: 1, 
-                    backgroundColor: "var(--grey-200)" 
+                  style={{
+                    flex: 1,
+                    backgroundColor: "var(--grey-200)",
                   }}
                 >
                   CANCEL
                 </button>
-                    <button
-                      className="profile-btn"
-                      onClick={handleLogoutConfirm}
-                      style={{ 
-                        flex: 1, 
-                        backgroundColor: "var(--rust-500)" 
-                      }}
-                    >
-                      LOGOUT
-                    </button>
+                <button
+                  className="profile-btn"
+                  onClick={handleLogoutConfirm}
+                  style={{
+                    flex: 1,
+                    backgroundColor: "var(--rust-500)",
+                  }}
+                >
+                  LOGOUT
+                </button>
               </div>
             </div>
           </div>
@@ -135,20 +135,34 @@ function UserModal(props: UserModalProps) {
           <>
             <div className="profile-content">
               {selectedFile ? (
-                <img
-                  src={URL.createObjectURL(selectedFile)}
-                  alt="Profile Preview"
-                  className="profile-preview"
-                />
-              ) : currentProfilePic ? (
-                <img
-                  src={currentProfilePic}
-                  alt="Current Profile"
-                  className="profile-preview"
-                />
-              ) : (
-                <FaRegUserCircle size={100} color="var(--grey-900)" />
-              )}
+  <img
+    src={URL.createObjectURL(selectedFile)}
+    alt="Profile Preview"
+    className="profile-preview"
+    style={{
+      width: "100px",
+      height: "100px",
+      borderRadius: "50%",
+      objectFit: "cover",
+      objectPosition: "center"
+    }}
+  />
+) : currentProfilePic ? (
+  <img
+    src={currentProfilePic}
+    alt="Current Profile"
+    className="profile-preview"
+    style={{
+      width: "100px",
+      height: "100px", 
+      borderRadius: "50%",
+      objectFit: "cover",
+      objectPosition: "center"
+    }}
+  />
+) : (
+  <FaRegUserCircle size={100} color="var(--grey-900)" />
+)}
             </div>
 
             <input
@@ -180,7 +194,7 @@ function UserModal(props: UserModalProps) {
               </div>
             ) : (
               <button className="profile-btn" onClick={handleAddingPicture}>
-                ADD
+                {currentProfilePic ? "Edit Photo" : "Add Photo"}
               </button>
             )}
 

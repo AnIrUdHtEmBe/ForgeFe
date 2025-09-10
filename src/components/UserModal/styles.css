@@ -57,13 +57,17 @@
   align-items: center;
 }
 
+
 .profile-preview {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid var(--rust-500); /* was #007bff */
+  width: 100px !important;
+  height: 100px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block;
+  border: 2px solid var(--rust-500);
 }
+
 
 /* Hidden file input */
 input[type="file"] {
