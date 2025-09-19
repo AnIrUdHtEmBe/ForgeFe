@@ -161,6 +161,8 @@ const ViewPlan = () => {
       const response = await axios.get(
         `https://testforgebackend.forgehub.in/session-templates/${sessionTemplateId}`
       );
+      console.log(response.data, "api1");
+
       const template = response.data;
 
       setSessionTemplateCache((prev) => ({
@@ -274,6 +276,8 @@ const ViewPlan = () => {
       const response = await axios.get(
         `https://testforgebackend.forgehub.in/session-instance/${sessionInstanceId}`
       );
+      console.log(response.data, "api2");
+
       const sessionInstance = response.data;
 
       setSessionInstanceCache((prev) => ({
@@ -440,9 +444,8 @@ const ViewPlan = () => {
                   >
                     {activity.name || "No name"}
                   </span>
-                  
                 </div>
-                
+
                 <div
                   style={{
                     wordWrap: "break-word",
@@ -457,8 +460,8 @@ const ViewPlan = () => {
                   {displayData.description || "No description"}
                 </div>
                 {displayData.vegNonVeg && (
-                    <VegNonVegDot vegNonVeg={displayData.vegNonVeg} />
-                  )}
+                  <VegNonVegDot vegNonVeg={displayData.vegNonVeg} />
+                )}
               </div>
 
               <div style={{ flex: "0 0 80px", minWidth: "82px" }}>
@@ -1490,200 +1493,21 @@ const ViewPlan = () => {
                                     (activity) => activity.status !== "REMOVED"
                                   )
                                   .map((activity, i) => (
-                                    <div
+                                    <EnhancedActivityItem
                                       key={i}
-                                      className="session-information-container"
-                                    >
-                                      <div className="--session-info">
-                                        <div className="--start">
-                                          {activity.videoLink ? (
-                                            <IoPlayCircle
-                                              size={22}
-                                              style={{
-                                                zIndex: 2,
-                                                position: "relative",
-                                                verticalAlign: "middle",
-                                                cursor: "pointer",
-                                                color: "var(--rust-500)",
-                                                ...(i === 0
-                                                  ? {
-                                                      outline:
-                                                        "1px solid black",
-                                                      outlineOffset: "8px",
-                                                      borderRadius: "50%",
-                                                      background: "white",
-                                                    }
-                                                  : {}),
-                                              }}
-                                              onClick={() => {
-                                                setCurrentVideoUrl(
-                                                  activity.videoLink
-                                                );
-                                                setShowVideoModal(true);
-                                              }}
-                                            />
-                                          ) : (
-                                            <IoPlayCircle
-                                              size={22}
-                                              style={{
-                                                zIndex: 2,
-                                                position: "relative",
-                                                verticalAlign: "middle",
-                                                color: "var(--grey-400)",
-                                                ...(i === 0
-                                                  ? {
-                                                      outline:
-                                                        "1px solid black",
-                                                      outlineOffset: "8px",
-                                                      borderRadius: "50%",
-                                                      background: "white",
-                                                    }
-                                                  : {}),
-                                              }}
-                                            />
-                                          )}
-
-                                          <div className="--session">
-                                            <div>
-                                              <div
-                                                className="--name"
-                                                style={{
-                                                  wordWrap: "break-word",
-                                                  wordBreak: "break-word",
-                                                  whiteSpace: "normal",
-                                                  lineHeight: "1.4",
-                                                }}
-                                              >
-                                                {activity.name || "No name"}
-                                              </div>
-                                              <div
-                                                style={{
-                                                  wordWrap: "break-word",
-                                                  wordBreak: "break-word",
-                                                  whiteSpace: "normal",
-                                                  lineHeight: "1.4",
-                                                  marginTop: "4px",
-                                                  fontSize: "12px",
-                                                  color: "var(--grey-400)",
-                                                }}
-                                              >
-                                                {activity.description ||
-                                                  "No description"}
-                                              </div>
-                                            </div>
-                                            <div
-                                              style={{
-                                                flex: "0 0 80px",
-                                                minWidth: "82px",
-                                              }}
-                                            >
-                                              <div className="--desc">
-                                                {activity.target || "-"}
-                                                {activity.target
-                                                  ? activity?.unit == "weight"
-                                                    ? "Kg"
-                                                    : activity?.unit ==
-                                                      "distance"
-                                                    ? "Km"
-                                                    : activity?.unit == "time"
-                                                    ? "Min"
-                                                    : activity?.unit ==
-                                                      "repetitions"
-                                                    ? "Reps"
-                                                    : activity?.unit == "grams"
-                                                    ? "g"
-                                                    : activity?.unit == "meter"
-                                                    ? "m"
-                                                    : activity?.unit == "litre"
-                                                    ? "L"
-                                                    : activity?.unit ==
-                                                      "millilitre"
-                                                    ? "ml"
-                                                    : ""
-                                                  : ""}
-                                              </div>
-                                            </div>
-                                            <div
-                                              style={{
-                                                flex: "0 0 80px",
-                                                minWidth: "80px",
-                                                textAlign: "center",
-                                              }}
-                                            >
-                                              <span className="--desc">
-                                                {activity.customReps || "-"}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      {/* {i < validActivities.length - 1 && (
-                                        <div className="--line"></div>
-                                      )} */}
-                                      {modalMap[data1.sessionInstanceId] && (
-                                        <div className="modal-overlay">
-                                          <div className="modal-box">
-                                            <button
-                                              className="modal-close"
-                                              onClick={() =>
-                                                setModalMap((prev) => ({
-                                                  ...prev,
-                                                  [data1.sessionInstanceId]:
-                                                    false,
-                                                }))
-                                              }
-                                            >
-                                              &times;
-                                            </button>
-
-                                            <div className="modal-title">
-                                              Choose Type
-                                            </div>
-                                            <button
-                                              className={`modal-button group ${
-                                                type === "group" ? "active" : ""
-                                              }`}
-                                              onClick={() => setType("group")}
-                                              disabled={
-                                                isLoadingGroupCount ||
-                                                availableGroupCount === 0
-                                              }
-                                            >
-                                              {isLoadingGroupCount
-                                                ? "Group Sessions"
-                                                : availableGroupCount > 0
-                                                ? `${availableGroupCount} Group Sessions available`
-                                                : "No Group Sessions available"}
-                                            </button>
-                                            <button
-                                              className={`modal-button group ${
-                                                type === "personal"
-                                                  ? "active"
-                                                  : ""
-                                              }`}
-                                              onClick={() =>
-                                                setType("personal")
-                                              }
-                                            >
-                                              1-on-1 Session
-                                            </button>
-
-                                            <button
-                                              className="modal-confirm"
-                                              disabled={type === ""}
-                                              onClick={() =>
-                                                slotBookingHandler(
-                                                  data1.category,
-                                                  data1
-                                                )
-                                              }
-                                            >
-                                              Confirm
-                                            </button>
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
+                                      activity={activity}
+                                      sessionInstanceId={
+                                        data1.sessionInstanceId
+                                      }
+                                      index={i}
+                                      showCheckbox={false}
+                                      onCheckboxChange={() => {}}
+                                      showVideoIcon={true}
+                                      onVideoClick={(videoLink) => {
+                                        setCurrentVideoUrl(videoLink);
+                                        setShowVideoModal(true);
+                                      }}
+                                    />
                                   ))}
                               </div>
                             )}
