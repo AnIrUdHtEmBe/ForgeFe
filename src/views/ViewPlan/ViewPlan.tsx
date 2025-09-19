@@ -50,6 +50,63 @@ interface ChatModalProps {
   roomDetails: any;
 }
 
+// Add these interfaces after existing ones
+interface SessionInstanceResponse {
+  sessionInstanceId: string;
+  sessionTemplateId: string;
+  userId: string;
+  scheduledDate: string;
+  activities: Array<{
+    activityId: string;
+    activityInstanceId: string;
+    status: string;
+    customReps: any;
+  }>;
+  status: string;
+  rating: number;
+  postSessionComment: string | null;
+  trainerId: string | null;
+  gameId: string | null;
+  oneOnoneId: string | null;
+  editedActivities: Array<{
+    activityId: string;
+    description?: string;
+    target?: number;
+    target2?: number;
+    vegNonVeg?: string;
+  }>;
+  actualValuesActivities: any[];
+  vegNonVeg: string;
+  type: string;
+}
+
+interface SessionTemplate {
+  sessionId: string;
+  title: string;
+  description: string;
+  category: string;
+  activityIds: string[];
+  status: string;
+  themes: string[];
+  goals: string[];
+  editedActivities: Array<{
+    activityId: string;
+    description?: string;
+    target?: number;
+    target2?: number;
+    vegNonVeg?: string;
+  }>;
+  vegNonVeg: string;
+  type: string;
+}
+
+interface ActivityDisplayData {
+  description: string;
+  target: number | null;
+  target2?: number | null;
+  vegNonVeg?: string;
+}
+
 const ViewPlan = () => {
   //current week plan
   const [showModal, setShowModal] = useState(false);
@@ -76,12 +133,414 @@ const ViewPlan = () => {
   });
   const [currentVideoUrl, setCurrentVideoUrl] = useState("");
   const [showVideoModal, setShowVideoModal] = useState(false);
+  // Add these cache states after existing state declarations
+  const [sessionInstanceCache, setSessionInstanceCache] = useState<{
+    [key: string]: SessionInstanceResponse;
+  }>({});
+  const [sessionTemplateCache, setSessionTemplateCache] = useState<{
+    [key: string]: SessionTemplate;
+  }>({});
+  const [enhancedSessionData, setEnhancedSessionData] = useState<{
+    [key: string]: any;
+  }>({});
   const extractVideoId = (url: string): string | null => {
     const regExp =
       /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
   };
+
+  const fetchSessionTemplate = async (
+    sessionTemplateId: string
+  ): Promise<SessionTemplate | null> => {
+    if (sessionTemplateCache[sessionTemplateId]) {
+      return sessionTemplateCache[sessionTemplateId];
+    }
+
+    try {
+      const response = await axios.get(
+        `https://testforgebackend.forgehub.in/session-templates/${sessionTemplateId}`
+      );
+      const template = response.data;
+
+      setSessionTemplateCache((prev) => ({
+        ...prev,
+        [sessionTemplateId]: template,
+      }));
+
+      return template;
+    } catch (error) {
+      console.log("Failed to fetch session template:", error);
+      return null;
+    }
+  };
+
+  const getActivityDisplayData = async (
+    activity: any,
+    sessionInstanceId: string
+  ): Promise<ActivityDisplayData> => {
+    // Fetch session instance data
+    const sessionInstance = await fetchSessionInstance(sessionInstanceId);
+
+    // 1st Priority: Check sessionInstance.editedActivities
+    if (sessionInstance?.editedActivities) {
+      const sessionEditedActivity = sessionInstance.editedActivities.find(
+        (edited: any) => edited.activityId === activity.activityId
+      );
+
+      if (
+        sessionEditedActivity &&
+        Object.keys(sessionEditedActivity).length > 1
+      ) {
+        return {
+          description:
+            sessionEditedActivity.description ?? activity.description,
+          target: sessionEditedActivity.target ?? activity.target,
+          target2: sessionEditedActivity.target2 ?? activity.target2,
+          vegNonVeg: sessionEditedActivity.vegNonVeg ?? activity.vegNonVeg,
+        };
+      }
+    }
+
+    // 2nd Priority: Check sessionTemplate.editedActivities
+    if (sessionInstance?.sessionTemplateId) {
+      const sessionTemplate = await fetchSessionTemplate(
+        sessionInstance.sessionTemplateId
+      );
+
+      if (sessionTemplate?.editedActivities) {
+        const templateEditedActivity = sessionTemplate.editedActivities.find(
+          (edited: any) => edited.activityId === activity.activityId
+        );
+
+        if (
+          templateEditedActivity &&
+          Object.keys(templateEditedActivity).length > 1
+        ) {
+          return {
+            description:
+              templateEditedActivity.description ?? activity.description,
+            target: templateEditedActivity.target ?? activity.target,
+            target2: templateEditedActivity.target2 ?? activity.target2,
+            vegNonVeg: templateEditedActivity.vegNonVeg ?? activity.vegNonVeg,
+          };
+        }
+      }
+    }
+
+    // 3rd Priority: Fallback to original activity values
+    return {
+      description: activity.description,
+      target: activity.target,
+      target2: activity.target2,
+      vegNonVeg: activity.vegNonVeg,
+    };
+  };
+
+  // Add this function after getActivityDisplayData
+  const loadEnhancedSessionData = async () => {
+    if (!newsessionForCurrentDate || newsessionForCurrentDate.length === 0)
+      return;
+
+    const enhancedData: { [key: string]: any } = {};
+
+    for (const session of newsessionForCurrentDate) {
+      const sessionInstance = await fetchSessionInstance(
+        session.sessionInstanceId
+      );
+
+      if (sessionInstance) {
+        enhancedData[session.sessionInstanceId] = {
+          ...session,
+          vegNonVeg: sessionInstance.vegNonVeg,
+          editedActivities: sessionInstance.editedActivities,
+        };
+      } else {
+        enhancedData[session.sessionInstanceId] = session;
+      }
+    }
+
+    setEnhancedSessionData(enhancedData);
+  };
+
+  const fetchSessionInstance = async (
+    sessionInstanceId: string
+  ): Promise<SessionInstanceResponse | null> => {
+    if (sessionInstanceCache[sessionInstanceId]) {
+      return sessionInstanceCache[sessionInstanceId];
+    }
+
+    try {
+      const response = await axios.get(
+        `https://testforgebackend.forgehub.in/session-instance/${sessionInstanceId}`
+      );
+      const sessionInstance = response.data;
+
+      setSessionInstanceCache((prev) => ({
+        ...prev,
+        [sessionInstanceId]: sessionInstance,
+      }));
+
+      return sessionInstance;
+    } catch (error) {
+      console.log("Failed to fetch session instance:", error);
+      return null;
+    }
+  };
+
+  // Add this component after getActivityDisplayData
+  // Add this component after loadEnhancedSessionData
+  const VegNonVegDot: React.FC<{ vegNonVeg: string }> = ({ vegNonVeg }) => {
+    const getColor = () => {
+      switch (vegNonVeg) {
+        case "VEG":
+          return "#10B981";
+        case "EGG":
+          return "#F59E0B";
+        case "NONVEG":
+          return "#DC2626";
+        default:
+          return "#6B7280";
+      }
+    };
+
+    const getText = () => {
+      switch (vegNonVeg) {
+        case "VEG":
+          return "VEG";
+        case "EGG":
+          return "EGG";
+        case "NONVEG":
+          return "NON";
+        default:
+          return "";
+      }
+    };
+
+    return (
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "3px",
+          marginLeft: "4px",
+          padding: "2px 4px",
+          border: `2px solid ${getColor()}`,
+          borderRadius: "8px",
+          fontSize: "9px",
+          fontWeight: "600",
+          flexShrink: 0,
+          height: "18px",
+          verticalAlign: "middle",
+          // Add this
+        }}
+      >
+        <div
+          style={{
+            width: "10px",
+            height: "10px",
+            borderRadius: "50%",
+            backgroundColor: getColor(),
+          }}
+        />
+        <span style={{ color: getColor() }}>{getText()}</span>
+      </div>
+    );
+  };
+
+  const EnhancedActivityItem: React.FC<{
+    activity: any;
+    sessionInstanceId: string;
+    index: number;
+    showCheckbox: boolean;
+    onCheckboxChange: (
+      activityInstanceId: string,
+      sessionInstanceId: string
+    ) => void;
+    showVideoIcon: boolean;
+    onVideoClick: (videoLink: string) => void;
+  }> = ({
+    activity,
+    sessionInstanceId,
+    index,
+    showCheckbox,
+    onCheckboxChange,
+    showVideoIcon,
+    onVideoClick,
+  }) => {
+    const [displayData, setDisplayData] = useState<ActivityDisplayData>({
+      description: activity.description,
+      target: activity.target,
+      target2: activity.target2,
+      vegNonVeg: activity.vegNonVeg,
+    });
+
+    useEffect(() => {
+      const loadDisplayData = async () => {
+        const data = await getActivityDisplayData(activity, sessionInstanceId);
+        setDisplayData(data);
+      };
+      loadDisplayData();
+    }, [activity, sessionInstanceId]);
+
+    return (
+      <div className="session-information-container">
+        <div className="--session-info">
+          <div className="--start">
+            {showVideoIcon ? (
+              activity.videoLink ? (
+                <IoPlayCircle
+                  size={22}
+                  style={{
+                    zIndex: 2,
+                    position: "relative",
+                    verticalAlign: "middle",
+                    cursor: "pointer",
+                    color: "var(--rust-500)",
+                  }}
+                  onClick={() => onVideoClick(activity.videoLink)}
+                />
+              ) : (
+                <IoPlayCircle
+                  size={22}
+                  style={{
+                    zIndex: 2,
+                    position: "relative",
+                    verticalAlign: "middle",
+                    color: "var(--grey-400)",
+                  }}
+                />
+              )
+            ) : (
+              <div className="dot" />
+            )}
+
+            <div className="--session">
+              <div>
+                <div
+                  className="--name"
+                  style={{
+                    wordWrap: "break-word",
+                    wordBreak: "break-word",
+                    whiteSpace: "normal",
+                    lineHeight: "1.4",
+                    display: "flex",
+                    alignItems: "flex-start", // Change from center to flex-start
+                    flexWrap: "nowrap",
+                    gap: "0",
+                    minHeight: "1.4em", // Add minimum height to ensure consistent baseline
+                  }}
+                >
+                  <span
+                    style={{
+                      flexShrink: 1,
+                      minWidth: 0,
+                      lineHeight: "1.4", // Ensure consistent line height
+                    }}
+                  >
+                    {activity.name || "No name"}
+                  </span>
+                  
+                </div>
+                
+                <div
+                  style={{
+                    wordWrap: "break-word",
+                    wordBreak: "break-word",
+                    whiteSpace: "normal",
+                    lineHeight: "1.4",
+                    marginTop: "4px",
+                    fontSize: "12px",
+                    color: "var(--grey-400)",
+                  }}
+                >
+                  {displayData.description || "No description"}
+                </div>
+                {displayData.vegNonVeg && (
+                    <VegNonVegDot vegNonVeg={displayData.vegNonVeg} />
+                  )}
+              </div>
+
+              <div style={{ flex: "0 0 80px", minWidth: "82px" }}>
+                <div className="--desc">
+                  {displayData.target || "-"}
+                  {displayData.target
+                    ? activity?.unit == "weight"
+                      ? "Kg"
+                      : activity?.unit == "distance"
+                      ? "Km"
+                      : activity?.unit == "time"
+                      ? "Min"
+                      : activity?.unit == "repetitions"
+                      ? "Reps"
+                      : activity?.unit == "grams"
+                      ? "g"
+                      : activity?.unit == "meter"
+                      ? "m"
+                      : activity?.unit == "litre"
+                      ? "L"
+                      : activity?.unit == "millilitre"
+                      ? "ml"
+                      : ""
+                    : ""}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  flex: "0 0 80px",
+                  minWidth: "80px",
+                  textAlign: "center",
+                }}
+              >
+                <span className="--desc">
+                  {displayData.target2
+                    ? `${displayData.target2}${
+                        activity.unit2
+                          ? activity?.unit2 == "weight"
+                            ? "Kg"
+                            : activity?.unit2 == "distance"
+                            ? "Km"
+                            : activity?.unit2 == "time"
+                            ? "Min"
+                            : activity?.unit2 == "repetitions"
+                            ? "Reps"
+                            : activity?.unit2 == "grams"
+                            ? "g"
+                            : activity?.unit2 == "meter"
+                            ? "m"
+                            : activity?.unit2 == "litre"
+                            ? "L"
+                            : activity?.unit2 == "millilitre"
+                            ? "ml"
+                            : ""
+                          : ""
+                      }`
+                    : activity.customReps || "-"}
+                </span>
+              </div>
+
+              {showCheckbox && (
+                <div>
+                  <Checkbox
+                    checked={activity.status === "COMPLETE"}
+                    disabled={activity.status == "COMPLETE"}
+                    onChange={() =>
+                      onCheckboxChange(
+                        activity.activityInstanceId,
+                        sessionInstanceId
+                      )
+                    }
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const clientId = localStorage.getItem("userId")?.slice(1, -1) || "";
   const CHAT_API_KEY =
     "0DwkUw.pjfyJw:CwXcw14bOIyzWPRLjX1W7MAoYQYEVgzk8ko3tn0dYUI";
@@ -312,6 +771,10 @@ const ViewPlan = () => {
     // console.log(newsessionForCurrentDate,"lk[qpkdqow")
   }, [newsessionForCurrentDate]);
 
+  useEffect(() => {
+    loadEnhancedSessionData();
+  }, [newsessionForCurrentDate]);
+
   // const sessionForCurrentDate = weekPlan?.sessionInstances.find(
   //   (session) => formatDate(session.scheduledDate) === formatDate(currentDate)
   // );
@@ -493,39 +956,36 @@ const ViewPlan = () => {
     }
   };
 
-const fetchAvailableGroups = async (category: string, dateISO: string) => {
-  setIsLoadingGroupCount(true);
-  setAvailableGroupCount(0);
-  try {
-    const categoryUrl = `https://play-os-backend.forgehub.in/sports/category/${category}`;
-    const categoryRes = await axios.get(categoryUrl);
-    const sports = categoryRes.data;
-
-    let totalValidGames = 0;
-    for (const sport of sports) {
-      const sportId = sport.sportId;
-      // Ensure date is start of day and add +1 to correct off-by-one
-      let date = new Date(dateISO);
-      date.setDate(date.getDate());
-      date.setHours(0, 0, 0, 0);
-      const gamesUrl = `https://play-os-backend.forgehub.in/game/games/by-sport?sportId=${sportId}&date=${date.toISOString()}&courtId=ALL`;
-      const gamesRes = await axios.get(gamesUrl);
-      const games = gamesRes.data;
-
-      const validGames = games.filter(
-        (game: any) =>
-          game.type === "game"
-      );
-      totalValidGames += validGames.length;
-    }
-    setAvailableGroupCount(totalValidGames);
-  } catch (error) {
-    console.error("Error fetching available groups:", error);
+  const fetchAvailableGroups = async (category: string, dateISO: string) => {
+    setIsLoadingGroupCount(true);
     setAvailableGroupCount(0);
-  } finally {
-    setIsLoadingGroupCount(false);
-  }
-};
+    try {
+      const categoryUrl = `https://play-os-backend.forgehub.in/sports/category/${category}`;
+      const categoryRes = await axios.get(categoryUrl);
+      const sports = categoryRes.data;
+
+      let totalValidGames = 0;
+      for (const sport of sports) {
+        const sportId = sport.sportId;
+        // Ensure date is start of day and add +1 to correct off-by-one
+        let date = new Date(dateISO);
+        date.setDate(date.getDate());
+        date.setHours(0, 0, 0, 0);
+        const gamesUrl = `https://play-os-backend.forgehub.in/game/games/by-sport?sportId=${sportId}&date=${date.toISOString()}&courtId=ALL`;
+        const gamesRes = await axios.get(gamesUrl);
+        const games = gamesRes.data;
+
+        const validGames = games.filter((game: any) => game.type === "game");
+        totalValidGames += validGames.length;
+      }
+      setAvailableGroupCount(totalValidGames);
+    } catch (error) {
+      console.error("Error fetching available groups:", error);
+      setAvailableGroupCount(0);
+    } finally {
+      setIsLoadingGroupCount(false);
+    }
+  };
 
   const ChatModal: React.FC<ChatModalProps> = ({
     isOpen,
@@ -710,7 +1170,7 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
                   </>
                 ) : (
                   <>
-                  <span>Send Message</span>
+                    <span>Send Message</span>
                     <svg
                       className="chat-modal-icon"
                       fill="none"
@@ -724,7 +1184,6 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
                         d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                       />
                     </svg>
-                    
                   </>
                 )}
               </button>
@@ -904,12 +1363,32 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
                       <div className="--schedule-container">
                         <div className="--schedule-templat-container">
                           <div>
-                            <span className="--schedule-template-title">
-                              {" "}
-                              {data1?.sessionTemplateTitle === "DUMMY"
-                                ? "ACTIVITIES"
-                                : data1?.sessionTemplateTitle}
-                            </span>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center", // Keep center alignment here
+                                gap: "0",
+                                flexWrap: "nowrap",
+                              }}
+                            >
+                              <span className="--schedule-template-title">
+                                {data1?.sessionTemplateTitle === "DUMMY"
+                                  ? "ACTIVITIES"
+                                  : data1?.sessionTemplateTitle}
+
+                                {data1.category === "NUTRITION" &&
+                                  enhancedSessionData[data1.sessionInstanceId]
+                                    ?.vegNonVeg && (
+                                    <VegNonVegDot
+                                      vegNonVeg={
+                                        enhancedSessionData[
+                                          data1.sessionInstanceId
+                                        ].vegNonVeg
+                                      }
+                                    />
+                                  )}
+                              </span>
+                            </div>
                           </div>
                           <TbMessage
                             size={30}
@@ -928,40 +1407,50 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
                           {data1?.category !== "NUTRITION" &&
                             data1?.sessionTemplateId !== "SEST_YFVI33" && (
                               <div
-  className={`--book-slot ${data1 ? "" : "--inActive"}`}
-  onClick={() => {
-    if (!data1) return;
+                                className={`--book-slot ${
+                                  data1 ? "" : "--inActive"
+                                }`}
+                                onClick={() => {
+                                  if (!data1) return;
 
-    let selectedDate = new Date(data1.scheduledDate);
-    selectedDate.setDate(selectedDate.getDate() + 1);
-    const selectedDateISO = selectedDate.toISOString();
+                                  let selectedDate = new Date(
+                                    data1.scheduledDate
+                                  );
+                                  selectedDate.setDate(
+                                    selectedDate.getDate() + 1
+                                  );
+                                  const selectedDateISO =
+                                    selectedDate.toISOString();
 
-    if (
-      data1?.category === "FITNESS" ||
-      data1?.category === "WELLNESS"
-    ) {
-      if (data1?.status == "SCHEDULED") {
-        fetchAvailableGroups(data1.category, selectedDateISO);
-        setModalMap((prev) => ({
-          ...prev,
-          [data1.sessionInstanceId]: true,
-        }));
-        return;
-      }
-    }
-    if (data1?.category === "NUTRITION") {
-      return;
-    }
+                                  if (
+                                    data1?.category === "FITNESS" ||
+                                    data1?.category === "WELLNESS"
+                                  ) {
+                                    if (data1?.status == "SCHEDULED") {
+                                      fetchAvailableGroups(
+                                        data1.category,
+                                        selectedDateISO
+                                      );
+                                      setModalMap((prev) => ({
+                                        ...prev,
+                                        [data1.sessionInstanceId]: true,
+                                      }));
+                                      return;
+                                    }
+                                  }
+                                  if (data1?.category === "NUTRITION") {
+                                    return;
+                                  }
 
-    slotBookingHandler(data1?.category, data1);
-  }}
->
-  <span>
-    {data1?.status === "BOOKED"
-      ? "View Booking"
-      : "Book Slot"}
-  </span>
-</div>
+                                  slotBookingHandler(data1?.category, data1);
+                                }}
+                              >
+                                <span>
+                                  {data1?.status === "BOOKED"
+                                    ? "View Booking"
+                                    : "Book Slot"}
+                                </span>
+                              </div>
                             )}
                         </div>
                         {data1 ? (
@@ -1233,118 +1722,18 @@ const fetchAvailableGroups = async (category: string, dateISO: string) => {
                                     (activity) => activity.status !== "REMOVED"
                                   )
                                   .map((activity, i) => (
-                                    <div
+                                    <EnhancedActivityItem
                                       key={i}
-                                      className="session-information-container"
-                                    >
-                                      <div className="--session-info">
-                                        <div className="--start">
-                                          <div
-                                            className="dot"
-                                            style={
-                                              i === 0
-                                                ? {
-                                                    outline: "1px solid black",
-                                                    outlineOffset: "10px",
-                                                  }
-                                                : {}
-                                            }
-                                          />
-                                          <div className="--session">
-                                            <div>
-                                              <div
-                                                className="--name"
-                                                style={{
-                                                  wordWrap: "break-word",
-                                                  wordBreak: "break-word",
-                                                  whiteSpace: "normal",
-                                                  lineHeight: "1.4",
-                                                }}
-                                              >
-                                                {activity.name || "No name"}
-                                              </div>
-                                              <div
-                                                style={{
-                                                  wordWrap: "break-word",
-                                                  wordBreak: "break-word",
-                                                  whiteSpace: "normal",
-                                                  lineHeight: "1.4",
-                                                  marginTop: "4px",
-                                                  fontSize: "12px",
-                                                  color: "var(--grey-400)",
-                                                }}
-                                              >
-                                                {activity.description ||
-                                                  "No description"}
-                                              </div>
-                                            </div>
-                                            <div
-                                              style={{
-                                                flex: "0 0 80px",
-                                                minWidth: "80px",
-                                                textAlign: "center",
-                                              }}
-                                            >
-                                              <div className="--desc">
-                                                {activity.target || "-"}
-                                                {activity.target
-                                                  ? activity?.unit == "weight"
-                                                    ? "Kg"
-                                                    : activity?.unit ==
-                                                      "distance"
-                                                    ? "Km"
-                                                    : activity?.unit == "time"
-                                                    ? "Min"
-                                                    : activity?.unit ==
-                                                      "repetitions"
-                                                    ? "Reps"
-                                                    : activity?.unit == "grams"
-                                                    ? "g"
-                                                    : activity?.unit == "meter"
-                                                    ? "m"
-                                                    : activity?.unit == "litre"
-                                                    ? "L"
-                                                    : activity?.unit ==
-                                                      "millilitre"
-                                                    ? "ml"
-                                                    : ""
-                                                  : ""}
-                                              </div>
-                                            </div>
-                                            <div
-                                              style={{
-                                                flex: "0 0 80px",
-                                                minWidth: "80px",
-                                                textAlign: "center",
-                                              }}
-                                            >
-                                              <span className="--desc">
-                                                {activity.customReps || "-"}
-                                              </span>
-                                            </div>
-                                            <div>
-                                              <Checkbox
-                                                checked={
-                                                  activity.status === "COMPLETE"
-                                                }
-                                                disabled={
-                                                  activity.status == "COMPLETE"
-                                                }
-                                                onChange={() =>
-                                                  handleCheckboxChange(
-                                                    activity.activityInstanceId,
-                                                    data1.sessionInstanceId
-                                                  )
-                                                }
-                                              />
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      {i < validActivities.length - 1 && (
-                                        <div id="line-nutrition"></div>
-                                      )}
-                                    </div>
+                                      activity={activity}
+                                      sessionInstanceId={
+                                        data1.sessionInstanceId
+                                      }
+                                      index={i}
+                                      showCheckbox={true}
+                                      onCheckboxChange={handleCheckboxChange}
+                                      showVideoIcon={false}
+                                      onVideoClick={() => {}}
+                                    />
                                   ))}
                               </div>
                             )}
