@@ -159,7 +159,7 @@ const ViewPlan = () => {
 
     try {
       const response = await axios.get(
-        `https://testforgebackend.forgehub.in/session-templates/${sessionTemplateId}`
+        `https://forge-play-backend.forgehub.in/session-templates/${sessionTemplateId}`
       );
       console.log(response.data, "api1");
 
@@ -274,7 +274,7 @@ const ViewPlan = () => {
 
     try {
       const response = await axios.get(
-        `https://testforgebackend.forgehub.in/session-instance/${sessionInstanceId}`
+        `https://forge-play-backend.forgehub.in/session-instance/${sessionInstanceId}`
       );
       console.log(response.data, "api2");
 
